@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Atención al Público - Defensoría Civil y Comercial 6</title>
+  <style>
+    :root {
+      --primary-blue: #007bff;
+      --primary-light-blue: #e7f4ff;
+      --primary-dark-blue: #0056b3;
+      --secondary-gray: #f8f9fa;
+      --secondary-light-gray: #e9ecef;
+      --secondary-dark-gray: #6c757d;
+      --status-success: #28a745;
+      --status-warning: #ffc107;
+      --status-danger: #dc3545;
+      --status-info: #17a2b8;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-link: #007bff;
+      --text-light: #ffffff;
+      --background-default: #ffffff;
+      --background-card: #ffffff;
+      --background-header: #ffffff;
+      --background-table-header: #f8f9fa;
+      --border-default: #dee2e6;
+      --font-family: 'Arial', 'Helvetica', sans-serif;
+      --display-size: 24px;
+      --h1-size: 20px;
+      --h2-size: 18px;
+      --body-large-size: 16px;
+      --body-regular-size: 14px;
+      --caption-size: 12px;
+      --font-weight-regular: 400;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --spacing-unit: 8px;
+      --spacing-xs: 4px;
+      --spacing-s: 8px;
+      --spacing-m: 16px;
+      --spacing-l: 24px;
+      --spacing-xl: 32px;
+      --spacing-gutter: 20px;
+      --border-radius-small: 2px;
+      --border-radius-default: 4px;
+      --border-radius-pill: 20px;
+      --shadow-none: none;
+      --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --shadow: 0 4px 15px rgba(0,0,0,.08);
+      
+      /* Mapeo de variables para mantener funcionalidad */
+      --bg: var(--primary-light-blue);
+      --card: var(--background-card);
+      --accent: var(--primary-blue);
+      --accent-dark: var(--primary-dark-blue);
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    html { height: 100%; }
+    body {
+      min-height: 100%;
+      font-family: var(--font-family);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: clamp(12px, 2vw, 24px);
+    }
+    h1,h2 { font-weight:600; color: var(--text); }
+    .container { width: min(1200px, 100%); margin-inline: auto; display: flex; flex-direction: column; gap: clamp(12px, 2vw, 20px); }
+    .header { background: var(--card); padding: clamp(16px, 2vw, 24px); border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+    .header h1 { font-size: clamp(18px, 2.8vw, 26px); margin-bottom: 6px; }
+    .header p { color: var(--muted); font-size: clamp(12px, 1.8vw, 14px); }
+    .status-bar { background: var(--card); padding: 12px clamp(12px,2vw,20px); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
+    .status-open { background: var(--status-success); }
+    .status-closed { background: var(--status-danger); }
+    .main { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px,2vw,20px); }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(14px, 2vw, 20px); }
+    .card h2 { font-size: clamp(16px, 2.2vw, 18px); margin-bottom: 12px; border-bottom: 1px solid var(--border-default); padding-bottom: 6px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px; }
+    .form-group { margin-bottom: 12px; }
+    label { font-size: 14px; font-weight: 600; margin-bottom: 6px; display:block; color: var(--text); }
+    input,select,textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 8px; background: #fff; font-size: 14px; color: var(--text);
+    }
+    .btn { display:inline-block; border-radius:8px; padding:8px 12px; font-size:13px; font-weight:700; cursor:pointer; }
+    .btn-primary { background: linear-gradient(to bottom, var(--accent), var(--accent-dark)); color: #fff; border: none; }
+    .btn-secondary { background: var(--secondary-light-gray); border:1px solid var(--border-default); color: var(--text); }
+    .btn-danger { background: var(--status-danger); color:#fff; border:none; }
+    .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+    .stat-box { background: var(--secondary-gray); border-radius: var(--radius); padding:16px; text-align:center; }
+    .stat-number { font-size: clamp(18px, 3vw, 22px); font-weight:700; color: var(--accent-dark); }
+    .stat-label { font-size:12px; color: var(--text); }
+    .chart-container { max-width:320px; height:260px; margin:16px auto 0; }
+    .records-table { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .table-header { background: var(--background-table-header); padding: 12px clamp(12px,2vw,18px); font-weight: 700; border-bottom:1px solid var(--border-default); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; color: var(--text); }
+    .filters { display:flex; gap:8px; flex-wrap:wrap; width:100%; justify-content:space-between; }
+    .filter-controls { display:flex; gap:8px; flex-wrap:wrap; }
+    .filter-controls > * { flex: 1 1 160px; min-width: 120px; }
+    .table-content { max-height: min(60vh, 560px); overflow-y:auto; }
+    .record { display:grid; grid-template-columns: 110px 80px 110px 1.2fr 1fr 120px; padding: 10px 12px; font-size:14px; border-bottom:1px solid var(--border-default); gap: 8px; align-items:center; }
+    .record-type { font-size:12px; padding:2px 6px; border-radius:6px; text-align:center; font-weight:700; }
+    .type-presencial { background:#eaf9ea; color:#2d9950; }
+    .type-telefonica { background:#fff8e6; color:#b36a00; }
+    .type-whatsapp { background:#f3e8ff; color:#7f3bb5; }
+    .type-zimbra { background:#ffe6e6; color:#cc0000; }
+    .record-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content: center; }
+    .record-actions .btn { 
+      width: 32px; 
+      height: 32px; 
+      padding: 0; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 14px;
+    }
+    /* Estilos para Paginación */
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pagination-controls select, .pagination-controls button {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    /* Compactar en pantallas medianas */
+    @media (max-width: 1000px) {
+      .main { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .record { grid-template-columns: 90px 70px 100px 1fr; }
+      .record .record-actions { grid-column: 1 / -1; }
+      .filters { flex-direction: column; align-items: flex-start; }
+      .filter-controls { width: 100%; justify-content: flex-end; }
+    }
+    /* Diseño tipo tarjetas en móviles */
+    @media (max-width: 640px) {
+      .table-content { max-height: unset; }
+      .stats { grid-template-columns: 1fr; }
+      .record { grid-template-columns: 1fr 1fr; grid-template-areas:
+        "fecha hora"
+        "tipo  tipo"
+        "persona persona"
+        "usuario usuario"
+        "acciones acciones";
+        row-gap: 6px;
+      }
+      .record > div:nth-child(1) { grid-area: fecha; }
+      .record > div:nth-child(2) { grid-area: hora; text-align:right; }
+      .record > div:nth-child(3) { grid-area: tipo; }
+      .record > div:nth-child(4) { grid-area: persona; }
+      .record > div:nth-child(5) { grid-area: usuario; }
+      .record > div:nth-child(6) { grid-area: acciones; }
+      .filters > * { flex: 1 1 100%; min-width: 0; }
+      .filter-controls { flex-direction: column; }
+      .chart-container { width: 100%; height: 220px; }
+    }
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); justify-content:center; align-items:center; z-index:1000; padding: 16px; }
+    .modal-content { background:#fff; padding:20px; border-radius:var(--radius); max-width:600px; width:100%; max-height:80vh; overflow:auto; color: var(--text); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .modal-header h3 { margin:0; color: var(--text); }
+    .close-btn { background:none; border:none; font-size:20px; cursor:pointer; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Registro de Atención al Público</h1>
+      <p>Defensoría Civil y Comercial 6 · Poder Judicial de Misiones</p>
+      <p style="margin-top:6px;font-weight:700;">Horario: Lunes a Viernes 07:00–12:00 (excepto sábados, domingos y feriados)</p>
+    </div>
+
+    <div class="status-bar">
+      <span id="statusIndicator" class="status-indicator"></span>
+      <span id="statusText"></span>
+      <span id="currentTime"></span>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>Registrar Atención</h2>
+        <form id="attentionForm">
+          <div class="form-group">
+            <label for="personName">Nombre de la Persona</label>
+            <input type="text" id="personName" required>
+          </div>
+          <div class="form-group">
+            <label for="attentionType">Tipo de Atención</label>
+            <select id="attentionType" required>
+              <option value="">Seleccionar</option>
+              <option value="presencial">Presencial</option>
+              <option value="telefonica">Telefónica</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="zimbra">Por Correo Zimbra Institucional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="assignedUser">Usuario Asignado</label>
+            <select id="assignedUser" required></select>
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción del Caso</label>
+            <textarea id="description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+      </div>
+
+      <div class="card" id="statsCard">
+        <h2>
+          Estadísticas del Día
+          <button id="printStatsBtn" class="btn btn-secondary">🖨️ Imprimir</button>
+        </h2>
+        <div class="stats">
+          <div class="stat-box"><div id="totalAttentions" class="stat-number">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div id="presentialCount" class="stat-number">0</div><div class="stat-label">Presenciales</div></div>
+          <div class="stat-box"><div id="phoneCount" class="stat-number">0</div><div class="stat-label">Telefónicas</div></div>
+          <div class="stat-box"><div id="whatsappCount" class="stat-number">0</div><div class="stat-label">WhatsApp</div></div>
+          <div class="stat-box"><div id="zimbraCount" class="stat-number">0</div><div class="stat-label">Zimbra</div></div>
+        </div>
+        <div class="chart-container">
+          <canvas id="statsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="records-table">
+      <div class="table-header">
+        <span>Registro de Atenciones</span>
+        <div class="filters">
+          <div class="filter-controls">
+            <input type="date" id="filterDate">
+            <select id="filterUser"><option value="">Todos los usuarios</option></select>
+            <input type="text" id="filterPerson" placeholder="Buscar persona...">
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="paginationControls" class="pagination-controls">
+              </div>
+            <button id="printBtn" class="btn btn-secondary">🖨️ Imprimir Listado</button>
+          </div>
+        </div>
+      </div>
+      <div id="recordsContainer" class="table-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">
+          No hay registros para mostrar
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="recordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detalle de Atención</h3>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    /* ========= Firebase App + Realtime Database ========= */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getDatabase, ref, push, onValue, update, remove,
+      serverTimestamp, query, orderByChild
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    /* ========= Configuración ========= */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+      authDomain: "atencion-publico-def6.firebaseapp.com",
+      databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+      projectId: "atencion-publico-def6",
+      storageBucket: "atencion-publico-def6.firebasestorage.app",
+      messagingSenderId: "1052433106688",
+      appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+    };
+
+    // Horario de atención y feriados (formato DD/MM/AAAA)
+    const OPEN_HOUR = 7;
+    const CLOSE_HOUR = 12;
+    const FERIADOS = [
+      // "01/01/2025","24/03/2025","02/04/2025","01/05/2025","09/07/2025","08/12/2025","25/12/2025"
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const baseRef = ref(db, "atencion");
+
+    let statsChart;
+    let recordsCache = []; // cache local para filtros/orden
+    
+    // VARIABLES DE PAGINACIÓN AÑADIDAS
+    let currentPage = 1; 
+    const recordsPerPage = 10;
+    // FIN VARIABLES DE PAGINACIÓN AÑADIDAS
+
+    const users = ["Bazante Nadia Romina","Boillat Cesar Enrique","Cardozo Maria Raquel","Cedron Noelia Aurora","Corrales Alicia Mariela","Escobar Monica Graciela","Fioravante Romulo","Gonzalez Alberto Misael","Gonzalez Juan Jose","Gudiño Natalia Esther","Magnani Enzo Luciano","Pablos Patricia","Palacios Ana Gabriela","Ortega Lucia Noemi","Ramos Marcelo Gustavo","Riveros Patricia Soledad","Sosa Rita Cecilia"];
+
+    /* ========= Utilidades de fecha/hora (DD/MM/AAAA y 24h) ========= */
+    const fmtFecha = (d)=> d ? d.toLocaleDateString("es-AR") : "-"; // DD/MM/AAAA
+    const fmtHora = (d)=> d ? d.toLocaleTimeString("es-AR", {hour12:false, hour:"2-digit", minute:"2-digit"}) : "--:--";
+
+    function esFeriado(date){
+      const ddmmyyyy = fmtFecha(date);
+      return FERIADOS.includes(ddmmyyyy);
+    }
+
+    function oficinaAbierta(date = new Date()){
+      const d = date.getDay(); // 0-dom,6-sab
+      if (d === 0 || d === 6) return false;
+      if (esFeriado(date)) return false;
+      const h = date.getHours();
+      return h >= OPEN_HOUR && h < CLOSE_HOUR; // 07:00–11:59
+    }
+
+    /* ========= Inicialización ========= */
+    function init(){
+      const sel=document.getElementById("assignedUser");
+      const filterSel=document.getElementById("filterUser");
+      users.forEach(u=>{
+        let o=document.createElement("option"); o.value=u; o.textContent=u;
+        sel.appendChild(o.cloneNode(true));
+        filterSel.appendChild(o);
+      });
+      updateClock(); updateStatus();
+      setInterval(()=>{updateClock();updateStatus();},60000);
+      initChart();
+      bindPrinting();
+      bindFilters();
+      startRealtime();
+    }
+
+    function bindPrinting(){
+      document.getElementById("printBtn").addEventListener("click", ()=>{
+        const w = window.open("", "_blank");
+        const html = document.querySelector(".records-table").outerHTML;
+        w.document.write(`<html><head><title>Listado</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>${html}</body></html>`);
+        w.document.close(); w.focus(); w.print();
+      });
+      document.getElementById("printStatsBtn").addEventListener("click", ()=>{
+        const w = window.open("", "_blank");
+        const html = document.getElementById("statsCard").outerHTML;
+        w.document.write(`<html><head><title>Estadísticas</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>${html}</body></html>`);
+        w.document.close(); w.focus(); w.print();
+      });
+    }
+
+    function bindFilters(){
+      // Se añade el reinicio de la página actual al cambiar los filtros
+      document.getElementById("filterDate").addEventListener("change", ()=> { currentPage = 1; renderRecords(recordsCache); });
+      document.getElementById("filterUser").addEventListener("change", ()=> { currentPage = 1; renderRecords(recordsCache); });
+      document.getElementById("filterPerson").addEventListener("input", ()=> { currentPage = 1; renderRecords(recordsCache); });
+    }
+
+    function updateClock(){
+      const now=new Date();
+      document.getElementById("currentTime").textContent="· " + fmtFecha(now) + " " + fmtHora(now);
+    }
+
+    function updateStatus(){
+      const ind=document.getElementById("statusIndicator");
+      const txt=document.getElementById("statusText");
+      const form=document.getElementById("attentionForm");
+      if(oficinaAbierta()){
+        ind.className="status-indicator status-open";
+        txt.textContent="Oficina Abierta (Lun–Vie 07:00–12:00)";
+        form.querySelectorAll("input,select,textarea,button").forEach(el=>el.disabled=false);
+      }else{
+        ind.className="status-indicator status-closed";
+        txt.textContent="Oficina Cerrada (sábados, domingos o fuera de horario / feriado)";
+        form.querySelectorAll("input,select,textarea,button").forEach(el=>el.disabled=true);
+      }
+    }
+
+    /* ========= Realtime Database (listen) ========= */
+    function startRealtime(){
+      // Ordenaremos por timestamp en cliente (desc), ya que Realtime Database no tiene "desc"
+      const qRef = query(baseRef, orderByChild("timestamp"));
+      onValue(qRef, (snapshot)=>{
+        const arr = [];
+        snapshot.forEach(child => {
+          const val = child.val() || {};
+          arr.push({ ...val, id: child.key });
+        });
+        // Orden descendente por timestamp
+        arr.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+        recordsCache = arr;
+        currentPage = 1; // Reiniciar página al recibir nuevos datos
+        renderRecords(recordsCache);
+      });
+    }
+
+    // FUNCIÓN PARA CAMBIAR LA PÁGINA
+    window.goToPage = (pageNumber) => {
+      currentPage = pageNumber;
+      renderRecords(recordsCache);
+      window.scrollTo({top: document.querySelector('.records-table').offsetTop, behavior: "smooth"}); // Scroll a la tabla
+    }
+
+    function createPaginationControls(totalRecords, currentPage, recordsPerPage, container){
+      container.innerHTML = "";
+      const totalPages = Math.ceil(totalRecords / recordsPerPage);
+
+      if (totalPages <= 1) return;
+
+      const prevBtn = document.createElement("button");
+      prevBtn.className = "btn btn-secondary";
+      prevBtn.textContent = "« Anterior";
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => window.goToPage(currentPage - 1);
+      container.appendChild(prevBtn);
+
+      const select = document.createElement("select");
+      select.onchange = (e) => window.goToPage(parseInt(e.target.value));
+      
+      for (let i = 1; i <= totalPages; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `Página ${i} de ${totalPages}`;
+        if (i === currentPage) option.selected = true;
+        select.appendChild(option);
+      }
+      container.appendChild(select);
+
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "btn btn-secondary";
+      nextBtn.textContent = "Siguiente »";
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => window.goToPage(currentPage + 1);
+      container.appendChild(nextBtn);
+    }
+    // FIN FUNCIÓN DE PAGINACIÓN
+
+    /* ========= Render de registros + estadísticas MODIFICADA ========= */
+    function renderRecords(records){
+      const filterDate=document.getElementById("filterDate").value; // YYYY-MM-DD
+      const filterUser=document.getElementById("filterUser").value;
+      const filterPerson=document.getElementById("filterPerson").value.toLowerCase();
+      const container=document.getElementById("recordsContainer");
+      container.innerHTML="";
+      let stats={total:0,presencial:0,telefonica:0,whatsapp:0,zimbra:0};
+
+      const filtered = records.filter(r=>{
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const iso = fechaObj ? new Date(fechaObj.getTime() - (fechaObj.getTimezoneOffset()*60000)).toISOString().slice(0,10) : null;
+        if(filterDate && iso !== filterDate) return false;
+        if(filterUser && r.assignedUser!==filterUser) return false;
+        if(filterPerson && !(r.personName||"").toLowerCase().includes(filterPerson)) return false;
+        
+        // CÁLCULO DE ESTADÍSTICAS (SOBRE TODOS LOS FILTRADOS)
+        stats.total++; 
+        if(stats[r.type]!==undefined) stats[r.type]++;
+        return true;
+      });
+
+      // APLICAR PAGINACIÓN
+      const totalFiltered = filtered.length;
+      const startIndex = (currentPage - 1) * recordsPerPage;
+      const endIndex = startIndex + recordsPerPage;
+      const paginatedRecords = filtered.slice(startIndex, endIndex);
+
+      // CREAR CONTROLES DE PAGINACIÓN
+      const paginationContainer = document.getElementById("paginationControls");
+      createPaginationControls(totalFiltered, currentPage, recordsPerPage, paginationContainer);
+      // FIN PAGINACIÓN
+
+      paginatedRecords.forEach(r=>{ // Iterar sobre los registros paginados
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const fechaStr = fmtFecha(fechaObj);
+        const horaStr  = r.time || fmtHora(fechaObj);
+        const div=document.createElement("div");
+        div.className="record";
+        div.innerHTML=`
+          <div>${fechaStr}</div>
+          <div>${horaStr}</div>
+          <div class="record-type type-${r.type}">${r.type ? (r.type[0].toUpperCase()+r.type.slice(1)) : "-"}</div>
+          <div><strong>${r.personName||""}</strong></div>
+          <div>${r.assignedUser||""}</div>
+          <div class="record-actions">
+            <button class="btn btn-secondary" onclick='viewRecord(${JSON.stringify(r)})' title="Ver detalles">👁️</button>
+            <button class="btn btn-primary" onclick='editRecord(${JSON.stringify(r)})' title="Editar">✏️</button>
+            <button class="btn btn-primary" onclick='updateRecord(${JSON.stringify(r.id)})' title="Actualizar">🔄</button>
+          </div>`;
+        container.appendChild(div);
+      });
+
+      if(totalFiltered === 0 || paginatedRecords.length === 0){
+        container.innerHTML="<div style='padding:30px;text-align:center;color:var(--muted)'>No hay registros para mostrar</div>";
+      }
+      
+      // Actualizar Estadísticas con el total de registros FILTRADOS (no solo los de la página)
+      document.getElementById("totalAttentions").textContent=totalFiltered;
+      document.getElementById("presentialCount").textContent=stats.presencial;
+      document.getElementById("phoneCount").textContent=stats.telefonica;
+      document.getElementById("whatsappCount").textContent=stats.whatsapp;
+      document.getElementById("zimbraCount").textContent=stats.zimbra;
+      updateChart(stats);
+    }
+
+    /* ========= Gráfico ========= */
+    function initChart(){
+      const ctx=document.getElementById("statsChart");
+      statsChart=new Chart(ctx,{
+        type:"pie",
+        data:{
+          labels:["Presenciales","Telefónicas","WhatsApp","Zimbra"],
+          datasets:[{
+            data:[0,0,0,0],
+            backgroundColor:["#34c759","#ff9500","#af52de","#ff3b30"]
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ position:"bottom" } }
+        }
+      });
+    }
+    function updateChart(stats){
+      statsChart.data.datasets[0].data=[stats.presencial,stats.telefonica,stats.whatsapp,stats.zimbra];
+      statsChart.update();
+    }
+
+    /* ========= Alta / Edición / Actualización / Eliminación ========= */
+    document.getElementById("attentionForm").addEventListener("submit",async(e)=>{
+      e.preventDefault();
+      if(!oficinaAbierta()){ alert("Oficina cerrada (Lun–Vie 07:00–12:00, excepto feriados)."); return; }
+      const now=new Date();
+      const rec={
+        time: fmtHora(now),
+        personName: personName.value,
+        type: attentionType.value,
+        assignedUser: assignedUser.value,
+        description: description.value,
+        timestamp: serverTimestamp()
+      };
+      try{
+        await push(baseRef, rec);
+        e.target.reset();
+      }catch(err){
+        console.error("Error guardando en Realtime Database: ",err);
+        alert("Error guardando el registro.");
+      }
+    });
+
+    // Modal (ver)
+    window.viewRecord=(r)=>{
+      const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+      const fechaStr = fmtFecha(fechaObj);
+      const horaStr  = r.time || fmtHora(fechaObj);
+      document.getElementById("modalBody").innerHTML=`
+        <p><b>Fecha:</b> ${fechaStr} ${horaStr}</p>
+        <p><b>Nombre:</b> ${r.personName||""}</p>
+        <p><b>Tipo:</b> ${r.type||""}</p>
+        <p><b>Usuario:</b> ${r.assignedUser||""}</p>
+        <p><b>Descripción:</b><br>${(r.description||"").replace(/\\n/g,"<br>")}</p>`;
+      document.getElementById("recordModal").style.display="flex";
+    }
+    window.closeModal=()=>{document.getElementById("recordModal").style.display="none";}
+
+    // Editar (carga en el form)
+    window.editRecord=(r)=>{
+      personName.value=r.personName||"";
+      attentionType.value=r.type||"";
+      assignedUser.value=r.assignedUser||"";
+      description.value=r.description||"";
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    // Actualizar (toma valores del form)
+    window.updateRecord=async(id)=>{
+      try {
+        await update(ref(db, "atencion/" + id), {
+          personName: personName.value,
+          type: attentionType.value,
+          assignedUser: assignedUser.value,
+          description: description.value
+        });
+        alert("Registro actualizado");
+      } catch(err){
+        console.error("Error al actualizar: ", err);
+        alert("No se pudo actualizar el registro.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded",init);
+  </script>
+</body>
+</html>

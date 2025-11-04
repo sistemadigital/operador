@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Art 583 CCyC – Defensoría Civil y Comercial 6 (con Realtime Database)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #007bff;
+            --primary-light-blue: #e7f4ff;
+            --primary-dark-blue: #0056b3;
+            --secondary-gray: #f8f9fa;
+            --secondary-light-gray: #e9ecef;
+            --secondary-dark-gray: #6c757d;
+            --status-success: #28a745;
+            --status-warning: #ffc107;
+            --status-danger: #dc3545;
+            --status-info: #17a2b8;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-link: #007bff;
+            --text-light: #ffffff;
+            --background-default: #ffffff;
+            --background-card: #ffffff;
+            --background-header: #ffffff;
+            --background-table-header: #f8f9fa;
+            --border-default: #dee2e6;
+            --font-family: 'Arial', 'Helvetica', sans-serif;
+            --display-size: 24px;
+            --h1-size: 20px;
+            --h2-size: 18px;
+            --body-large-size: 16px;
+            --body-regular-size: 14px;
+            --caption-size: 12px;
+            --font-weight-regular: 400;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --spacing-unit: 8px;
+            --spacing-xs: 4px;
+            --spacing-s: 8px;
+            --spacing-m: 16px;
+            --spacing-l: 24px;
+            --spacing-xl: 32px;
+            --spacing-gutter: 20px;
+            --border-radius-small: 2px;
+            --border-radius-default: 4px;
+            --border-radius-pill: 20px;
+            --shadow-none: none;
+            --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,.08);
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-default);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: var(--spacing-m);
+        }
+
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .header {
+            background-color: var(--background-header);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-l);
+            margin-bottom: var(--spacing-l);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-default);
+            text-align: center;
+        }
+
+        .header h1, .header h2 { 
+            color: var(--text-primary); 
+            font-weight: var(--font-weight-bold); 
+        }
+        
+        .header h3 { 
+            font-size: clamp(1.1rem, 2.8vw, 1.4rem); 
+            margin-bottom: var(--spacing-s); 
+            color: var(--text-primary);
+        }
+
+        .article-info {
+            background: var(--secondary-gray);
+            border-left: 4px solid var(--primary-blue);
+            padding: var(--spacing-m);
+            margin: var(--spacing-m) 0;
+            border-radius: var(--border-radius-default);
+            font-size: clamp(0.9rem, 2.2vw, 0.95rem);
+            line-height: 1.6;
+        }
+
+        .article-info h3 { 
+            color: var(--primary-blue); 
+            margin-bottom: var(--spacing-s); 
+            font-size: clamp(1.05rem, 3.2vw, 1.15rem); 
+        }
+
+        .controls {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-m);
+            margin-bottom: var(--spacing-l);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-default);
+        }
+
+        .controls-row { 
+            display: flex; 
+            gap: var(--spacing-s); 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+
+        .btn {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--border-radius-default);
+            padding: var(--spacing-s) var(--spacing-m);
+            font-size: var(--body-regular-size);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: var(--font-weight-semibold);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark-blue);
+        }
+
+        .btn-success {
+            background-color: var(--status-success);
+        }
+
+        .btn-warning {
+            background-color: var(--status-warning);
+            color: var(--text-primary);
+        }
+
+        .search-box { 
+            flex: 1; 
+            min-width: min(320px, 100%); 
+            padding: var(--spacing-s); 
+            border: 1px solid var(--border-default); 
+            border-radius: var(--border-radius-default); 
+            font-size: var(--body-regular-size); 
+            transition: border-color .2s ease; 
+        }
+
+        .search-box:focus { 
+            outline: none; 
+            border-color: var(--primary-blue); 
+            box-shadow: 0 0 0 3px rgba(0,123,255,.1); 
+        }
+
+        /* ESTILOS DE TABLA SIMILARES A CAUSAS.HTML */
+        .table-section {
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-default);
+            border: 1px solid var(--border-default);
+            overflow: hidden;
+            box-shadow: var(--shadow-subtle);
+            margin-bottom: var(--spacing-l);
+        }
+
+        .table-title {
+            font-size: var(--h2-size);
+            font-weight: var(--font-weight-semibold);
+            padding: var(--spacing-m);
+            background-color: var(--background-table-header);
+            border-bottom: 1px solid var(--border-default);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-s);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .data-table th {
+            background-color: var(--background-table-header);
+            font-weight: var(--font-weight-semibold);
+            border-bottom: 2px solid var(--border-default);
+            padding: var(--spacing-m);
+            color: var(--text-primary);
+            font-size: var(--caption-size);
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .data-table td {
+            border-bottom: 1px solid var(--border-default);
+            padding: var(--spacing-m);
+            color: var(--text-primary);
+            font-size: var(--body-regular-size);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: var(--secondary-gray);
+        }
+
+        /* Estilos para tipos de atención */
+        .tipo-pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        
+        .tipo-presencial { background-color: var(--status-success); }
+        .tipo-telefonica { background-color: var(--status-warning); color: var(--text-primary); }
+        .tipo-whatsapp { background-color: #25D366; }
+        .tipo-zimbra { background-color: var(--status-danger); }
+
+        .actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+        }
+
+        .actions .btn {
+            padding: 6px 10px;
+            font-size: var(--caption-size);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .no-cases { 
+            text-align: center; 
+            padding: 48px 16px; 
+            color: var(--text-secondary); 
+            font-weight: var(--font-weight-semibold); 
+            font-size: 1.05rem; 
+        }
+
+        /* MODALES - Mantenemos los estilos originales pero con nueva paleta */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,.5); 
+            backdrop-filter: blur(5px); 
+            padding: 10px; 
+        }
+
+        .modal-content { 
+            background: var(--background-card); 
+            margin: 0 auto; 
+            padding: 0; 
+            border-radius: var(--radius); 
+            width: min(100%, 900px); 
+            max-height: 92vh; 
+            overflow-y: auto; 
+            box-shadow: 0 20px 60px rgba(0,0,0,.3); 
+            animation: modalSlideIn .25s ease; 
+        }
+
+        @keyframes modalSlideIn { 
+            from { opacity: 0; transform: translateY(-30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .modal-header { 
+            background: var(--primary-blue); 
+            color: var(--text-light); 
+            padding: 16px 20px; 
+            border-radius: var(--radius) var(--radius) 0 0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 10px; 
+            position: sticky; 
+            top: 0; 
+        }
+
+        .modal-header h2 { 
+            margin: 0; 
+            font-size: 1.2rem; 
+        }
+
+        .modal-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+
+        .close { 
+            color: var(--text-light); 
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: opacity .2s ease; 
+        }
+
+        .close:hover { 
+            opacity: .7; 
+        }
+
+        .modal-body { 
+            padding: 20px; 
+        }
+
+        .form-group { 
+            margin-bottom: 16px; 
+        }
+
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: var(--font-weight-semibold); 
+            color: var(--text-primary); 
+        }
+
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-default); 
+            border-radius: var(--border-radius-default); 
+            font-size: var(--body-regular-size); 
+            transition: border-color .2s ease; 
+            background-color: var(--background-default);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+            outline: none; 
+            border-color: var(--primary-blue); 
+            box-shadow: 0 0 0 3px rgba(0,123,255,.1); 
+        }
+
+        .form-group textarea { 
+            resize: vertical; 
+            min-height: 100px; 
+        }
+
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+
+        .detail-section { 
+            margin-bottom: 18px; 
+            padding: 16px; 
+            background: var(--secondary-gray); 
+            border-radius: var(--border-radius-default); 
+        }
+
+        .detail-section h3 { 
+            color: var(--primary-blue); 
+            margin-bottom: 12px; 
+            font-size: 1.05rem; 
+            border-bottom: 2px solid var(--primary-blue); 
+            padding-bottom: 6px; 
+        }
+
+        .detail-item { 
+            display: grid; 
+            grid-template-columns: 1fr 2fr; 
+            gap: 10px; 
+            margin-bottom: 8px; 
+            padding: 6px 0; 
+            border-bottom: 1px solid var(--border-default); 
+        }
+
+        .detail-item:last-child { 
+            border-bottom: none; 
+        }
+
+        .detail-label { 
+            font-weight: var(--font-weight-semibold); 
+            color: var(--text-primary); 
+        }
+
+        .detail-value { 
+            color: var(--text-secondary); 
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container { 
+                padding: var(--spacing-s); 
+            }
+            
+            .form-row { 
+                grid-template-columns: 1fr; 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header { 
+                padding: var(--spacing-m); 
+            }
+            
+            .controls-row { 
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+            
+            .modal-content { 
+                width: 100%; 
+                max-height: 94vh; 
+            }
+            
+            .detail-item { 
+                grid-template-columns: 1fr; 
+                gap: 6px; 
+            }
+
+            .table-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: var(--spacing-xs);
+            }
+            
+            .header,
+            .controls,
+            .table-section {
+                padding: var(--spacing-s);
+            }
+            
+            .data-table th, 
+            .data-table td {
+                padding: var(--spacing-s);
+            }
+
+            .modal-header,
+            .modal-body {
+                padding: var(--spacing-s);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Registro Art 583 CCyC – Defensoría Civil y Comercial 6</h3>
+            <div class="article-info">
+                <h3>ARTÍCULO 583. Reclamación en supuestos de filiación con sola maternidad</h3>
+                <p>El Registro Civil debe comunicar al Ministerio Público cuando un niño/a figure sólo con filiación materna, procurando la determinación de paternidad y reconocimiento. Debe instarse a la madre a suministrar el nombre del presunto padre y datos para su individualización, bajo juramento previo aviso de consecuencias legales.</p>
+                <p>Antes de remitir la comunicación, el Registro cita e informa a la madre sobre derechos y deberes. Cumplido ello, se remiten actuaciones al Ministerio Público para promover acción judicial.</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="controls-row">
+                <button class="btn btn-success" onclick="openModal('add')">
+                    <i class="fas fa-plus"></i> Nuevo Caso
+                </button>
+                <input type="text" class="search-box" id="searchInput" placeholder="Buscar casos por cualquier campo..." onkeyup="filterCases()" />
+                <button class="btn btn-warning" onclick="printAllCases()">
+                    <i class="fas fa-print"></i> Imprimir Todo
+                </button>
+            </div>
+        </div>
+
+        <!-- TABLA ESTILO CAUSAS.HTML -->
+        <div class="table-section">
+            <div class="table-title">
+                <span>Registro de Casos</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span id="paginationInfo" style="font-size: 0.9rem; color: var(--text-secondary);"></span>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>N° Expediente</th>
+                            <th>Menor</th>
+                            <th>Madre</th>
+                            <th>Fecha Ingreso</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="casesContainer">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <div class="no-cases">
+                                    <div>📁</div>
+                                    <p>No hay casos registrados</p>
+                                    <p>Haga clic en "Nuevo Caso" para comenzar</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Controles de paginación -->
+        <div id="paginacion-container" style="display: none; justify-content: space-between; align-items: center; padding: var(--spacing-m); margin-top: var(--spacing-m); background: var(--background-card); border-radius: var(--border-radius-default); box-shadow: var(--shadow-subtle);">
+            <div class="page-info" style="font-size: var(--body-regular-size); color: var(--text-secondary); font-weight: var(--font-weight-semibold);"></div>
+            <div class="nav-buttons" style="display: flex; gap: var(--spacing-s);"></div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar casos -->
+    <div id="caseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Caso</h2>
+                <div class="modal-actions">
+                    <button class="btn btn-warning" onclick="printCaseFromForm()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <span class="close" onclick="closeModal()">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="caseForm">
+                    <div class="detail-section">
+                        <h3>Información General del Caso</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="numeroExpediente">Número de Expediente *</label>
+                                <input type="text" id="numeroExpediente" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaIngreso">Fecha de Ingreso *</label>
+                                <input type="date" id="fechaIngreso" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="estado">Estado del Caso *</label>
+                                <select id="estado" required>
+                                    <option value="">Seleccionar estado</option>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="en-proceso">En Proceso</option>
+                                    <option value="resuelto">Resuelto</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prioridad">Prioridad</label>
+                                <select id="prioridad">
+                                    <option value="normal">Normal</option>
+                                    <option value="alta">Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Información del Menor</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombreMenor">Nombre del Menor *</label>
+                                <input type="text" id="nombreMenor" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidoMenor">Apellido del Menor *</label>
+                                <input type="text" id="apellidoMenor" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                                <input type="date" id="fechaNacimiento" />
+                            </div>
+                            <div class="form-group">
+                                <label for="dniMenor">DNI del Menor</label>
+                                <input type="text" id="dniMenor" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lugarNacimiento">Lugar de Nacimiento</label>
+                            <input type="text" id="lugarNacimiento" />
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Información de la Madre</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombreMadre">Nombre de la Madre *</label>
+                                <input type="text" id="nombreMadre" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidoMadre">Apellido de la Madre *</label>
+                                <input type="text" id="apellidoMadre" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dniMadre">DNI de la Madre</label>
+                                <input type="text" id="dniMadre" />
+                            </div>
+                            <div class="form-group">
+                                <label for="telefonoMadre">Teléfono de la Madre</label>
+                                <input type="text" id="telefonoMadre" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="domicilioMadre">Domicilio de la Madre</label>
+                            <input type="text" id="domicilioMadre" />
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Información del Presunto Padre</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombrePadre">Nombre del Presunto Padre</label>
+                                <input type="text" id="nombrePadre" />
+                            </div>
+                            <div class="form-group">
+                                <label for="apellidoPadre">Apellido del Presunto Padre</label>
+                                <input type="text" id="apellidoPadre" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dniPadre">DNI del Presunto Padre</label>
+                                <input type="text" id="dniPadre" />
+                            </div>
+                            <div class="form-group">
+                                <label for="telefonoPadre">Teléfono del Presunto Padre</label>
+                                <input type="text" id="telefonoPadre" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="domicilioPadre">Domicilio del Presunto Padre</label>
+                            <input type="text" id="domicilioPadre" />
+                        </div>
+                        <div class="form-group">
+                            <label for="informacionAdicionalPadre">Información Adicional para Individualización</label>
+                            <textarea id="informacionAdicionalPadre" placeholder="Información útil para individualización y paradero"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; margin-top: 20px;">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar Caso
+                        </button>
+                        <button type="button" class="btn" onclick="closeModal()" style="margin-left:10px;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App + Realtime Database (módulos) -->
+    <script type="module">
+        // Inicializar Firebase App
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import {
+            getDatabase, ref, set, get, onValue, remove, child, update
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaMuUaVI_61xHMQoRSsIkHi9fqvZgkj6s",
+            authDomain: "articulo583.firebaseapp.com",
+            projectId: "articulo583",
+            storageBucket: "articulo583.firebasestorage.app",
+            messagingSenderId: "972837111055",
+            appId: "1:972837111055:web:aa37d0d28d8b0d0a0f6a7a",
+            databaseURL: "https://articulo583-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Estado local
+        let cases = JSON.parse(localStorage.getItem('defensoriaCases')) || [];
+        let currentEditingId = null;
+
+        const casesRef = ref(db, 'casos');
+
+        // Suscripción en tiempo real a Realtime Database
+        onValue(casesRef, (snapshot) => {
+            const val = snapshot.val();
+            const remote = [];
+            if (val && typeof val === 'object') {
+                for (const [key, data] of Object.entries(val)) {
+                    remote.push({ id: key, ...data });
+                }
+                // Orden simple por fecha de ingreso descendente si existe
+                remote.sort((a, b) => (b.fechaIngreso || '').localeCompare(a.fechaIngreso || ''));
+            }
+            cases = remote;
+            localStorage.setItem('defensoriaCases', JSON.stringify(cases));
+            renderCases();
+        }, (err) => {
+            renderCases();
+        });
+
+        // Variables de paginación
+        const recordsPerPage = 10;
+        let paginaActual = 1;
+        let datosFiltrados = [];
+
+        // Cargar UI al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCases();
+        });
+
+        // UI logic
+        window.openModal = function(mode, caseId = null) {
+            const modal = document.getElementById('caseModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('caseForm');
+            if (mode === 'add') { 
+                modalTitle.textContent = 'Nuevo Caso'; 
+                form.reset(); 
+                currentEditingId = null; 
+            } else if (mode === 'edit') { 
+                modalTitle.textContent = 'Editar Caso'; 
+                currentEditingId = caseId; 
+                loadCaseData(caseId); 
+            }
+            modal.style.display = 'block';
+        }
+
+        window.closeModal = function() { 
+            document.getElementById('caseModal').style.display = 'none'; 
+            currentEditingId = null; 
+        }
+
+        function loadCaseData(caseId) {
+            const caseData = cases.find(c => c.id === caseId);
+            if (!caseData) return;
+            const fields = [
+                'numeroExpediente','fechaIngreso','estado','prioridad','nombreMenor','apellidoMenor','fechaNacimiento','dniMenor','lugarNacimiento',
+                'nombreMadre','apellidoMadre','dniMadre','telefonoMadre','domicilioMadre','nombrePadre','apellidoPadre','dniPadre','telefonoPadre',
+                'domicilioPadre','informacionAdicionalPadre'
+            ];
+            for (const key of fields) {
+                const el = document.getElementById(key);
+                if (el) el.value = caseData[key] || '';
+            }
+        }
+
+        async function saveCaseData() {
+            const caseData = {
+                id: currentEditingId || Date.now().toString(),
+                numeroExpediente: document.getElementById('numeroExpediente').value,
+                fechaIngreso: document.getElementById('fechaIngreso').value,
+                estado: document.getElementById('estado').value,
+                prioridad: document.getElementById('prioridad').value,
+                nombreMenor: document.getElementById('nombreMenor').value,
+                apellidoMenor: document.getElementById('apellidoMenor').value,
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                dniMenor: document.getElementById('dniMenor').value,
+                lugarNacimiento: document.getElementById('lugarNacimiento').value,
+                nombreMadre: document.getElementById('nombreMadre').value,
+                apellidoMadre: document.getElementById('apellidoMadre').value,
+                dniMadre: document.getElementById('dniMadre').value,
+                telefonoMadre: document.getElementById('telefonoMadre').value,
+                domicilioMadre: document.getElementById('domicilioMadre').value,
+                nombrePadre: document.getElementById('nombrePadre').value,
+                apellidoPadre: document.getElementById('apellidoPadre').value,
+                dniPadre: document.getElementById('dniPadre').value,
+                telefonoPadre: document.getElementById('telefonoPadre').value,
+                domicilioPadre: document.getElementById('domicilioPadre').value,
+                informacionAdicionalPadre: document.getElementById('informacionAdicionalPadre').value,
+                fechaModificacion: new Date().toISOString().split('T')[0],
+            };
+
+            try {
+                const id = caseData.id;
+                await set(child(casesRef, id), {
+                    ...caseData,
+                    fechaCreacion: (currentEditingId ? caseData.fechaCreacion : (new Date().toISOString().split('T')[0])) || (new Date().toISOString().split('T')[0]),
+                    ts: Date.now()
+                });
+
+                const idx = cases.findIndex(c => c.id === id);
+                if (idx !== -1) cases[idx] = caseData; else cases.push(caseData);
+                localStorage.setItem('defensoriaCases', JSON.stringify(cases));
+                renderCases();
+                closeModal();
+            } catch (e) {
+                alert('Error al guardar en Realtime Database. Revise la conexión o reglas de seguridad.');
+            }
+        }
+
+        async function deleteCase(caseId) {
+            if (!confirm('¿Está seguro de que desea eliminar este caso? Esta acción no se puede deshacer.')) return;
+            try {
+                await remove(child(casesRef, caseId));
+                cases = cases.filter(c => c.id !== caseId);
+                localStorage.setItem('defensoriaCases', JSON.stringify(cases));
+                renderCases();
+            } catch (e) {
+                alert('No se pudo eliminar el caso en Realtime Database.');
+            }
+        }
+
+        // Filtrado de casos
+        window.filterCases = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) {
+                datosFiltrados = cases;
+            } else {
+                datosFiltrados = cases.filter(caseData => 
+                    Object.values(caseData).some(value => 
+                        value && value.toString().toLowerCase().includes(searchTerm)
+                    )
+                );
+            }
+            paginaActual = 1;
+            renderTablaPaginada();
+        }
+
+        // Renderizado con paginación
+        function renderTablaPaginada() {
+            const startIndex = (paginaActual - 1) * recordsPerPage;
+            const endIndex = startIndex + recordsPerPage;
+            const dataToRender = datosFiltrados.slice(startIndex, endIndex);
+            renderTablas(dataToRender);
+            renderPaginacion(datosFiltrados.length, dataToRender.length);
+        }
+
+        function renderCases() {
+            datosFiltrados = cases;
+            renderTablaPaginada();
+        }
+
+        function renderTablas(data) {
+            const container = document.getElementById('casesContainer');
+            
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <div class="no-cases">
+                                <div>📁</div>
+                                <p>No hay casos registrados</p>
+                                <p>Haga clic en "Nuevo Caso" para comenzar</p>
+                            </div>
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            container.innerHTML = data.map(caseData => `
+                <tr>
+                    <td>${caseData.numeroExpediente || ''}</td>
+                    <td>${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</td>
+                    <td>${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</td>
+                    <td>${formatDate(caseData.fechaIngreso) || ''}</td>
+                    <td><span class="tipo-pill tipo-${caseData.estado}">${getStatusText(caseData.estado)}</span></td>
+                    <td><span class="tipo-pill tipo-${caseData.prioridad}">${getPriorityText(caseData.prioridad)}</span></td>
+                    <td class="actions">
+                        <button class="btn btn-icon" onclick="viewCase('${caseData.id}')" title="Ver">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="openModal('edit', '${caseData.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-icon" style="background-color: var(--status-danger);" onclick="deleteCase('${caseData.id}')" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Paginación
+        function renderPaginacion(totalRecords, recordsOnPage) {
+            const container = document.getElementById('paginacion-container');
+            const totalPages = Math.ceil(totalRecords / recordsPerPage);
+            
+            if (totalPages <= 1) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            
+            const pageInfo = container.querySelector('.page-info');
+            const navButtons = container.querySelector('.nav-buttons');
+            
+            pageInfo.innerHTML = `Página ${paginaActual} de ${totalPages} | Mostrando ${recordsOnPage} de ${totalRecords} registros`;
+            
+            navButtons.innerHTML = `
+                <button class="btn" ${paginaActual === 1 ? 'disabled' : ''} onclick="changePage(${paginaActual - 1})">
+                    <i class="fas fa-arrow-left"></i> Anterior
+                </button>
+                <button class="btn" ${paginaActual === totalPages ? 'disabled' : ''} onclick="changePage(${paginaActual + 1})">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+            `;
+        }
+
+        window.changePage = function(page) {
+            paginaActual = page;
+            renderTablaPaginada();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Utilidades
+        window.formatDate = function(dateString) { 
+            if (!dateString) return ''; 
+            const date = new Date(dateString); 
+            return isNaN(date) ? '' : date.toLocaleDateString('es-AR'); 
+        }
+
+        window.getStatusText = function(status) { 
+            const m = { 'pendiente':'Pendiente', 'en-proceso':'En Proceso', 'resuelto':'Resuelto' }; 
+            return m[status] || 'Sin estado'; 
+        }
+
+        window.getPriorityText = function(priority) { 
+            const m = { 'normal':'Normal', 'alta':'Alta', 'urgente':'Urgente' }; 
+            return m[priority] || 'Normal'; 
+        }
+
+        // Funciones de impresión
+        window.printCaseFromForm = function() {
+            alert('Función de impresión desde formulario');
+        }
+
+        window.printAllCases = function() {
+            const printWindow = window.open('', '_blank');
+            const printContent = `<!DOCTYPE html><html><head><title>Listado Completo de Casos</title>
+            <style>body{font-family:Arial,sans-serif;margin:20px;} .header{text-align:center;margin-bottom:30px;} .case{border:1px solid #ddd;margin-bottom:20px;padding:15px;} .case-header{font-weight:bold;font-size:1.1em;margin-bottom:10px;}</style></head><body>
+            <div class="header"><h1>Listado Completo de Casos</h1><p>Fecha de impresión: ${new Date().toLocaleDateString('es-AR')}</p></div>
+            ${cases.map(caseData => `
+                <div class='case'>
+                  <div class='case-header'>Caso ${caseData.numeroExpediente || ''}</div>
+                  <p><strong>Menor:</strong> ${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</p>
+                  <p><strong>Madre:</strong> ${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</p>
+                  <p><strong>Fecha de Ingreso:</strong> ${formatDate(caseData.fechaIngreso) || ''}</p>
+                  <p><strong>Estado:</strong> ${getStatusText(caseData.estado)}</p>
+                </div>`).join('')}
+            </body></html>`;
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Vista de caso (simplificada)
+        window.viewCase = function(caseId) {
+            const caseData = cases.find(c => c.id === caseId);
+            if (!caseData) return;
+            
+            const modal = document.getElementById('caseModal');
+            const modalTitle = document.getElementById('modalTitle');
+            modalTitle.textContent = `Caso ${caseData.numeroExpediente}`;
+            
+            // Cargar datos en el formulario para vista
+            loadCaseData(caseId);
+            
+            // Deshabilitar todos los campos para solo lectura
+            const form = document.getElementById('caseForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = true);
+            
+            modal.style.display = 'block';
+            
+            // Restaurar cuando se cierre
+            const restoreForm = function() {
+                inputs.forEach(input => input.disabled = false);
+                modal.removeEventListener('close', restoreForm);
+            };
+            modal.addEventListener('close', restoreForm);
+        }
+
+        // Eventos
+        document.getElementById('caseForm').addEventListener('submit', function(e){ 
+            e.preventDefault(); 
+            saveCaseData(); 
+        });
+
+        window.addEventListener('click', function(event){ 
+            const modal = document.getElementById('caseModal');
+            if(event.target === modal) closeModal(); 
+        });
+
+        // Iconos FontAwesome
+        const faScript = document.createElement('script');
+        faScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js';
+        document.head.appendChild(faScript);
+    </script>
+</body>
+</html>

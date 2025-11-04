@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operador. Pase y Asignación de Expedientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { padding-top: 70px; background-color: #f8f9fa; }
+        .card { transition: transform 0.3s; position: relative; border: none; border-radius: 8px; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .card-actions { position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity 0.3s; }
+        .card:hover .card-actions { opacity: 1; }
+        .expediente-card { cursor: pointer; }
+        .table-responsive { font-size: 0.9rem; }
+        .pagination { justify-content: center; margin-top: 20px; }
+        .filter-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stats-card { height: 100%; }
+        .stats-header { background-color: #0d6efd; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .delete-confirmation { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1050; width: 350px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
+        @media (max-width: 992px) {
+            .section-title { font-size: 1.5rem; }
+            .btn-group-responsive { flex-direction: column; gap: 10px; }
+            .btn-group-responsive .btn { width: 100%; }
+            .stats-section { margin-top: 20px; }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .filter-active {
+            background-color: #e3f2fd !important;
+            border-left: 4px solid #0d6efd !important;
+        }
+        /* Estilo para hacer el icono del calendario clickeable */
+        .clickable-calendar { 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Operador. Pase y Asignación de Expedientes</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">Listado de Expedientes con pase/asignación</h2>
+            <div class="btn-group-responsive d-flex gap-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expedienteModal">
+                    <i class="fas fa-plus me-1"></i> Crear Nuevo
+                </button>
+                <button class="btn btn-info" id="btnPrintAll">
+                    <i class="fas fa-print me-1"></i> Imprimir
+                </button>
+                <button class="btn btn-outline-secondary" id="btnActualizar">
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card p-3 mb-4 filter-card">
+                    <div class="row g-3">
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label">Buscar por contenido</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Expediente, usuario...">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label">Filtrar por Expediente</label>
+                            <input type="text" id="expedienteAsignadoFilter" class="form-control" placeholder="Nro. Expediente Asignado">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label">Filtrar por Usuario</label>
+                            <select id="userFilter" class="form-select">
+                                <option value="">Todos los Usuarios</option>
+                                <option>Bazante Nadia Romina</option>
+                                <option>Boillat Cesar Enrique</option>
+                                <option>Cardozo Maria Raquel</option>
+                                <option>Cedron Noelia Aurora</option>
+                                <option>Corrales Alicia Mariela</option>
+                                <option>Escobar Monica Graciela</option>
+                                <option>Fioravante Romulo</option>
+                                <option>Gonzalez Alberto Misael</option>
+                                <option>Gonzalez Juan Jose</option>
+                                <option>Gudiño Natalia Esther</option>
+                                <option>Magnani Enzo Luciano</option>
+                                <option>Pablos Patricia</option>
+                                <option>Palacios Ana Gabriela</option>
+                                <option>Ortega Lucia Noemi</option>
+                                <option>Ramos Marcelo Gustavo</option>
+                                <option>Riveros Patricia Soledad</option>
+                                <option>Sosa Rita Cecilia</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label">Filtrar por Proceso</label>
+                            <select id="procesoFilter" class="form-select">
+                                <option value="">Todos</option>
+                                <option>DEUT</option>
+                                <option>CEJUME</option>
+                                <option>civil</option>
+                                <option>familia</option>
+                                <option>penal</option>
+                                <option>laboral</option>
+                                <option>violencia familiar</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-sm-12">
+                            <label class="form-label">Rango de Fecha de Pase</label>
+                            <div class="d-flex align-items-center">
+                                <div class="input-group me-1">
+                                    <span class="input-group-text clickable-calendar" data-target="dateFilterStart"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" id="dateFilterStart" class="form-control" placeholder="Desde">
+                                </div>
+                                <span class="input-group-text p-2 mx-1">a</span>
+                                <div class="input-group ms-1">
+                                    <span class="input-group-text clickable-calendar" data-target="dateFilterEnd"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" id="dateFilterEnd" class="form-control" placeholder="Hasta">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-8">
+                            <label class="form-label d-block">Filtros Especiales</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="causaNuevaFilter">
+                                    <label class="form-check-label" for="causaNuevaFilter">Causa Nueva</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="causaAnteriorFilter">
+                                    <label class="form-check-label" for="causaAnteriorFilter">Causa Anterior</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="devolucionFilter">
+                                    <label class="form-check-label" for="devolucionFilter">Con Devolución</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remisionFilter">
+                                    <label class="form-check-label" for="remisionFilter">Con Remisión</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-sm-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
+                        </div>
+                    </div>
+                    <div class="mt-3" id="activeFiltersContainer" style="display: none;">
+                        <small class="text-muted">Filtros activos:</small>
+                        <div id="activeFilters" class="d-flex flex-wrap gap-2 mt-1"></div>
+                    </div>
+                </div>
+
+                <div id="expedientesContainer">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando expedientes...</p>
+                    </div>
+                </div>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="paginationContainer">
+                        </ul>
+                </nav>
+            </div>
+
+            <div class="col-lg-4 stats-section">
+                <div class="card stats-card">
+                    <div class="stats-header p-3">
+                        <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Estadísticas por Usuario</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="userStatsChart"></canvas>
+                        </div>
+                        <div id="statsDetails" class="mt-3">
+                            <p class="text-center text-muted">Cargando estadísticas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Sistema</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="deleteOverlay"></div>
+    <div class="delete-confirmation" id="deleteConfirmation">
+        <h5 class="text-danger mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+        <p>¿Está seguro de que desea eliminar este expediente?</p>
+        <p class="fw-bold" id="expedienteToDelete"></p>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button class="btn btn-secondary" id="cancelDeleteBtn">Cancelar</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="expedienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expedienteModalTitle">Nuevo Expediente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="expedienteForm">
+                        <input type="hidden" id="expedienteId">
+                        <div class="mb-3">
+                            <label for="numCausa" class="form-label">Número de Causa *</label>
+                            <input type="text" class="form-control" id="numCausa" required>
+                            <div class="invalid-feedback" id="numCausaFeedback">Por favor ingrese un número de causa válido.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tipoProceso" class="form-label">Tipo de Proceso *</label>
+                                <select class="form-select" id="tipoProceso" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option>DEUT</option>
+                                    <option>CEJUME</option>
+                                    <option>civil</option>
+                                    <option>familia</option>
+                                    <option>penal</option>
+                                    <option>laboral</option>
+                                    <option>violencia familiar</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="detalleProceso" class="form-label">Detalle Proceso</label>
+                                <input type="text" class="form-control" id="detalleProceso">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Estado de la Causa *</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="estadoCausa" id="causaNuevaRadio" value="nueva" required>
+                                        <label class="form-check-label" for="causaNuevaRadio">
+                                            Causa Nueva
+                                        </label>
+                                    </div>
+                                    <select class="form-select mt-1" id="causaNuevaDetalle">
+                                        <option value="">-- Detalle --</option>
+                                        <option>inicio demanda</option>
+                                        <option>contestacion demanda</option>
+                                        <option>otros</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="estadoCausa" id="causaAnteriorRadio" value="anterior">
+                                        <label class="form-check-label" for="causaAnteriorRadio">
+                                            Causa Anterior
+                                        </label>
+                                    </div>
+                                    <select class="form-select mt-1" id="causaAnteriorDetalle">
+                                        <option value="">-- Detalle --</option>
+                                        <option>inicio demanda</option>
+                                        <option>contestacion demanda</option>
+                                        <option>otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="mb-3">
+                            <label for="usuarioAsignado" class="form-label">Usuario Asignado *</label>
+                            <select class="form-select" id="usuarioAsignado" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option>Bazante Nadia Romina</option>
+                                <option>Boillat Cesar Enrique</option>
+                                <option>Cardozo Maria Raquel</option>
+                                <option>Cedron Noelia Aurora</option>
+                                <option>Corrales Alicia Mariela</option>
+                                <option>Escobar Monica Graciela</option>
+                                <option>Fioravante Romulo</option>
+                                <option>Gonzalez Alberto Misael</option>
+                                <option>Gonzalez Juan Jose</option>
+                                <option>Gudiño Natalia Esther</option>
+                                <option>Magnani Enzo Luciano</option>
+                                <option>Pablos Patricia</option>
+                                <option>Palacios Ana Gabriela</option>
+                                <option>Ortega Lucia Noemi</option>
+                                <option>Ramos Marcelo Gustavo</option>
+                                <option>Riveros Patricia Soledad</option>
+                                <option>Sosa Rita Cecilia</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaPase" class="form-label">Fecha y Hora de Pase *</label>
+                            <div class="input-group">
+                                <span class="input-group-text clickable-calendar" data-target="fechaPase"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="datetime-local" class="form-control" id="fechaPase" required>
+                                </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observacionesPase" class="form-label"><strong>Observaciones del Pase/asignación:</strong></label>
+                            <textarea class="form-control" id="observacionesPase" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otrosExpedientesCuerda" class="form-label">Otros Expedientes por Cuerda</label>
+                            <textarea class="form-control" id="otrosExpedientesCuerda" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otrosExpedientesAcumulados" class="form-label">Otros Expedientes Acumulados</label>
+                            <textarea class="form-control" id="otrosExpedientesAcumulados" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <h6 class="mb-3">Motivos Especiales (opcional)</h6>
+                        <div class="mb-3">
+                            <label for="devolucionMotivo" class="form-label">Devolución a Mesa de Entradas (Motivo)</label>
+                            <textarea class="form-control" id="devolucionMotivo" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remisionMotivo" class="form-label">Remisión a otra Defensoría (Motivo)</label>
+                            <textarea class="form-control" id="remisionMotivo" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveExpedienteBtn">
+                        <span id="expedienteSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        Guardar Expediente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewExpedienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewExpedienteTitle">Detalles del Expediente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="viewExpedienteBody">
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-info" id="printExpedienteBtn">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+            authDomain: "atencion-publico-def6.firebaseapp.com",
+            databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+            projectId: "atencion-publico-def6",
+            storageBucket: "atencion-publico-def6.firebasestorage.app",
+            messagingSenderId: "1052433106688",
+            appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const expedientesRef = db.collection('causas');
+        const expedientesContainer = document.getElementById('expedientesContainer');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const expedienteForm = document.getElementById('expedienteForm');
+        const saveExpedienteBtn = document.getElementById('saveExpedienteBtn');
+        const expedienteSpinner = document.getElementById('expedienteSpinner');
+        const expedienteModal = document.getElementById('expedienteModal');
+        const viewExpedienteModal = document.getElementById('viewExpedienteModal');
+        const printExpedienteBtn = document.getElementById('printExpedienteBtn');
+        const btnPrintAll = document.getElementById('btnPrintAll');
+        const numCausaInput = document.getElementById('numCausa');
+        const numCausaFeedback = document.getElementById('numCausaFeedback');
+        const deleteConfirmation = document.getElementById('deleteConfirmation');
+        const deleteOverlay = document.getElementById('deleteOverlay');
+        const expedienteToDelete = document.getElementById('expedienteToDelete');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+        const activeFilters = document.getElementById('activeFilters');
+
+        // Filtros
+        const searchInput = document.getElementById('searchInput');
+        const expedienteAsignadoFilter = document.getElementById('expedienteAsignadoFilter');
+        const userFilter = document.getElementById('userFilter');
+        const dateFilterStart = document.getElementById('dateFilterStart');
+        const dateFilterEnd = document.getElementById('dateFilterEnd');
+        const btnSearch = document.getElementById('btnSearch');
+        const devolucionFilter = document.getElementById('devolucionFilter');
+        const remisionFilter = document.getElementById('remisionFilter');
+        const procesoFilter = document.getElementById('procesoFilter');
+        // NUEVOS FILTROS
+        const causaNuevaFilter = document.getElementById('causaNuevaFilter');
+        const causaAnteriorFilter = document.getElementById('causaAnteriorFilter');
+
+
+        // Variables para paginación
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let allExpedientes = [];
+        let filteredExpedientes = [];
+        let currentFilters = {};
+        let deleteExpedienteId = null;
+        
+        // Variables para el gráfico
+        let userStatsChart = null;
+
+        // Función para formatear fecha y hora a DD/MM/AAAA HH:MM hs
+        function formatDateTime(dateTimeString, includeTime = false) {
+            if (!dateTimeString) return 'N/A';
+            
+            let datePart, timePart = '';
+            
+            // Verifica si es un valor de datetime-local (YYYY-MM-DDTHH:MM)
+            if (dateTimeString.includes('T')) { 
+                [datePart, timePart] = dateTimeString.split('T');
+            } else { // Formato YYYY-MM-DD (date) o solo la fecha
+                datePart = dateTimeString;
+                timePart = '00:00'; // Valor predeterminado para el filtro si no tiene hora
+            }
+
+            const parts = datePart.split('-');
+            if (parts.length !== 3) return 'N/A';
+            const [year, month, day] = parts;
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            if (includeTime && timePart) {
+                // Se asegura de tener HH:MM y añade 'hs'
+                return `${formattedDate} ${timePart} hs`;
+            }
+            
+            return formattedDate;
+        }
+
+        // Función para mostrar toast de notificación
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            const header = toast.querySelector('.toast-header');
+            header.classList.remove('bg-danger', 'bg-success', 'text-white'); // Limpiar clases previas
+
+            if (type === 'error') {
+                header.classList.add('bg-danger', 'text-white');
+            } else if (type === 'success') {
+                header.classList.add('bg-success', 'text-white');
+            }
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // Función para verificar si un número de causa ya existe
+        async function checkExpedienteExists(numCausa, excludeId = null) {
+            try {
+                let query = expedientesRef.where('numCausa', '==', numCausa);
+                const snapshot = await query.get();
+                
+                if (snapshot.empty) return false;
+                
+                // Si se está editando, excluir el documento actual
+                if (excludeId) {
+                    const exists = snapshot.docs.some(doc => doc.id !== excludeId);
+                    return exists;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error("Error al verificar expediente: ", error);
+                return false;
+            }
+        }
+
+        // Función para guardar o actualizar un expediente
+        saveExpedienteBtn.addEventListener('click', async () => {
+            const expedienteId = document.getElementById('expedienteId').value;
+            const numCausa = document.getElementById('numCausa').value.trim();
+            const tipoProceso = document.getElementById('tipoProceso').value;
+            const detalleProceso = document.getElementById('detalleProceso').value;
+            const estadoCausaRadio = document.querySelector('input[name="estadoCausa"]:checked');
+            const estadoCausa = estadoCausaRadio ? estadoCausaRadio.value : '';
+            const causaNuevaDetalle = document.getElementById('causaNuevaDetalle').value;
+            const causaAnteriorDetalle = document.getElementById('causaAnteriorDetalle').value;
+            const detalleEstadoCausa = estadoCausa === 'nueva' ? causaNuevaDetalle : (estadoCausa === 'anterior' ? causaAnteriorDetalle : '');
+            const usuarioAsignado = document.getElementById('usuarioAsignado').value;
+            const fechaPase = document.getElementById('fechaPase').value; // YYYY-MM-DDTHH:MM
+            const observacionesPase = document.getElementById('observacionesPase').value;
+            const otrosExpedientesCuerda = document.getElementById('otrosExpedientesCuerda').value;
+            const otrosExpedientesAcumulados = document.getElementById('otrosExpedientesAcumulados').value;
+            const devolucionMotivo = document.getElementById('devolucionMotivo').value;
+            const remisionMotivo = document.getElementById('remisionMotivo').value;
+
+            if (!numCausa || !usuarioAsignado || !fechaPase || !tipoProceso || !estadoCausa) {
+                showToast('Por favor, complete todos los campos obligatorios.', 'error');
+                return;
+            }
+
+            const exists = await checkExpedienteExists(numCausa, expedienteId);
+            if (exists) {
+                numCausaInput.classList.add('is-invalid');
+                numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+                showToast('Este número de expediente ya está registrado en el sistema.', 'error');
+                return;
+            }
+
+            expedienteSpinner.style.display = 'inline-block';
+            saveExpedienteBtn.disabled = true;
+
+            const expedienteData = {
+                numCausa,
+                tipoProceso,
+                detalleProceso,
+                estadoCausa,
+                detalleEstadoCausa,
+                usuarioAsignado,
+                fechaPase,
+                observacionesPase,
+                otrosExpedientesCuerda,
+                otrosExpedientesAcumulados,
+                devolucionMotivo,
+                remisionMotivo
+            };
+
+            try {
+                if (expedienteId) {
+                    await expedientesRef.doc(expedienteId).update(expedienteData);
+                    showToast('Expediente actualizado con éxito!', 'success');
+                } else {
+                    await expedientesRef.add({
+                        ...expedienteData,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showToast('Expediente guardado con éxito!', 'success');
+                }
+                
+                const modalInstance = bootstrap.Modal.getInstance(expedienteModal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                expedienteForm.reset();
+                loadExpedientes();
+            } catch (error) {
+                console.error("Error al guardar el expediente: ", error);
+                showToast("Error al guardar el expediente: " + error.message, 'error');
+            } finally {
+                expedienteSpinner.style.display = 'none';
+                saveExpedienteBtn.disabled = false;
+            }
+        });
+
+        // Evento para limpiar el formulario al abrir el modal de nuevo registro
+        expedienteModal.addEventListener('show.bs.modal', (event) => {
+            const button = event.relatedTarget;
+            if (button && button.dataset.bsToggle === 'modal' && button.dataset.bsTarget === '#expedienteModal') {
+                expedienteForm.reset();
+                document.getElementById('expedienteId').value = '';
+                document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
+                document.getElementById('saveExpedienteBtn').textContent = 'Guardar Expediente';
+                numCausaInput.classList.remove('is-invalid');
+            } else {
+                // Lógica de edición
+                const expedienteId = document.getElementById('expedienteId').value;
+                if (expedienteId) {
+                    const data = allExpedientes.find(e => e.id === expedienteId);
+                    if (data) {
+                        const nuevaDetalle = document.getElementById('causaNuevaDetalle');
+                        const anteriorDetalle = document.getElementById('causaAnteriorDetalle');
+                        
+                        if (data.estadoCausa === 'nueva') {
+                            document.getElementById('causaNuevaRadio').checked = true;
+                            nuevaDetalle.value = data.detalleEstadoCausa || '';
+                            anteriorDetalle.value = '';
+                        } else if (data.estadoCausa === 'anterior') {
+                            document.getElementById('causaAnteriorRadio').checked = true;
+                            anteriorDetalle.value = data.detalleEstadoCausa || '';
+                            nuevaDetalle.value = '';
+                        } else {
+                            document.querySelector('input[name="estadoCausa"]').checked = false; 
+                            nuevaDetalle.value = '';
+                            anteriorDetalle.value = '';
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Manejar la lógica de selección de detalle de causa
+        document.getElementById('causaNuevaRadio').addEventListener('change', () => {
+            document.getElementById('causaAnteriorDetalle').value = '';
+        });
+        document.getElementById('causaAnteriorRadio').addEventListener('change', () => {
+            document.getElementById('causaNuevaDetalle').value = '';
+        });
+
+
+        // Validar número de causa en tiempo real
+        numCausaInput.addEventListener('blur', async () => {
+            const numCausa = numCausaInput.value.trim();
+            if (!numCausa) return;
+            
+            const expedienteId = document.getElementById('expedienteId').value;
+            const exists = await checkExpedienteExists(numCausa, expedienteId);
+            
+            if (exists) {
+                numCausaInput.classList.add('is-invalid');
+                numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+            } else {
+                numCausaInput.classList.remove('is-invalid');
+            }
+        });
+
+        // Función para cargar y mostrar los expedientes con filtros
+        async function loadExpedientes() {
+            expedientesContainer.innerHTML = `<div class="text-center py-4">
+                                                 <div class="spinner-border text-primary" role="status">
+                                                   <span class="visually-hidden">Cargando...</span>
+                                                 </div>
+                                                 <p class="mt-2">Cargando expedientes...</p>
+                                               </div>`;
+            paginationContainer.innerHTML = '';
+
+            try {
+                const snapshot = await expedientesRef.orderBy('timestamp', 'desc').get();
+                allExpedientes = [];
+                
+                snapshot.forEach(doc => {
+                    allExpedientes.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                applyFilters();
+                
+            } catch (error) {
+                console.error("Error al cargar los expedientes:", error);
+                expedientesContainer.innerHTML = `<p class="text-center text-danger mt-5">Error al cargar expedientes: ${error.message}</p>`;
+            }
+        }
+        
+        // Función para mostrar filtros activos
+        function showActiveFilters() {
+            activeFilters.innerHTML = '';
+            let hasFilters = false;
+            
+            if (currentFilters.search) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-primary">Búsqueda: "${currentFilters.search}"</span>`;
+            }
+            
+            if (currentFilters.expediente) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-info text-dark">Expediente: "${currentFilters.expediente}"</span>`;
+            }
+            
+            if (currentFilters.usuario) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Usuario: "${currentFilters.usuario}"</span>`;
+            }
+
+            if (currentFilters.proceso) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-secondary">Proceso: "${currentFilters.proceso}"</span>`;
+            }
+            
+            if (currentFilters.fechaInicio || currentFilters.fechaFin) {
+                hasFilters = true;
+                let fechaText = 'Fechas: ';
+                if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `; // Muestra DD/MM/AAAA
+                if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`; // Muestra DD/MM/AAAA
+                activeFilters.innerHTML += `<span class="badge bg-success">${fechaText}</span>`;
+            }
+            
+            // NUEVOS FILTROS
+            if (currentFilters.causaNueva) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-danger">Causa Nueva</span>`;
+            }
+            if (currentFilters.causaAnterior) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-danger">Causa Anterior</span>`;
+            }
+
+            if (currentFilters.devolucion) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Con Devolución</span>`;
+            }
+
+            if (currentFilters.remision) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-info text-dark">Con Remisión</span>`;
+            }
+            
+            activeFiltersContainer.style.display = hasFilters ? 'block' : 'none';
+        }
+        
+        // Función para aplicar filtros
+        function applyFilters() {
+            const searchString = searchInput.value.toLowerCase();
+            const expedienteAsignadoString = expedienteAsignadoFilter.value.toLowerCase();
+            const userString = userFilter.value;
+            const procesoString = procesoFilter.value; 
+            const startDate = dateFilterStart.value;
+            const endDate = dateFilterEnd.value;
+            const showDevolucion = devolucionFilter.checked;
+            const showRemision = remisionFilter.checked;
+            // NUEVOS FILTROS
+            const showCausaNueva = causaNuevaFilter.checked;
+            const showCausaAnterior = causaAnteriorFilter.checked;
+
+            // Guardar filtros actuales
+            currentFilters = {
+                search: searchString || null,
+                expediente: expedienteAsignadoString || null,
+                usuario: userString || null,
+                proceso: procesoString || null,
+                fechaInicio: startDate || null,
+                fechaFin: endDate || null,
+                devolucion: showDevolucion,
+                remision: showRemision,
+                causaNueva: showCausaNueva, 
+                causaAnterior: showCausaAnterior 
+            };
+            
+            // Mostrar filtros activos
+            showActiveFilters();
+            
+            filteredExpedientes = allExpedientes.filter(data => {
+                // Búsqueda en todos los campos de texto
+                const matchesSearch = !searchString || 
+                    Object.values(data).some(value => {
+                        if (value && typeof value === 'string') {
+                            return value.toLowerCase().includes(searchString);
+                        }
+                        return false;
+                    });
+
+                const matchesExpedienteAsignado = !expedienteAsignadoString || 
+                                                  data.numCausa.toLowerCase().includes(expedienteAsignadoString);
+
+                const matchesUser = !userString || data.usuarioAsignado === userString;
+
+                const matchesProceso = !procesoString || data.tipoProceso === procesoString; 
+
+                // Filtrado por fecha
+                let matchesDate = true;
+                if (startDate || endDate) {
+                    const fullDateTime = data.fechaPase;
+                    if (!fullDateTime) {
+                        matchesDate = false;
+                    } else {
+                        // Extraer solo la parte YYYY-MM-DD para la comparación del rango
+                        const datePart = fullDateTime.split('T')[0]; 
+                        
+                        if (startDate && datePart < startDate) {
+                            matchesDate = false;
+                        }
+                        if (endDate && datePart > endDate) {
+                            matchesDate = false;
+                        }
+                    }
+                }
+
+                // Filtrado por motivos especiales
+                const matchesSpecialReason = (!showDevolucion || (showDevolucion && data.devolucionMotivo)) &&
+                                             (!showRemision || (showRemision && data.remisionMotivo));
+
+                // Filtrado por estado de causa (NUEVO)
+                const matchesEstadoCausa = (!showCausaNueva && !showCausaAnterior) ||
+                                            (showCausaNueva && data.estadoCausa === 'nueva') ||
+                                            (showCausaAnterior && data.estadoCausa === 'anterior');
+
+                return matchesSearch && matchesExpedienteAsignado && matchesUser && matchesProceso && matchesDate && matchesSpecialReason && matchesEstadoCausa;
+            });
+            
+            currentPage = 1;
+            renderExpedientes();
+            renderPagination();
+            renderUserStats();
+        }
+        
+        // Función para renderizar expedientes según la página actual
+        function renderExpedientes() {
+            expedientesContainer.innerHTML = '';
+            
+            if (filteredExpedientes.length === 0) {
+                expedientesContainer.innerHTML = '<p class="text-center text-muted mt-5">No hay expedientes registrados que coincidan con los criterios de búsqueda.</p>';
+                return;
+            }
+            
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredExpedientes.length);
+            const currentExpedientes = filteredExpedientes.slice(startIndex, endIndex);
+            
+            // Crear tabla minimalista
+            let tableHtml = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Expediente</th>
+                                <th>Proceso</th>
+                                <th>Usuario Asignado</th>
+                                <th>Fecha de Pase</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            currentExpedientes.forEach(data => {
+                // Aplicar estilos si hay filtros activos
+                const isFiltered = (currentFilters.usuario && data.usuarioAsignado === currentFilters.usuario) || 
+                                   (currentFilters.proceso && data.tipoProceso === currentFilters.proceso);
+                
+                tableHtml += `
+                    <tr class="expediente-row ${isFiltered ? 'filter-active' : ''}" data-id="${data.id}">
+                        <td class="fw-bold expediente-num-causa">${data.numCausa}</td>
+                        <td>${data.tipoProceso || 'N/A'}</td>
+                        <td>${data.usuarioAsignado}</td>
+                        <td>${formatDateTime(data.fechaPase, true)}</td> 
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary view-btn" data-id="${data.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${data.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${data.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-muted mt-2">
+                    Mostrando ${startIndex + 1} - ${endIndex} de ${filteredExpedientes.length} expedientes
+                </div>
+            `;
+            
+            expedientesContainer.innerHTML = tableHtml;
+            
+            // Agregar event listeners a los botones
+            expedientesContainer.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewExpediente(e.currentTarget.dataset.id);
+                });
+            });
+            
+            expedientesContainer.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editExpediente(e.currentTarget.dataset.id);
+                });
+            });
+
+            expedientesContainer.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showDeleteConfirmation(e.currentTarget.dataset.id);
+                });
+            });
+            
+            expedientesContainer.querySelectorAll('.expediente-row').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        viewExpediente(e.currentTarget.dataset.id);
+                    }
+                });
+            });
+        }
+        
+        // Función para mostrar confirmación de eliminación
+        function showDeleteConfirmation(id) {
+            const expediente = allExpedientes.find(e => e.id === id);
+            if (!expediente) return;
+            
+            deleteExpedienteId = id;
+            expedienteToDelete.textContent = `${expediente.numCausa} - ${expediente.usuarioAsignado}`;
+            
+            deleteConfirmation.style.display = 'block';
+            deleteOverlay.style.display = 'block';
+        }
+        
+        // Función para ocultar confirmación de eliminación
+        function hideDeleteConfirmation() {
+            deleteConfirmation.style.display = 'none';
+            deleteOverlay.style.display = 'none';
+            deleteExpedienteId = null;
+        }
+        
+        // Event listeners para confirmación de eliminación
+        cancelDeleteBtn.addEventListener('click', hideDeleteConfirmation);
+        deleteOverlay.addEventListener('click', hideDeleteConfirmation);
+        
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (deleteExpedienteId) {
+                await deleteExpediente(deleteExpedienteId);
+                hideDeleteConfirmation();
+            }
+        });
+        
+        // Función para eliminar un expediente
+        async function deleteExpediente(id) {
+            try {
+                await expedientesRef.doc(id).delete();
+                showToast('Expediente eliminado con éxito!', 'success');
+                loadExpedientes();
+            } catch (error) {
+                console.error("Error al eliminar el expediente: ", error);
+                showToast("Error al eliminar el expediente: " + error.message, 'error');
+            }
+        }
+        
+        // Función para renderizar la paginación
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredExpedientes.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHtml = '';
+            
+            // Botón anterior
+            paginationHtml += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage - 1}">Anterior</a>
+                </li>
+            `;
+            
+            // Páginas
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+            
+            // Botón siguiente
+            paginationHtml += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage + 1}">Siguiente</a>
+                </li>
+            `;
+            
+            paginationContainer.innerHTML = paginationHtml;
+            
+            // Agregar event listeners a los enlaces de paginación
+            paginationContainer.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = parseInt(e.target.dataset.page);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderExpedientes();
+                        renderPagination();
+                        window.scrollTo(0, 0);
+                    }
+                });
+            });
+        }
+        
+        // Función para generar estadísticas por usuario
+        function renderUserStats() {
+            const statsByUser = {};
+            
+            filteredExpedientes.forEach(expediente => {
+                const user = expediente.usuarioAsignado;
+                if (!statsByUser[user]) {
+                    statsByUser[user] = 0;
+                }
+                statsByUser[user]++;
+            });
+            
+            // Ordenar usuarios por cantidad de expedientes (descendente)
+            const sortedUsers = Object.keys(statsByUser).sort((a, b) => statsByUser[b] - statsByUser[a]);
+            
+            // Preparar datos para el gráfico
+            const userLabels = sortedUsers;
+            const userData = sortedUsers.map(user => statsByUser[user]);
+            
+            // Crear o actualizar el gráfico
+            const ctx = document.getElementById('userStatsChart').getContext('2d');
+            
+            if (userStatsChart) {
+                userStatsChart.destroy();
+            }
+            
+            userStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: userLabels,
+                    datasets: [{
+                        label: 'Expedientes por Usuario',
+                        data: userData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Expedientes'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Expedientes: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Actualizar detalles de estadísticas
+            const statsDetails = document.getElementById('statsDetails');
+            if (sortedUsers.length === 0) {
+                statsDetails.innerHTML = '<p class="text-center text-muted">No hay datos para mostrar</p>';
+            } else {
+                let detailsHtml = `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold">Usuario</span>
+                        <span class="fw-bold">Cantidad</span>
+                    </div>
+                `;
+                
+                sortedUsers.forEach(user => {
+                    detailsHtml += `
+                        <div class="d-flex justify-content-between border-bottom py-1">
+                            <span>${user}</span>
+                            <span class="badge bg-primary rounded-pill">${statsByUser[user]}</span>
+                        </div>
+                    `;
+                });
+                
+                detailsHtml += `
+                    <div class="d-flex justify-content-between mt-2 fw-bold">
+                        <span>Total</span>
+                        <span class="badge bg-success rounded-pill">${filteredExpedientes.length}</span>
+                    </div>
+                `;
+                
+                statsDetails.innerHTML = detailsHtml;
+            }
+        }
+
+        // Función para poblar el filtro de usuarios (no se usa, la lista es estática)
+        async function populateUserFilter() {
+        }
+
+        // Función para editar un expediente
+        async function editExpediente(id) {
+            try {
+                const doc = await expedientesRef.doc(id).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('expedienteId').value = doc.id;
+                    document.getElementById('numCausa').value = data.numCausa;
+                    document.getElementById('tipoProceso').value = data.tipoProceso || '';
+                    document.getElementById('detalleProceso').value = data.detalleProceso || '';
+                    
+                    const nuevaRadio = document.getElementById('causaNuevaRadio');
+                    const anteriorRadio = document.getElementById('causaAnteriorRadio');
+                    const nuevaDetalle = document.getElementById('causaNuevaDetalle');
+                    const anteriorDetalle = document.getElementById('causaAnteriorDetalle');
+
+                    if (data.estadoCausa === 'nueva') {
+                        nuevaRadio.checked = true;
+                        anteriorRadio.checked = false;
+                        nuevaDetalle.value = data.detalleEstadoCausa || '';
+                        anteriorDetalle.value = '';
+                    } else if (data.estadoCausa === 'anterior') {
+                        nuevaRadio.checked = false;
+                        anteriorRadio.checked = true;
+                        anteriorDetalle.value = data.detalleEstadoCausa || '';
+                        nuevaDetalle.value = '';
+                    } else {
+                        nuevaRadio.checked = false;
+                        anteriorRadio.checked = false;
+                        nuevaDetalle.value = '';
+                        anteriorDetalle.value = '';
+                    }
+
+                    document.getElementById('usuarioAsignado').value = data.usuarioAsignado;
+                    document.getElementById('fechaPase').value = data.fechaPase; // YYYY-MM-DDTHH:MM
+                    document.getElementById('observacionesPase').value = data.observacionesPase || '';
+                    document.getElementById('otrosExpedientesCuerda').value = data.otrosExpedientesCuerda || '';
+                    document.getElementById('otrosExpedientesAcumulados').value = data.otrosExpedientesAcumulados || '';
+                    document.getElementById('devolucionMotivo').value = data.devolucionMotivo || '';
+                    document.getElementById('remisionMotivo').value = data.remisionMotivo || '';
+                    
+                    document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
+                    document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
+                    
+                    const modal = new bootstrap.Modal(expedienteModal);
+                    modal.show();
+                } else {
+                    showToast('Expediente no encontrado.', 'error');
+                }
+            } catch (error) {
+                console.error("Error al obtener el expediente para editar: ", error);
+                showToast('Error al cargar el expediente para editar.', 'error');
+            }
+        }
+
+        // Función para ver el expediente en un modal informativo
+        async function viewExpediente(id) {
+            try {
+                const doc = await expedientesRef.doc(id).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    const viewBody = document.getElementById('viewExpedienteBody');
+                    
+                    const estadoCausaDisplay = data.estadoCausa === 'nueva' ? 'Causa Nueva' : (data.estadoCausa === 'anterior' ? 'Causa Anterior' : 'N/A');
+                    const detalleEstadoCausaDisplay = data.detalleEstadoCausa || 'N/A';
+                    
+                    viewBody.innerHTML = `
+                        <div id="printContent">
+                            <p><strong>Número de Causa:</strong> ${data.numCausa}</p>
+                            <p><strong>Tipo de Proceso:</strong> ${data.tipoProceso || 'N/A'}</p>
+                            <p><strong>Detalle Proceso:</strong> ${data.detalleProceso || 'N/A'}</p>
+                            <p><strong>Estado de la Causa:</strong> ${estadoCausaDisplay} (${detalleEstadoCausaDisplay})</p>
+                            <hr>
+                            <p><strong>Usuario Asignado:</strong> ${data.usuarioAsignado}</p>
+                            <p><strong>Fecha y Hora de Pase:</strong> ${formatDateTime(data.fechaPase, true)}</p>
+                            <p><strong>Observaciones del Pase/asignación:</strong> ${data.observacionesPase || 'N/A'}</p>
+                            <p><strong>Otros Expedientes por Cuerda:</strong> ${data.otrosExpedientesCuerda || 'N/A'}</p>
+                            <p><strong>Otros Expedientes Acumulados:</strong> ${data.otrosExpedientesAcumulados || 'N/A'}</p>
+                            <hr>
+                            <h6>Motivos Especiales</h6>
+                            <p><strong>Devolución a Mesa de Entradas:</strong> ${data.devolucionMotivo || 'N/A'}</p>
+                            <p><strong>Remisión a otra Defensoría:</strong> ${data.remisionMotivo || 'N/A'}</p>
+                        </div>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(viewExpedienteModal);
+                    modal.show();
+                    
+                    printExpedienteBtn.onclick = () => imprimirExpediente(data);
+                } else {
+                    showToast('Expediente no encontrado.', 'error');
+                }
+            } catch (error) {
+                console.error("Error al ver el expediente: ", error);
+                showToast('Error al cargar los detalles del expediente.', 'error');
+            }
+        }
+        
+        // Función para imprimir el contenido del modal
+        function imprimirExpediente(expediente) {
+            const estadoCausaDisplay = expediente.estadoCausa === 'nueva' ? 'Causa Nueva' : (expediente.estadoCausa === 'anterior' ? 'Causa Anterior' : 'N/A');
+            const detalleEstadoCausaDisplay = expediente.detalleEstadoCausa || 'N/A';
+            
+            const printContent = `
+                <h2>Detalles del Expediente</h2>
+                <p><strong>Número de Causa:</strong> ${expediente.numCausa}</p>
+                <p><strong>Tipo de Proceso:</strong> ${expediente.tipoProceso || 'N/A'}</p>
+                <p><strong>Detalle Proceso:</strong> ${expediente.detalleProceso || 'N/A'}</p>
+                <p><strong>Estado de la Causa:</strong> ${estadoCausaDisplay} (${detalleEstadoCausaDisplay})</p>
+                <p><strong>Usuario Asignado:</strong> ${expediente.usuarioAsignado}</p>
+                <p><strong>Fecha y Hora de Pase:</strong> ${formatDateTime(expediente.fechaPase, true)}</p>
+                <p><strong>Observaciones del Pase/asignación:</strong> ${expediente.observacionesPase || 'N/A'}</p>
+                <p><strong>Otros Expedientes por Cuerda:</strong> ${expediente.otrosExpedientesCuerda || 'N/A'}</p>
+                <p><strong>Otros Expedientes Acumulados:</strong> ${expediente.otrosExpedientesAcumulados || 'N/A'}</p>
+                <hr>
+                <h6>Motivos Especiales</h6>
+                <p><strong>Devolución a Mesa de Entradas:</strong> ${expediente.devolucionMotivo || 'N/A'}</p>
+                <p><strong>Remisión a otra Defensoría:</strong> ${expediente.remisionMotivo || 'N/A'}</p>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Imprimir Expediente</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+            printWindow.document.write('<style>body { padding: 20px; }</style></head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+        
+        // Función para imprimir todos los expedientes filtrados
+        function imprimirTodosExpedientes() {
+            if (filteredExpedientes.length === 0) {
+                showToast('No hay expedientes para imprimir.', 'error');
+                return;
+            }
+            
+            let printContent = `
+                <h2 class="text-center mb-4">Listado de Expedientes</h2>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Expediente</th>
+                            <th>Proceso</th>
+                            <th>Usuario Asignado</th>
+                            <th>Fecha y Hora de Pase</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredExpedientes.forEach(expediente => {
+                printContent += `
+                    <tr>
+                        <td>${expediente.numCausa}</td>
+                        <td>${expediente.tipoProceso || 'N/A'}</td>
+                        <td>${expediente.usuarioAsignado}</td>
+                        <td>${formatDateTime(expediente.fechaPase, true)}</td>
+                        <td>${expediente.observacionesPase || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+            
+            printContent += `
+                    </tbody>
+                </table>
+                <div class="mt-3 text-muted">
+                    Total de expedientes: ${filteredExpedientes.length}
+                </div>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Listado de Expedientes</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+            printWindow.document.write('<style>body { padding: 20px; }</style></head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+        
+        // Event listeners para filtros
+        btnSearch.addEventListener('click', applyFilters);
+
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
+        expedienteAsignadoFilter.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
+        userFilter.addEventListener('change', applyFilters);
+        procesoFilter.addEventListener('change', applyFilters); 
+        dateFilterStart.addEventListener('change', applyFilters);
+        dateFilterEnd.addEventListener('change', applyFilters);
+        devolucionFilter.addEventListener('change', applyFilters);
+        remisionFilter.addEventListener('change', applyFilters);
+        // NUEVOS EVENT LISTENERS PARA CAUSA NUEVA/ANTERIOR
+        causaNuevaFilter.addEventListener('change', applyFilters);
+        causaAnteriorFilter.addEventListener('change', applyFilters);
+        
+        // Asignar evento al botón de imprimir todos
+        btnPrintAll.addEventListener('click', imprimirTodosExpedientes);
+
+        // Event listener para hacer clic en el icono del calendario y desplegar el selector nativo
+        document.addEventListener('click', (e) => {
+            const clickableCalendar = e.target.closest('.clickable-calendar');
+            if (clickableCalendar) {
+                e.preventDefault();
+                const targetId = clickableCalendar.dataset.target;
+                const input = document.getElementById(targetId);
+                
+                if (input) {
+                    // Usamos click() para intentar abrir el selector nativo de fecha/hora
+                    input.click(); 
+                }
+            }
+        });
+
+        // Llamar a las funciones de carga al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExpedientes();
+            populateUserFilter();
+            
+            // Establecer fecha actual en el filtro de fin si está vacío
+            if (!dateFilterEnd.value) {
+                const today = new Date();
+                dateFilterEnd.value = today.toISOString().split('T')[0];
+            }
+            
+            // Establecer fecha y hora actual en el campo de pase si está vacío
+            const fechaPaseInput = document.getElementById('fechaPase');
+            if (!fechaPaseInput.value) {
+                const now = new Date();
+                // Obtener YYYY-MM-DDTHH:MM para datetime-local
+                const localISODate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+                fechaPaseInput.value = localISODate;
+            }
+        });
+        
+        // Asignar el evento al botón de actualizar
+        const btnActualizar = document.getElementById('btnActualizar');
+        btnActualizar.addEventListener('click', loadExpedientes);
+    </script>
+</body>
+</html>
