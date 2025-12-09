@@ -60,6 +60,12 @@
             color: #dc3545 !important;
             font-weight: bold !important;
         }
+        /* Estilo para campos bloqueados */
+        .campo-bloqueado {
+            background-color: #e9ecef !important;
+            cursor: not-allowed !important;
+            opacity: 0.7 !important;
+        }
         /* Modal de alerta personalizado */
         .modal-alerta-flotante {
             position: fixed;
@@ -619,6 +625,50 @@
             });
         }
 
+        // Función para bloquear todos los campos del formulario
+        function bloquearCamposFormulario() {
+            const campos = [
+                'tipoProceso', 'detalleProceso', 'usuarioAsignado',
+                'observacionesPase', 'otrosExpedientesCuerda', 'otrosExpedientesAcumulados',
+                'devolucionMotivo', 'remisionMotivo', 'archivoCheck',
+                'causaNuevaRadio', 'causaAnteriorRadio', 'causaNuevaDetalle', 'causaAnteriorDetalle'
+            ];
+            
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    campo.disabled = true;
+                    campo.classList.add('campo-bloqueado');
+                }
+            });
+            
+            // También bloquear el botón de guardar
+            saveExpedienteBtn.disabled = true;
+            saveExpedienteBtn.classList.add('campo-bloqueado');
+        }
+
+        // Función para desbloquear todos los campos del formulario
+        function desbloquearCamposFormulario() {
+            const campos = [
+                'tipoProceso', 'detalleProceso', 'usuarioAsignado',
+                'observacionesPase', 'otrosExpedientesCuerda', 'otrosExpedientesAcumulados',
+                'devolucionMotivo', 'remisionMotivo', 'archivoCheck',
+                'causaNuevaRadio', 'causaAnteriorRadio', 'causaNuevaDetalle', 'causaAnteriorDetalle'
+            ];
+            
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    campo.disabled = false;
+                    campo.classList.remove('campo-bloqueado');
+                }
+            });
+            
+            // También desbloquear el botón de guardar
+            saveExpedienteBtn.disabled = false;
+            saveExpedienteBtn.classList.remove('campo-bloqueado');
+        }
+
         // Función para verificar si un número de causa ya existe
         async function checkExpedienteExists(numCausa, excludeId = null) {
             try {
@@ -742,6 +792,9 @@
                 numCausaFeedback.classList.remove('error-rojo-negrita');
                 numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
                 
+                // Desbloquear todos los campos al abrir modal de nuevo expediente
+                desbloquearCamposFormulario();
+                
                 // Quitar marcas de campos faltantes
                 const todosLosCampos = ['numCausa', 'tipoProceso', 'usuarioAsignado'];
                 todosLosCampos.forEach(campoId => {
@@ -767,6 +820,15 @@
                 // Lógica de edición
                 const expedienteId = document.getElementById('expedienteId').value;
                 if (expedienteId) {
+                    // Al editar, mostrar fecha y hora actual (como en nuevo expediente)
+                    const currentDateTimeISO = getCurrentLocalDateTimeISO();
+                    const currentDateTimeFormatted = getCurrentLocalDateTimeFormatted();
+                    
+                    // Mostrar la fecha formateada para el usuario
+                    document.getElementById('fechaPaseDisplay').value = currentDateTimeFormatted;
+                    // Guardar el valor ISO en el campo hidden para almacenar
+                    document.getElementById('fechaPase').value = currentDateTimeISO;
+                    
                     const data = allExpedientes.find(e => e.id === expedienteId);
                     if (data) {
                         const nuevaDetalle = document.getElementById('causaNuevaDetalle');
@@ -784,13 +846,6 @@
                             document.querySelector('input[name="estadoCausa"]').checked = false; 
                             nuevaDetalle.value = '';
                             anteriorDetalle.value = '';
-                        }
-                        
-                        // Mostrar fecha y hora formateadas en el campo de solo lectura
-                        if (data.fechaPase) {
-                            const formattedDateTime = formatDateTime(data.fechaPase, true);
-                            document.getElementById('fechaPaseDisplay').value = formattedDateTime;
-                            document.getElementById('fechaPase').value = data.fechaPase;
                         }
                     }
                 }
@@ -825,23 +880,39 @@
         });
 
 
-        // Validar número de causa en tiempo real
+        // Validar número de causa en tiempo real - CON BLOQUEO DE CAMPOS
         numCausaInput.addEventListener('blur', async () => {
             const numCausa = numCausaInput.value.trim();
-            if (!numCausa) return;
+            if (!numCausa) {
+                // Si el campo está vacío, desbloquear campos
+                desbloquearCamposFormulario();
+                return;
+            }
             
             const expedienteId = document.getElementById('expedienteId').value;
             const exists = await checkExpedienteExists(numCausa, expedienteId);
             
-            if (exists) {
+            if (exists && !expedienteId) {
+                // Solo para nuevo registro (no edición): si existe, bloquear todos los campos
                 numCausaInput.classList.add('is-invalid');
-                numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+                numCausaFeedback.textContent = 'Este número de expediente ya está registrado. Ingrese un nuevo número.';
                 numCausaFeedback.classList.add('error-rojo-negrita');
+                showToast('Este número de expediente ya está registrado en el sistema. Ingrese un nuevo número para continuar.', 'error');
+                bloquearCamposFormulario();
             } else {
                 numCausaInput.classList.remove('is-invalid');
                 numCausaFeedback.classList.remove('error-rojo-negrita');
                 numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
+                desbloquearCamposFormulario();
             }
+        });
+
+        // Al cambiar el número de causa, desbloquear campos para permitir nuevo registro
+        numCausaInput.addEventListener('input', function() {
+            // Si el usuario comienza a escribir un nuevo número, desbloquear campos
+            desbloquearCamposFormulario();
+            numCausaInput.classList.remove('is-invalid');
+            numCausaFeedback.classList.remove('error-rojo-negrita');
         });
 
         // Función para cargar y mostrar los expedientes con filtros
@@ -1312,12 +1383,8 @@
 
                     document.getElementById('usuarioAsignado').value = data.usuarioAsignado;
                     
-                    // Para edición, mantener la fecha original pero en modo solo lectura
-                    if (data.fechaPase) {
-                        const formattedDateTime = formatDateTime(data.fechaPase, true);
-                        document.getElementById('fechaPaseDisplay').value = formattedDateTime;
-                        document.getElementById('fechaPase').value = data.fechaPase;
-                    }
+                    // Para edición, NO mostrar la fecha original - mostrar fecha y hora actual
+                    // (esto ya se hace en el evento show.bs.modal para modo edición)
                     
                     document.getElementById('observacionesPase').value = data.observacionesPase || '';
                     document.getElementById('otrosExpedientesCuerda').value = data.otrosExpedientesCuerda || '';
@@ -1328,6 +1395,9 @@
                     
                     document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
                     document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
+                    
+                    // Desbloquear todos los campos en modo edición
+                    desbloquearCamposFormulario();
                     
                     const modal = new bootstrap.Modal(expedienteModal);
                     modal.show();
