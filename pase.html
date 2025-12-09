@@ -46,6 +46,54 @@
             background-color: #f8f9fa;
             cursor: not-allowed;
         }
+        /* Estilo para mensaje de error en rojo negrita */
+        .error-rojo-negrita {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+        /* Estilo para campo obligatorio faltante */
+        .campo-faltante {
+            border-color: #dc3545 !important;
+            background-color: #fff5f5 !important;
+        }
+        .campo-faltante-label {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+        /* Modal de alerta personalizado */
+        .modal-alerta-flotante {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .modal-alerta-flotante .modal-content {
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+        }
+        .modal-alerta-flotante .modal-header {
+            background-color: #dc3545;
+            color: white;
+            border-bottom: 1px solid #c82333;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+        .modal-alerta-flotante .modal-title {
+            font-weight: bold;
+        }
+        .modal-alerta-flotante .modal-body {
+            background-color: #f8d7da;
+            color: #721c24;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +251,24 @@
             </div>
         </div>
 
+        <!-- Modal de alerta flotante para campos obligatorios -->
+        <div class="modal fade modal-alerta-flotante" id="camposObligatoriosModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Error de Validación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <i class="fas fa-times-circle me-2"></i> Faltan campos obligatorios para completar el registro. Verifique e intente nuevamente.
+                    </div>
+                    <div class="modal-footer p-2">
+                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="toast-container position-fixed bottom-0 end-0 p-3">
             <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
@@ -227,7 +293,7 @@
                         <div class="mb-3">
                             <label for="numCausa" class="form-label">Número de Causa *</label>
                             <input type="text" class="form-control" id="numCausa" required>
-                            <div class="invalid-feedback" id="numCausaFeedback">Por favor ingrese un número de causa válido.</div>
+                            <div class="invalid-feedback error-rojo-negrita" id="numCausaFeedback">Por favor ingrese un número de causa válido.</div>
                         </div>
 
                         <div class="row">
@@ -410,6 +476,7 @@
         const numCausaFeedback = document.getElementById('numCausaFeedback');
         const activeFiltersContainer = document.getElementById('activeFiltersContainer');
         const activeFilters = document.getElementById('activeFilters');
+        const camposObligatoriosModal = new bootstrap.Modal(document.getElementById('camposObligatoriosModal'));
 
         // Filtros
         const searchInput = document.getElementById('searchInput');
@@ -513,6 +580,45 @@
             bsToast.show();
         }
 
+        // Función para mostrar modal de campos obligatorios
+        function showCamposObligatoriosModal() {
+            camposObligatoriosModal.show();
+            
+            // Cerrar automáticamente después de 5 segundos
+            setTimeout(() => {
+                camposObligatoriosModal.hide();
+            }, 5000);
+        }
+
+        // Función para remarcar campos obligatorios faltantes
+        function marcarCamposFaltantes(camposFaltantes) {
+            // Primero quitar todas las marcas previas
+            const todosLosCampos = ['numCausa', 'tipoProceso', 'usuarioAsignado'];
+            todosLosCampos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                const label = document.querySelector(`label[for="${campoId}"]`);
+                if (campo) {
+                    campo.classList.remove('campo-faltante');
+                }
+                if (label) {
+                    label.classList.remove('campo-faltante-label');
+                }
+            });
+            
+            // Marcar los campos faltantes
+            camposFaltantes.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                const label = document.querySelector(`label[for="${campoId}"]`);
+                if (campo) {
+                    campo.classList.add('campo-faltante');
+                    campo.focus();
+                }
+                if (label) {
+                    label.classList.add('campo-faltante-label');
+                }
+            });
+        }
+
         // Función para verificar si un número de causa ya existe
         async function checkExpedienteExists(numCausa, excludeId = null) {
             try {
@@ -554,9 +660,18 @@
             const remisionMotivo = document.getElementById('remisionMotivo').value;
             const archivo = document.getElementById('archivoCheck').checked;
 
-            // Solo validar campos obligatorios: numCausa, tipoProceso, usuarioAsignado
-            if (!numCausa || !usuarioAsignado || !tipoProceso) {
-                showToast('Por favor, complete todos los campos obligatorios.', 'error');
+            // Validar campos obligatorios y recolectar los que faltan
+            const camposFaltantes = [];
+            if (!numCausa) camposFaltantes.push('numCausa');
+            if (!tipoProceso) camposFaltantes.push('tipoProceso');
+            if (!usuarioAsignado) camposFaltantes.push('usuarioAsignado');
+            
+            // Si hay campos faltantes, mostrar modal y marcar campos
+            if (camposFaltantes.length > 0) {
+                // Mostrar modal de alerta flotante en rojo
+                showCamposObligatoriosModal();
+                // Marcar los campos faltantes
+                marcarCamposFaltantes(camposFaltantes);
                 return;
             }
 
@@ -564,6 +679,7 @@
             if (exists) {
                 numCausaInput.classList.add('is-invalid');
                 numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+                numCausaFeedback.classList.add('error-rojo-negrita');
                 showToast('Este número de expediente ya está registrado en el sistema.', 'error');
                 return;
             }
@@ -623,6 +739,21 @@
                 document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
                 document.getElementById('saveExpedienteBtn').textContent = 'Guardar Expediente';
                 numCausaInput.classList.remove('is-invalid');
+                numCausaFeedback.classList.remove('error-rojo-negrita');
+                numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
+                
+                // Quitar marcas de campos faltantes
+                const todosLosCampos = ['numCausa', 'tipoProceso', 'usuarioAsignado'];
+                todosLosCampos.forEach(campoId => {
+                    const campo = document.getElementById(campoId);
+                    const label = document.querySelector(`label[for="${campoId}"]`);
+                    if (campo) {
+                        campo.classList.remove('campo-faltante');
+                    }
+                    if (label) {
+                        label.classList.remove('campo-faltante-label');
+                    }
+                });
                 
                 // Establecer fecha y hora actual LOCAL automáticamente
                 const currentDateTimeISO = getCurrentLocalDateTimeISO();
@@ -666,6 +797,25 @@
             }
         });
         
+        // Event listeners para quitar marcas de campos faltantes cuando el usuario comienza a escribir/seleccionar
+        document.getElementById('numCausa').addEventListener('input', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="numCausa"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
+        document.getElementById('tipoProceso').addEventListener('change', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="tipoProceso"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
+        document.getElementById('usuarioAsignado').addEventListener('change', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="usuarioAsignado"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
         // Manejar la lógica de selección de detalle de causa
         document.getElementById('causaNuevaRadio').addEventListener('change', () => {
             document.getElementById('causaAnteriorDetalle').value = '';
@@ -686,8 +836,11 @@
             if (exists) {
                 numCausaInput.classList.add('is-invalid');
                 numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+                numCausaFeedback.classList.add('error-rojo-negrita');
             } else {
                 numCausaInput.classList.remove('is-invalid');
+                numCausaFeedback.classList.remove('error-rojo-negrita');
+                numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
             }
         });
 
