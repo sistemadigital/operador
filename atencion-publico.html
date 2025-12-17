@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Atención al Público - Defensoría Civil y Comercial 6</title>
+  <style>
+    :root {
+      --primary-blue: #007bff;
+      --primary-light-blue: #e7f4ff;
+      --primary-dark-blue: #0056b3;
+      --secondary-gray: #f8f9fa;
+      --secondary-light-gray: #e9ecef;
+      --secondary-dark-gray: #6c757d;
+      --status-success: #28a745;
+      --status-warning: #ffc107;
+      --status-danger: #dc3545;
+      --status-info: #17a2b8;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-link: #007bff;
+      --text-light: #ffffff;
+      --background-default: #ffffff;
+      --background-card: #ffffff;
+      --background-header: #ffffff;
+      --background-table-header: #f8f9fa;
+      --border-default: #dee2e6;
+      --font-family: 'Arial', 'Helvetica', sans-serif;
+      --display-size: 24px;
+      --h1-size: 20px;
+      --h2-size: 18px;
+      --body-large-size: 16px;
+      --body-regular-size: 14px;
+      --caption-size: 12px;
+      --font-weight-regular: 400;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+      --spacing-unit: 8px;
+      --spacing-xs: 4px;
+      --spacing-s: 8px;
+      --spacing-m: 16px;
+      --spacing-l: 24px;
+      --spacing-xl: 32px;
+      --spacing-gutter: 20px;
+      --border-radius-small: 2px;
+      --border-radius-default: 4px;
+      --border-radius-pill: 20px;
+      --shadow-none: none;
+      --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --shadow: 0 4px 15px rgba(0,0,0,.08);
+      
+      /* Mapeo de variables para mantener funcionalidad */
+      --bg: var(--primary-light-blue);
+      --card: var(--background-card);
+      --accent: var(--primary-blue);
+      --accent-dark: var(--primary-dark-blue);
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    html { height: 100%; }
+    body {
+      min-height: 100%;
+      font-family: var(--font-family);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: clamp(12px, 2vw, 24px);
+    }
+    h1,h2 { font-weight:600; color: var(--text); }
+    .container { width: min(1200px, 100%); margin-inline: auto; display: flex; flex-direction: column; gap: clamp(12px, 2vw, 20px); }
+    .header { background: var(--card); padding: clamp(16px, 2vw, 24px); border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+    .header h1 { font-size: clamp(18px, 2.8vw, 26px); margin-bottom: 6px; }
+    .header p { color: var(--muted); font-size: clamp(12px, 1.8vw, 14px); }
+    .status-bar { background: var(--card); padding: 12px clamp(12px,2vw,20px); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
+    .status-open { background: var(--status-success); }
+    .status-closed { background: var(--status-danger); }
+    .main { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px,2vw,20px); }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(14px, 2vw, 20px); }
+    .card h2 { font-size: clamp(16px, 2.2vw, 18px); margin-bottom: 12px; border-bottom: 1px solid var(--border-default); padding-bottom: 6px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px; }
+    .form-group { margin-bottom: 12px; }
+    label { font-size: 14px; font-weight: 600; margin-bottom: 6px; display:block; color: var(--text); }
+    input,select,textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: 8px; background: #fff; font-size: 14px; color: var(--text);
+    }
+    .btn { display:inline-block; border-radius:8px; padding:8px 12px; font-size:13px; font-weight:700; cursor:pointer; }
+    .btn-primary { background: linear-gradient(to bottom, var(--accent), var(--accent-dark)); color: #fff; border: none; }
+    .btn-secondary { background: var(--secondary-light-gray); border:1px solid var(--border-default); color: var(--text); }
+    .btn-danger { background: var(--status-danger); color:#fff; border:none; }
+    .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; }
+    .stat-box { background: var(--secondary-gray); border-radius: var(--radius); padding:16px; text-align:center; }
+    .stat-number { font-size: clamp(18px, 3vw, 22px); font-weight:700; color: var(--accent-dark); }
+    .stat-label { font-size:12px; color: var(--text); }
+    .chart-container { max-width:320px; height:260px; margin:16px auto 0; }
+    .records-table { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .table-header { background: var(--background-table-header); padding: 12px clamp(12px,2vw,18px); font-weight: 700; border-bottom:1px solid var(--border-default); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; color: var(--text); }
+    .filters { display:flex; flex-direction: column; gap: 12px; width:100%; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; align-items: center; }
+    .filter-row > * { flex: 1; min-width: 120px; }
+    .date-range { display: flex; gap: 8px; flex-wrap: wrap; }
+    .date-range > * { flex: 1; min-width: 140px; }
+    .table-content { max-height: min(60vh, 560px); overflow-y:auto; }
+    .record { display:grid; grid-template-columns: 110px 80px 110px 1.2fr 1fr 90px; padding: 10px 12px; font-size:14px; border-bottom:1px solid var(--border-default); gap: 8px; align-items:center; }
+    .record-type { font-size:12px; padding:2px 6px; border-radius:6px; text-align:center; font-weight:700; }
+    .type-presencial { background:#eaf9ea; color:#2d9950; }
+    .type-telefonica { background:#fff8e6; color:#b36a00; }
+    .type-whatsapp { background:#f3e8ff; color:#7f3bb5; }
+    .type-zimbra { background:#ffe6e6; color:#cc0000; }
+    .record-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content: center; }
+    .record-actions .btn { 
+      width: 32px; 
+      height: 32px; 
+      padding: 0; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    /* Estilos para Paginación Mejorada */
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pagination-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .pagination-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-pagination {
+      background: var(--secondary-light-gray);
+      border: 1px solid var(--border-default);
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+    .btn-pagination:hover:not(:disabled) {
+      background: var(--border-default);
+    }
+    .btn-pagination:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .page-select {
+      padding: 6px 8px;
+      border: 1px solid var(--border-default);
+      border-radius: 4px;
+      background: #fff;
+      font-size: 13px;
+      color: var(--text);
+      min-width: 60px;
+    }
+    
+    /* Estilos para el nuevo gráfico de estadísticas por usuario */
+    .user-stats-container {
+      margin-top: 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .user-stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-default);
+      padding-bottom: 8px;
+    }
+    .user-stats-chart-container {
+      height: 300px;
+      width: 100%;
+    }
+    .user-stats-details {
+      margin-top: 16px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .user-stat-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .user-stat-item:last-child {
+      border-bottom: none;
+    }
+    .user-stat-name {
+      flex: 1;
+    }
+    .user-stat-count {
+      font-weight: bold;
+      color: var(--accent-dark);
+    }
+    
+    /* Compactar en pantallas medianas */
+    @media (max-width: 1000px) {
+      .main { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .record { grid-template-columns: 90px 70px 100px 1fr; }
+      .record .record-actions { grid-column: 1 / -1; }
+      .filter-row { width: 100%; }
+      .date-range { width: 100%; }
+      .user-stats-chart-container {
+        height: 250px;
+      }
+    }
+    /* Diseño tipo tarjetas en móviles */
+    @media (max-width: 768px) {
+      .table-content { max-height: unset; }
+      .stats { grid-template-columns: 1fr; }
+      .record { grid-template-columns: 1fr 1fr; grid-template-areas:
+        "fecha hora"
+        "tipo  tipo"
+        "persona persona"
+        "usuario usuario"
+        "acciones acciones";
+        row-gap: 6px;
+      }
+      .record > div:nth-child(1) { grid-area: fecha; }
+      .record > div:nth-child(2) { grid-area: hora; text-align:right; }
+      .record > div:nth-child(3) { grid-area: tipo; }
+      .record > div:nth-child(4) { grid-area: persona; }
+      .record > div:nth-child(5) { grid-area: usuario; }
+      .record > div:nth-child(6) { grid-area: acciones; }
+      .filter-row { flex-direction: column; }
+      .filter-row > * { min-width: 100%; }
+      .date-range { flex-direction: column; }
+      .pagination-controls { 
+        justify-content: center; 
+        width: 100%; 
+        margin-top: 8px;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .chart-container { width: 100%; height: 220px; }
+      .user-stats-chart-container {
+        height: 200px;
+      }
+    }
+    @media (max-width: 480px) {
+      .pagination-controls {
+        flex-direction: column;
+        width: 100%;
+      }
+      .pagination-controls select, .pagination-controls button {
+        width: 100%;
+      }
+    }
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); justify-content:center; align-items:center; z-index:1000; padding: 16px; }
+    .modal-content { background:#fff; padding:20px; border-radius:var(--radius); max-width:600px; width:100%; max-height:80vh; overflow:auto; color: var(--text); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .modal-header h3 { margin:0; color: var(--text); }
+    .close-btn { background:none; border:none; font-size:20px; cursor:pointer; color: var(--text); }
+    
+    /* Estilos para impresión */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .records-table, .records-table * {
+        visibility: visible;
+      }
+      .records-table {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .table-header, .record-actions {
+        display: none !important;
+      }
+      .record {
+        grid-template-columns: 110px 80px 110px 1.2fr 1fr !important;
+      }
+      .stats-print, .stats-print * {
+        visibility: visible;
+      }
+      .stats-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+      }
+      .stats-print h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .stats-print .stats {
+        margin-bottom: 20px;
+      }
+      .stats-print .chart-container {
+        max-width: 100%;
+        height: 300px;
+      }
+    }
+    
+    /* Botón de actualización y búsqueda avanzada */
+    #refreshBtn, #searchAllBtn {
+      margin-left: auto;
+      padding: 4px 12px;
+      font-size: 12px;
+      background: var(--secondary-light-gray);
+      border: 1px solid var(--border-default);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    #refreshBtn:hover, #searchAllBtn:hover {
+      background: var(--border-default);
+    }
+    #refreshBtn .spinner, #searchAllBtn .spinner {
+      display: none;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--text-secondary);
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Filtros activos */
+    .active-filters-container {
+      display: none;
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--secondary-light-gray);
+      border-radius: 6px;
+      border-left: 4px solid var(--primary-blue);
+    }
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .filter-badge {
+      background: var(--primary-blue);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .filter-badge .remove-filter {
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    /* Botón de búsqueda en todos los registros */
+    .search-all-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--secondary-light-gray);
+      border-radius: 6px;
+      border-left: 4px solid var(--status-warning);
+    }
+    .search-all-info {
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex: 1;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Registro de Atención al Público</h1>
+      <p>Defensoría Civil y Comercial 6 · Poder Judicial de Misiones</p>
+      <p style="margin-top:6px;font-weight:700;">Horario: Lunes a Viernes 07:00–12:30 (excepto sábados, domingos y feriados)</p>
+    </div>
+
+    <div class="status-bar">
+      <span id="statusIndicator" class="status-indicator"></span>
+      <span id="statusText"></span>
+      <span id="currentTime"></span>
+      <button id="refreshBtn">
+        <span class="spinner" id="refreshSpinner"></span>
+        <i class="fas fa-sync-alt"></i> Actualizar
+      </button>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>Registrar Atención</h2>
+        <form id="attentionForm">
+          <div class="form-group">
+            <label for="personName">Nombre de la Persona</label>
+            <input type="text" id="personName" required>
+          </div>
+          <div class="form-group">
+            <label for="attentionType">Tipo de Atención</label>
+            <select id="attentionType" required>
+              <option value="">Seleccionar</option>
+              <option value="presencial">Presencial</option>
+              <option value="telefonica">Telefónica</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="zimbra">Por Correo Zimbra Institucional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="assignedUser">Usuario Asignado</label>
+            <select id="assignedUser" required></select>
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción del Caso</label>
+            <textarea id="description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+      </div>
+
+      <div class="card" id="statsCard">
+        <h2>
+          Estadísticas Totales
+          <button id="printStatsBtn" class="btn btn-secondary">🖨️ Imprimir</button>
+        </h2>
+        <div class="stats">
+          <div class="stat-box"><div id="totalAttentions" class="stat-number">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div id="presentialCount" class="stat-number">0</div><div class="stat-label">Presenciales</div></div>
+          <div class="stat-box"><div id="phoneCount" class="stat-number">0</div><div class="stat-label">Telefónicas</div></div>
+          <div class="stat-box"><div id="whatsappCount" class="stat-number">0</div><div class="stat-label">WhatsApp</div></div>
+          <div class="stat-box"><div id="zimbraCount" class="stat-number">0</div><div class="stat-label">Zimbra</div></div>
+        </div>
+        <div class="chart-container">
+          <canvas id="statsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nuevo gráfico de estadísticas por usuario -->
+    <div class="user-stats-container">
+      <div class="user-stats-header">
+        <h2>Estadísticas por Usuario (Totales)</h2>
+      </div>
+      <div class="user-stats-chart-container">
+        <canvas id="userStatsChart"></canvas>
+      </div>
+      <div class="user-stats-details" id="userStatsDetails">
+        <!-- Los detalles se generarán dinámicamente -->
+      </div>
+    </div>
+
+    <div class="records-table">
+      <div class="table-header">
+        <span>Registro de Atenciones (Últimos 100)</span>
+        <div class="filters">
+          <!-- Primera fila: Filtros de búsqueda -->
+          <div class="filter-row">
+            <div class="date-range">
+              <input type="date" id="filterDateStart" placeholder="Fecha inicio">
+              <input type="date" id="filterDateEnd" placeholder="Fecha fin">
+            </div>
+            <select id="filterUser"><option value="">Todos los usuarios</option></select>
+            <input type="text" id="filterPerson" placeholder="Buscar persona...">
+          </div>
+          
+          <!-- Segunda fila: Paginación y botón imprimir -->
+          <div class="filter-row">
+            <div id="paginationControls" class="pagination-controls"></div>
+            <button id="printBtn" class="btn btn-secondary">🖨️ Imprimir Listado</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contenedor de filtros activos -->
+      <div id="activeFiltersContainer" class="active-filters-container">
+        <small>Filtros activos:</small>
+        <div id="activeFilters" class="active-filters"></div>
+      </div>
+      
+      <!-- Contenedor para búsqueda en todos los registros -->
+      <div id="searchAllContainer" class="search-all-container" style="display: none;">
+        <div class="search-all-info">
+          <i class="fas fa-info-circle"></i>
+          <span id="searchAllMessage">Mostrando resultados de la búsqueda en todos los registros</span>
+        </div>
+        <button id="searchAllBtn" class="btn btn-secondary">
+          <span class="spinner" id="searchAllSpinner"></span>
+          Buscar en todos
+        </button>
+      </div>
+      
+      <div id="recordsContainer" class="table-content">
+        <div style="padding:30px;text-align:center;color:var(--muted)">
+          No hay registros para mostrar
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="recordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detalle de Atención</h3>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    /* ========= Firebase App + Realtime Database ========= */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getDatabase, ref, push, onValue, update, remove,
+      serverTimestamp, query, orderByChild, limitToLast
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    /* ========= Configuración ========= */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+      authDomain: "atencion-publico-def6.firebaseapp.com",
+      databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+      projectId: "atencion-publico-def6",
+      storageBucket: "atencion-publico-def6.firebasestorage.app",
+      messagingSenderId: "1052433106688",
+      appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+    };
+
+    // Horario de atención y feriados (formato DD/MM/AAAA)
+    const OPEN_HOUR = 7;
+    const CLOSE_HOUR = 12.5; // 12:30 = 12.5 en formato decimal
+    const FERIADOS = [];
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const baseRef = ref(db, "atencion");
+
+    let statsChart;
+    let userStatsChart;
+    
+    // CACHÉ Y PAGINACIÓN
+    let cachedRecords = null;
+    let lastFetchTime = 0;
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos en milisegundos
+    const MAX_RECORDS = 100; // Solo traer los últimos 100 registros para la lista
+    
+    let currentPage = 1; 
+    const recordsPerPage = 10;
+
+    // Variables para estadísticas totales
+    let allRecordsForStats = [];
+    let statsLastFetchTime = 0;
+    const STATS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutos para estadísticas
+
+    const users = ["Bazante Nadia Romina","Boillat Cesar Enrique","Cardozo Maria Raquel","Cedron Noelia Aurora","Corrales Alicia Mariela","Escobar Monica Graciela","Fioravante Romulo","Gonzalez Alberto Misael","Gonzalez Juan Jose","Gudiño Natalia Esther","Magnani Enzo Luciano","Pablos Patricia","Palacios Ana Gabriela","Ortega Lucia Noemi","Ramos Marcelo Gustavo","Riveros Patricia Soledad","Sosa Rita Cecilia"];
+
+    // Variables para filtros activos
+    let currentFilters = {};
+    let searchingAll = false; // Flag para saber si estamos buscando en todos los registros
+
+    /* ========= Utilidades de fecha/hora ========= */
+    const fmtFecha = (d)=> d ? d.toLocaleDateString("es-AR") : "-"; // DD/MM/AAAA
+    const fmtHora = (d)=> d ? d.toLocaleTimeString("es-AR", {hour12:false, hour:"2-digit", minute:"2-digit"}) : "--:--";
+
+    function parseFecha(ddmmyyyy) {
+      if (!ddmmyyyy) return null;
+      const parts = ddmmyyyy.split('/');
+      if (parts.length !== 3) return null;
+      return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    function esFeriado(date){
+      const ddmmyyyy = fmtFecha(date);
+      return FERIADOS.includes(ddmmyyyy);
+    }
+
+    function oficinaAbierta(date = new Date()){
+      const d = date.getDay(); // 0-dom,6-sab
+      if (d === 0 || d === 6) return false;
+      if (esFeriado(date)) return false;
+      const h = date.getHours() + date.getMinutes()/60;
+      return h >= OPEN_HOUR && h < CLOSE_HOUR; // 07:00–12:29
+    }
+
+    /* ========= Caché para lista de registros (últimos 100) ========= */
+    async function fetchRecordsWithCache(forceRefresh = false) {
+      const now = Date.now();
+      
+      // Usar cache si está disponible y no ha expirado
+      if (cachedRecords && !forceRefresh && (now - lastFetchTime) < CACHE_DURATION) {
+        console.log('Usando datos en caché para lista');
+        return cachedRecords;
+      }
+      
+      console.log('Consultando Firebase para lista...');
+      try {
+        // Solo traer los últimos 100 registros para reducir consumo
+        const qRef = query(baseRef, orderByChild("timestamp"), limitToLast(MAX_RECORDS));
+        
+        return new Promise((resolve, reject) => {
+          onValue(qRef, (snapshot) => {
+            const arr = [];
+            snapshot.forEach(child => {
+              const val = child.val() || {};
+              arr.push({ ...val, id: child.key });
+            });
+            // Orden descendente por timestamp
+            arr.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+            
+            // Actualizar cache
+            cachedRecords = arr;
+            lastFetchTime = now;
+            
+            resolve(arr);
+          }, (error) => {
+            console.error("Error al cargar registros:", error);
+            // Si hay error, intentar usar cache si existe
+            if (cachedRecords) {
+              console.log('Usando caché debido a error en consulta');
+              resolve(cachedRecords);
+            } else {
+              reject(error);
+            }
+          }, { onlyOnce: true });
+        });
+      } catch (error) {
+        console.error("Error en fetchRecordsWithCache:", error);
+        throw error;
+      }
+    }
+
+    /* ========= Función para cargar TODOS los registros para estadísticas ========= */
+    async function fetchAllRecordsForStats(forceRefresh = false) {
+      const now = Date.now();
+      
+      // Usar cache si está disponible y no ha expirado
+      if (allRecordsForStats.length > 0 && !forceRefresh && (now - statsLastFetchTime) < STATS_CACHE_DURATION) {
+        console.log('Usando datos en caché para estadísticas');
+        return allRecordsForStats;
+      }
+      
+      console.log('Consultando Firebase para estadísticas totales...');
+      try {
+        const qRef = query(baseRef, orderByChild("timestamp"));
+        
+        return new Promise((resolve, reject) => {
+          onValue(qRef, (snapshot) => {
+            const arr = [];
+            snapshot.forEach(child => {
+              const val = child.val() || {};
+              arr.push({ ...val, id: child.key });
+            });
+            // Orden descendente por timestamp
+            arr.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+            
+            // Actualizar cache de estadísticas
+            allRecordsForStats = arr;
+            statsLastFetchTime = now;
+            
+            resolve(arr);
+          }, (error) => {
+            console.error("Error al cargar registros para estadísticas:", error);
+            // Si hay error, intentar usar cache si existe
+            if (allRecordsForStats.length > 0) {
+              console.log('Usando caché de estadísticas debido a error');
+              resolve(allRecordsForStats);
+            } else {
+              reject(error);
+            }
+          }, { onlyOnce: true });
+        });
+      } catch (error) {
+        console.error("Error en fetchAllRecordsForStats:", error);
+        throw error;
+      }
+    }
+
+    /* ========= Función para búsqueda en TODOS los registros ========= */
+    async function searchInAllRecords(filters) {
+      console.log('Buscando en todos los registros...');
+      try {
+        const qRef = query(baseRef, orderByChild("timestamp"));
+        
+        return new Promise((resolve, reject) => {
+          onValue(qRef, (snapshot) => {
+            const arr = [];
+            snapshot.forEach(child => {
+              const val = child.val() || {};
+              arr.push({ ...val, id: child.key });
+            });
+            // Orden descendente por timestamp
+            arr.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+            
+            // Aplicar filtros
+            const filtered = applyFiltersToRecords(arr, filters);
+            
+            resolve(filtered);
+          }, (error) => {
+            console.error("Error en búsqueda global:", error);
+            reject(error);
+          }, { onlyOnce: true });
+        });
+      } catch (error) {
+        console.error("Error en searchInAllRecords:", error);
+        throw error;
+      }
+    }
+
+    /* ========= Función para aplicar filtros a registros ========= */
+    function applyFiltersToRecords(records, filters) {
+      const filterDateStart = filters.dateStart;
+      const filterDateEnd = filters.dateEnd;
+      const filterUser = filters.user;
+      const filterPerson = filters.person ? filters.person.toLowerCase() : '';
+      
+      return records.filter(r => {
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const iso = fechaObj ? new Date(fechaObj.getTime() - (fechaObj.getTimezoneOffset()*60000)).toISOString().slice(0,10) : null;
+        
+        // Filtro por rango de fechas
+        if (filterDateStart && iso < filterDateStart) return false;
+        if (filterDateEnd && iso > filterDateEnd) return false;
+        
+        // Filtro por usuario
+        if (filterUser && r.assignedUser !== filterUser) return false;
+        
+        // Filtro por nombre de persona
+        if (filterPerson && !(r.personName||"").toLowerCase().includes(filterPerson)) return false;
+        
+        return true;
+      });
+    }
+
+    function invalidateCache() {
+      cachedRecords = null;
+      lastFetchTime = 0;
+      allRecordsForStats = [];
+      statsLastFetchTime = 0;
+    }
+
+    /* ========= Inicialización ========= */
+    function init(){
+      const sel=document.getElementById("assignedUser");
+      const filterSel=document.getElementById("filterUser");
+      users.forEach(u=>{
+        let o=document.createElement("option"); o.value=u; o.textContent=u;
+        sel.appendChild(o.cloneNode(true));
+        filterSel.appendChild(o);
+      });
+      updateClock(); updateStatus();
+      setInterval(()=>{updateClock();updateStatus();},60000);
+      initChart();
+      initUserStatsChart();
+      bindPrinting();
+      bindFilters();
+      loadRecords(false); // Cargar inicialmente sin forzar refresh
+      loadStats(true); // Cargar estadísticas totales
+    }
+
+    async function loadRecords(forceRefresh = false) {
+      const recordsContainer = document.getElementById("recordsContainer");
+      recordsContainer.innerHTML = `<div style="padding:30px;text-align:center;color:var(--muted)">
+        <div class="spinner" style="display:inline-block;width:20px;height:20px;border:2px solid var(--muted);border-top:2px solid transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+        <p style="margin-top:8px;">Cargando registros...</p>
+      </div>`;
+      
+      try {
+        const records = await fetchRecordsWithCache(forceRefresh);
+        renderRecords(records);
+      } catch (error) {
+        console.error("Error al cargar registros:", error);
+        recordsContainer.innerHTML = `<div style="padding:30px;text-align:center;color:var(--status-danger)">
+          Error al cargar registros. <button onclick="loadRecords(true)" style="background:none;border:none;color:var(--primary-blue);text-decoration:underline;cursor:pointer">Reintentar</button>
+        </div>`;
+      }
+    }
+
+    async function loadStats(forceRefresh = false) {
+      try {
+        const allRecords = await fetchAllRecordsForStats(forceRefresh);
+        updateTotalStats(allRecords);
+        updateUserStats(allRecords);
+      } catch (error) {
+        console.error("Error al cargar estadísticas:", error);
+      }
+    }
+
+    function bindPrinting(){
+      document.getElementById("printBtn").addEventListener("click", ()=>{
+        const w = window.open("", "_blank");
+        const filteredRecords = getFilteredRecords(cachedRecords || []);
+        
+        let tableHTML = `
+          <table style="width:100%; border-collapse:collapse; margin-top:20px;">
+            <thead>
+              <tr style="background:#f8f9fa; border-bottom:2px solid #dee2e6;">
+                <th style="padding:10px; text-align:left;">Fecha</th>
+                <th style="padding:10px; text-align:left;">Hora</th>
+                <th style="padding:10px; text-align:left;">Tipo</th>
+                <th style="padding:10px; text-align:left;">Persona</th>
+                <th style="padding:10px; text-align:left;">Usuario</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        
+        filteredRecords.forEach(r => {
+          const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+          const fechaStr = fmtFecha(fechaObj);
+          const horaStr  = r.time || fmtHora(fechaObj);
+          const tipo = r.type ? (r.type[0].toUpperCase() + r.type.slice(1)) : "-";
+          
+          tableHTML += `
+            <tr style="border-bottom:1px solid #dee2e6;">
+              <td style="padding:10px;">${fechaStr}</td>
+              <td style="padding:10px;">${horaStr}</td>
+              <td style="padding:10px;">${tipo}</td>
+              <td style="padding:10px;">${r.personName || ""}</td>
+              <td style="padding:10px;">${r.assignedUser || ""}</td>
+            </tr>`;
+        });
+        
+        tableHTML += `</tbody></table>`;
+        
+        let titulo = "Listado Completo de Atenciones";
+        const filterDateStart = document.getElementById("filterDateStart").value;
+        const filterDateEnd = document.getElementById("filterDateEnd").value;
+        const filterUser = document.getElementById("filterUser").value;
+        const filterPerson = document.getElementById("filterPerson").value;
+        
+        if (filterDateStart && filterDateEnd) {
+          titulo = `Atenciones del ${filterDateStart} al ${filterDateEnd}`;
+        } else if (filterDateStart) {
+          titulo = `Atenciones del ${filterDateStart}`;
+        } else if (filterDateEnd) {
+          titulo = `Atenciones hasta el ${filterDateEnd}`;
+        }
+        
+        if (filterUser) {
+          titulo += ` - Usuario: ${filterUser}`;
+        }
+        
+        if (filterPerson) {
+          titulo += ` - Persona: ${filterPerson}`;
+        }
+        
+        w.document.write(`
+          <html>
+            <head>
+              <title>Listado de Atenciones</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { margin-bottom: 10px; }
+                .filters-info { margin-bottom: 20px; color: #666; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                th { background-color: #f8f9fa; }
+              </style>
+            </head>
+            <body>
+              <h1>Registro de Atenciones - Defensoría Civil y Comercial 6</h1>
+              <div class="filters-info">
+                <p><strong>${titulo}</strong></p>
+                <p>Fecha de impresión: ${fmtFecha(new Date())}</p>
+                <p>Total de registros: ${filteredRecords.length}</p>
+              </div>
+              ${tableHTML}
+            </body>
+          </html>
+        `);
+        w.document.close();
+        w.focus();
+        w.print();
+      });
+      
+      document.getElementById("printStatsBtn").addEventListener("click", ()=>{
+        const w = window.open("", "_blank");
+        const total = document.getElementById("totalAttentions").textContent;
+        const presencial = document.getElementById("presentialCount").textContent;
+        const telefonica = document.getElementById("phoneCount").textContent;
+        const whatsapp = document.getElementById("whatsappCount").textContent;
+        const zimbra = document.getElementById("zimbraCount").textContent;
+        
+        const chartImage = statsChart.toBase64Image();
+        
+        w.document.write(`
+          <html>
+            <head>
+              <title>Estadísticas de Atención</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .stats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+                .stat-box { border: 1px solid #ccc; padding: 10px; text-align: center; }
+                .stat-number { font-size: 24px; font-weight: bold; }
+                .stat-label { font-size: 14px; }
+                .chart-container { text-align: center; margin-top: 20px; }
+                .details { margin-top: 20px; }
+                .details h3 { margin-bottom: 10px; }
+                .details ul { list-style-type: none; padding: 0; }
+                .details li { margin-bottom: 5px; padding: 5px; background: #f8f9fa; border-radius: 4px; }
+              </style>
+            </head>
+            <body>
+              <h1>Estadísticas Totales de Atención - Defensoría Civil y Comercial 6</h1>
+              <p>Fecha de impresión: ${fmtFecha(new Date())}</p>
+              <div class="stats-container">
+                <div class="stat-box">
+                  <div class="stat-number">${total}</div>
+                  <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">${presencial}</div>
+                  <div class="stat-label">Presenciales</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">${telefonica}</div>
+                  <div class="stat-label">Telefónicas</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">${whatsapp}</div>
+                  <div class="stat-label">WhatsApp</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number">${zimbra}</div>
+                  <div class="stat-label">Zimbra</div>
+                </div>
+              </div>
+              <div class="chart-container">
+                <img src="${chartImage}" alt="Gráfico de Estadísticas" style="max-width:100%;">
+              </div>
+              <div class="details">
+                <h3>Detalle por Tipo de Atención</h3>
+                <ul>
+                  <li><strong>Presenciales:</strong> ${presencial} atenciones</li>
+                  <li><strong>Telefónicas:</strong> ${telefonica} atenciones</li>
+                  <li><strong>WhatsApp:</strong> ${whatsapp} atenciones</li>
+                  <li><strong>Zimbra:</strong> ${zimbra} atenciones</li>
+                </ul>
+              </div>
+            </body>
+          </html>
+        `);
+        w.document.close();
+        w.focus();
+        w.print();
+      });
+    }
+
+    function bindFilters(){
+      const filterInputs = [
+        "filterDateStart", "filterDateEnd", "filterUser"
+      ];
+      
+      filterInputs.forEach(id => {
+        document.getElementById(id).addEventListener("change", () => {
+          currentPage = 1;
+          searchingAll = false;
+          document.getElementById("searchAllContainer").style.display = "none";
+          updateActiveFilters();
+          renderRecords(cachedRecords || []);
+        });
+      });
+      
+      document.getElementById("filterPerson").addEventListener("input", () => {
+        currentPage = 1;
+        searchingAll = false;
+        document.getElementById("searchAllContainer").style.display = "none";
+        updateActiveFilters();
+        renderRecords(cachedRecords || []);
+      });
+      
+      // Botón de actualización
+      document.getElementById("refreshBtn").addEventListener("click", async () => {
+        const spinner = document.getElementById("refreshSpinner");
+        const btn = document.getElementById("refreshBtn");
+        
+        spinner.style.display = "inline-block";
+        btn.disabled = true;
+        
+        await loadRecords(true);
+        await loadStats(true);
+        
+        setTimeout(() => {
+          spinner.style.display = "none";
+          btn.disabled = false;
+        }, 500);
+      });
+      
+      // Botón de búsqueda en todos los registros
+      document.getElementById("searchAllBtn").addEventListener("click", async () => {
+        const spinner = document.getElementById("searchAllSpinner");
+        const btn = document.getElementById("searchAllBtn");
+        const message = document.getElementById("searchAllMessage");
+        
+        spinner.style.display = "inline-block";
+        btn.disabled = true;
+        message.textContent = "Buscando en todos los registros...";
+        
+        try {
+          const filters = getCurrentFilters();
+          const allResults = await searchInAllRecords(filters);
+          
+          searchingAll = true;
+          currentPage = 1;
+          
+          // Mostrar resultados
+          renderSearchResults(allResults);
+          
+          message.textContent = `Mostrando ${allResults.length} resultados de búsqueda en todos los registros`;
+        } catch (error) {
+          console.error("Error en búsqueda global:", error);
+          message.textContent = "Error en la búsqueda. Intente nuevamente.";
+        } finally {
+          spinner.style.display = "none";
+          btn.disabled = false;
+        }
+      });
+    }
+
+    function getCurrentFilters() {
+      return {
+        dateStart: document.getElementById("filterDateStart").value,
+        dateEnd: document.getElementById("filterDateEnd").value,
+        user: document.getElementById("filterUser").value,
+        person: document.getElementById("filterPerson").value
+      };
+    }
+
+    function updateActiveFilters() {
+      const filterDateStart = document.getElementById("filterDateStart").value;
+      const filterDateEnd = document.getElementById("filterDateEnd").value;
+      const filterUser = document.getElementById("filterUser").value;
+      const filterPerson = document.getElementById("filterPerson").value;
+      
+      currentFilters = {
+        dateStart: filterDateStart || null,
+        dateEnd: filterDateEnd || null,
+        user: filterUser || null,
+        person: filterPerson || null
+      };
+      
+      const activeFiltersContainer = document.getElementById("activeFiltersContainer");
+      const activeFilters = document.getElementById("activeFilters");
+      activeFilters.innerHTML = "";
+      
+      let hasFilters = false;
+      
+      if (currentFilters.dateStart) {
+        hasFilters = true;
+        activeFilters.innerHTML += `
+          <span class="filter-badge">
+            Desde: ${currentFilters.dateStart}
+            <span class="remove-filter" onclick="clearFilter('dateStart')">×</span>
+          </span>
+        `;
+      }
+      
+      if (currentFilters.dateEnd) {
+        hasFilters = true;
+        activeFilters.innerHTML += `
+          <span class="filter-badge">
+            Hasta: ${currentFilters.dateEnd}
+            <span class="remove-filter" onclick="clearFilter('dateEnd')">×</span>
+          </span>
+        `;
+      }
+      
+      if (currentFilters.user) {
+        hasFilters = true;
+        activeFilters.innerHTML += `
+          <span class="filter-badge">
+            Usuario: ${currentFilters.user}
+            <span class="remove-filter" onclick="clearFilter('user')">×</span>
+          </span>
+        `;
+      }
+      
+      if (currentFilters.person) {
+        hasFilters = true;
+        activeFilters.innerHTML += `
+          <span class="filter-badge">
+            Persona: ${currentFilters.person}
+            <span class="remove-filter" onclick="clearFilter('person')">×</span>
+          </span>
+        `;
+      }
+      
+      activeFiltersContainer.style.display = hasFilters ? "block" : "none";
+    }
+    
+    // Función global para limpiar filtros
+    window.clearFilter = (filterName) => {
+      switch(filterName) {
+        case 'dateStart':
+          document.getElementById("filterDateStart").value = "";
+          break;
+        case 'dateEnd':
+          document.getElementById("filterDateEnd").value = "";
+          break;
+        case 'user':
+          document.getElementById("filterUser").value = "";
+          break;
+        case 'person':
+          document.getElementById("filterPerson").value = "";
+          break;
+      }
+      currentPage = 1;
+      searchingAll = false;
+      document.getElementById("searchAllContainer").style.display = "none";
+      updateActiveFilters();
+      renderRecords(cachedRecords || []);
+    };
+
+    function updateClock(){
+      const now=new Date();
+      document.getElementById("currentTime").textContent="· " + fmtFecha(now) + " " + fmtHora(now);
+    }
+
+    function updateStatus(){
+      const ind=document.getElementById("statusIndicator");
+      const txt=document.getElementById("statusText");
+      const form=document.getElementById("attentionForm");
+      if(oficinaAbierta()){
+        ind.className="status-indicator status-open";
+        txt.textContent="Oficina Abierta (Lun–Vie 07:00–12:30)";
+        form.querySelectorAll("input,select,textarea,button").forEach(el=>el.disabled=false);
+      }else{
+        ind.className="status-indicator status-closed";
+        txt.textContent="Oficina Cerrada (sábados, domingos o fuera de horario / feriado)";
+        form.querySelectorAll("input,select,textarea,button").forEach(el=>el.disabled=true);
+      }
+    }
+
+    // FUNCIÓN PARA CAMBIAR LA PÁGINA
+    window.goToPage = (pageNumber) => {
+      currentPage = pageNumber;
+      if (searchingAll) {
+        // Si estamos en modo búsqueda global, necesitamos mantener esos datos
+        // Pero como no los almacenamos globalmente, recargamos desde caché
+        // Esto es una simplificación
+        renderRecords(cachedRecords || []);
+      } else {
+        renderRecords(cachedRecords || []);
+      }
+      const tableElement = document.querySelector('.records-table');
+      if (tableElement) {
+        window.scrollTo({top: tableElement.offsetTop, behavior: "smooth"});
+      }
+    }
+
+    // FUNCIÓN DE PAGINACIÓN MEJORADA
+    function createPaginationControls(totalRecords, currentPage, recordsPerPage, container){
+      container.innerHTML = "";
+      const totalPages = Math.ceil(totalRecords / recordsPerPage);
+
+      if (totalRecords === 0) {
+        const noRecords = document.createElement("span");
+        noRecords.className = "pagination-info";
+        noRecords.textContent = "No hay registros";
+        container.appendChild(noRecords);
+        return;
+      }
+
+      // Información de registros
+      const info = document.createElement("span");
+      info.className = "pagination-info";
+      const start = (currentPage - 1) * recordsPerPage + 1;
+      const end = Math.min(currentPage * recordsPerPage, totalRecords);
+      info.textContent = `${start}-${end} de ${totalRecords} registros`;
+      container.appendChild(info);
+
+      if (totalPages <= 1) return;
+
+      // Controles de paginación
+      const paginationButtons = document.createElement("div");
+      paginationButtons.className = "pagination-buttons";
+      
+      // Botón anterior
+      const prevBtn = document.createElement("button");
+      prevBtn.className = "btn-pagination";
+      prevBtn.innerHTML = "&laquo;";
+      prevBtn.title = "Página anterior";
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => window.goToPage(currentPage - 1);
+      paginationButtons.appendChild(prevBtn);
+
+      // Selector de página
+      const pageSelect = document.createElement("select");
+      pageSelect.className = "page-select";
+      pageSelect.onchange = (e) => window.goToPage(parseInt(e.target.value));
+      
+      for (let i = 1; i <= totalPages; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        if (i === currentPage) option.selected = true;
+        pageSelect.appendChild(option);
+      }
+      paginationButtons.appendChild(pageSelect);
+
+      // Botón siguiente
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "btn-pagination";
+      nextBtn.innerHTML = "&raquo;";
+      nextBtn.title = "Página siguiente";
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => window.goToPage(currentPage + 1);
+      paginationButtons.appendChild(nextBtn);
+      
+      container.appendChild(paginationButtons);
+    }
+
+    // Función para obtener registros filtrados de los últimos 100
+    function getFilteredRecords(records) {
+      const filterDateStart = document.getElementById("filterDateStart").value;
+      const filterDateEnd = document.getElementById("filterDateEnd").value;
+      const filterUser = document.getElementById("filterUser").value;
+      const filterPerson = document.getElementById("filterPerson").value.toLowerCase();
+      
+      return records.filter(r => {
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const iso = fechaObj ? new Date(fechaObj.getTime() - (fechaObj.getTimezoneOffset()*60000)).toISOString().slice(0,10) : null;
+        
+        // Filtro por rango de fechas
+        if (filterDateStart && iso < filterDateStart) return false;
+        if (filterDateEnd && iso > filterDateEnd) return false;
+        
+        // Filtro por usuario
+        if (filterUser && r.assignedUser !== filterUser) return false;
+        
+        // Filtro por nombre de persona
+        if (filterPerson && !(r.personName||"").toLowerCase().includes(filterPerson)) return false;
+        
+        return true;
+      });
+    }
+
+    /* ========= Render de registros ========= */
+    function renderRecords(records){
+      const container=document.getElementById("recordsContainer");
+      container.innerHTML="";
+
+      // Usar la función de filtrado común
+      const filtered = getFilteredRecords(records);
+
+      // Verificar si hay resultados
+      if (filtered.length === 0) {
+        const filterPerson = document.getElementById("filterPerson").value;
+        const filterUser = document.getElementById("filterUser").value;
+        
+        // Si hay criterios de búsqueda, mostrar opción para buscar en todos los registros
+        if (filterPerson || filterUser) {
+          document.getElementById("searchAllContainer").style.display = "flex";
+          document.getElementById("searchAllMessage").textContent = "No se encontraron resultados en los últimos 100 registros. ¿Buscar en todos los registros?";
+        } else {
+          document.getElementById("searchAllContainer").style.display = "none";
+        }
+      } else {
+        document.getElementById("searchAllContainer").style.display = "none";
+      }
+
+      // APLICAR PAGINACIÓN
+      const totalFiltered = filtered.length;
+      const startIndex = (currentPage - 1) * recordsPerPage;
+      const endIndex = Math.min(startIndex + recordsPerPage, totalFiltered);
+      const paginatedRecords = filtered.slice(startIndex, endIndex);
+
+      // CREAR CONTROLES DE PAGINACIÓN
+      const paginationContainer = document.getElementById("paginationControls");
+      createPaginationControls(totalFiltered, currentPage, recordsPerPage, paginationContainer);
+
+      paginatedRecords.forEach(r=>{
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const fechaStr = fmtFecha(fechaObj);
+        const horaStr  = r.time || fmtHora(fechaObj);
+        const div=document.createElement("div");
+        div.className="record";
+        div.innerHTML=`
+          <div>${fechaStr}</div>
+          <div>${horaStr}</div>
+          <div class="record-type type-${r.type}">${r.type ? (r.type[0].toUpperCase()+r.type.slice(1)) : "-"}</div>
+          <div><strong>${r.personName||""}</strong></div>
+          <div>${r.assignedUser||""}</div>
+          <div class="record-actions">
+            <button class="btn btn-secondary" onclick='viewRecord(${JSON.stringify(r)})' title="Ver detalles">👁️</button>
+            <button class="btn btn-primary" onclick='editRecord(${JSON.stringify(r)})' title="Editar">✏️</button>
+          </div>`;
+        container.appendChild(div);
+      });
+
+      if(totalFiltered === 0 || paginatedRecords.length === 0){
+        container.innerHTML="<div style='padding:30px;text-align:center;color:var(--muted)'>No hay registros para mostrar</div>";
+      }
+    }
+
+    /* ========= Render de resultados de búsqueda global ========= */
+    function renderSearchResults(records) {
+      const container=document.getElementById("recordsContainer");
+      container.innerHTML="";
+
+      // APLICAR PAGINACIÓN
+      const totalFiltered = records.length;
+      const startIndex = (currentPage - 1) * recordsPerPage;
+      const endIndex = Math.min(startIndex + recordsPerPage, totalFiltered);
+      const paginatedRecords = records.slice(startIndex, endIndex);
+
+      // CREAR CONTROLES DE PAGINACIÓN
+      const paginationContainer = document.getElementById("paginationControls");
+      createPaginationControls(totalFiltered, currentPage, recordsPerPage, paginationContainer);
+
+      paginatedRecords.forEach(r=>{
+        const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+        const fechaStr = fmtFecha(fechaObj);
+        const horaStr  = r.time || fmtHora(fechaObj);
+        const div=document.createElement("div");
+        div.className="record";
+        div.innerHTML=`
+          <div>${fechaStr}</div>
+          <div>${horaStr}</div>
+          <div class="record-type type-${r.type}">${r.type ? (r.type[0].toUpperCase()+r.type.slice(1)) : "-"}</div>
+          <div><strong>${r.personName||""}</strong></div>
+          <div>${r.assignedUser||""}</div>
+          <div class="record-actions">
+            <button class="btn btn-secondary" onclick='viewRecord(${JSON.stringify(r)})' title="Ver detalles">👁️</button>
+            <button class="btn btn-primary" onclick='editRecord(${JSON.stringify(r)})' title="Editar">✏️</button>
+          </div>`;
+        container.appendChild(div);
+      });
+
+      if(totalFiltered === 0 || paginatedRecords.length === 0){
+        container.innerHTML="<div style='padding:30px;text-align:center;color:var(--muted)'>No se encontraron registros</div>";
+      }
+    }
+
+    /* ========= Actualizar estadísticas totales ========= */
+    function updateTotalStats(allRecords) {
+      let stats={total:0,presencial:0,telefonica:0,whatsapp:0,zimbra:0};
+
+      // Calcular estadísticas de TODOS los registros
+      allRecords.forEach(r => {
+        stats.total++; 
+        if(stats[r.type]!==undefined) stats[r.type]++;
+      });
+
+      // Actualizar Estadísticas Totales
+      document.getElementById("totalAttentions").textContent=stats.total;
+      document.getElementById("presentialCount").textContent=stats.presencial;
+      document.getElementById("phoneCount").textContent=stats.telefonica;
+      document.getElementById("whatsappCount").textContent=stats.whatsapp;
+      document.getElementById("zimbraCount").textContent=stats.zimbra;
+      updateChart(stats);
+    }
+
+    /* ========= Gráfico ========= */
+    function initChart(){
+      const ctx=document.getElementById("statsChart");
+      statsChart=new Chart(ctx,{
+        type:"pie",
+        data:{
+          labels:["Presenciales","Telefónicas","WhatsApp","Zimbra"],
+          datasets:[{
+            data:[0,0,0,0],
+            backgroundColor:["#34c759","#ff9500","#af52de","#ff3b30"]
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ 
+            legend:{ position:"bottom" },
+            title: {
+              display: true,
+              text: 'Estadísticas Totales'
+            }
+          }
+        }
+      });
+    }
+    function updateChart(stats){
+      statsChart.data.datasets[0].data=[stats.presencial,stats.telefonica,stats.whatsapp,stats.zimbra];
+      statsChart.update();
+    }
+
+    /* ========= Nuevo Gráfico de Estadísticas por Usuario ========= */
+    function initUserStatsChart() {
+      const ctx = document.getElementById('userStatsChart').getContext('2d');
+      userStatsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Atenciones por Usuario',
+            data: [],
+            backgroundColor: 'rgba(13, 110, 253, 0.7)',
+            borderColor: 'rgba(13, 110, 253, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Cantidad de Atenciones'
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `Atenciones: ${context.raw}`;
+                }
+              }
+            },
+            title: {
+              display: true,
+              text: 'Estadísticas Totales por Usuario'
+            }
+          }
+        }
+      });
+    }
+
+    function updateUserStats(allRecords) {
+      const statsByUser = {};
+      
+      // Contar atenciones por usuario en TODOS los registros
+      allRecords.forEach(record => {
+        const user = record.assignedUser;
+        if (!statsByUser[user]) {
+          statsByUser[user] = 0;
+        }
+        statsByUser[user]++;
+      });
+      
+      // Ordenar usuarios por cantidad de atenciones (descendente)
+      const sortedUsers = Object.keys(statsByUser).sort((a, b) => statsByUser[b] - statsByUser[a]);
+      
+      // Actualizar el gráfico
+      userStatsChart.data.labels = sortedUsers;
+      userStatsChart.data.datasets[0].data = sortedUsers.map(user => statsByUser[user]);
+      userStatsChart.update();
+      
+      // Actualizar los detalles
+      const statsDetails = document.getElementById('userStatsDetails');
+      if (sortedUsers.length === 0) {
+        statsDetails.innerHTML = '<p class="text-center text-muted">No hay datos para mostrar</p>';
+      } else {
+        let detailsHtml = `
+          <div class="user-stat-item" style="font-weight: bold; background-color: var(--secondary-light-gray);">
+            <div class="user-stat-name">Usuario</div>
+            <div class="user-stat-count">Cantidad</div>
+          </div>
+        `;
+        
+        sortedUsers.forEach(user => {
+          detailsHtml += `
+            <div class="user-stat-item">
+              <div class="user-stat-name">${user}</div>
+              <div class="user-stat-count">${statsByUser[user]}</div>
+            </div>
+          `;
+        });
+        
+        detailsHtml += `
+          <div class="user-stat-item" style="font-weight: bold; border-top: 2px solid var(--border-default);">
+            <div class="user-stat-name">Total</div>
+            <div class="user-stat-count">${allRecords.length}</div>
+          </div>
+        `;
+        
+        statsDetails.innerHTML = detailsHtml;
+      }
+    }
+
+    /* ========= Alta / Edición ========= */
+    document.getElementById("attentionForm").addEventListener("submit",async(e)=>{
+      e.preventDefault();
+      if(!oficinaAbierta()){ 
+        alert("Oficina cerrada (Lun–Vie 07:00–12:30, excepto feriados)."); 
+        return; 
+      }
+      
+      const now=new Date();
+      const rec={
+        time: fmtHora(now),
+        personName: personName.value,
+        type: attentionType.value,
+        assignedUser: assignedUser.value,
+        description: description.value,
+        timestamp: Date.now() // Usar timestamp local para ordenamiento
+      };
+      
+      try{
+        await push(baseRef, rec);
+        e.target.reset();
+        
+        // Invalidar caché para que se actualice en la próxima carga
+        invalidateCache();
+        
+        // Recargar registros y estadísticas
+        await loadRecords(true);
+        await loadStats(true);
+        
+      }catch(err){
+        console.error("Error guardando en Realtime Database: ",err);
+        alert("Error guardando el registro.");
+      }
+    });
+
+    // Modal (ver)
+    window.viewRecord=(r)=>{
+      const fechaObj = r.timestamp ? new Date(r.timestamp) : null;
+      const fechaStr = fmtFecha(fechaObj);
+      const horaStr  = r.time || fmtHora(fechaObj);
+      document.getElementById("modalBody").innerHTML=`
+        <p><b>Fecha:</b> ${fechaStr} ${horaStr}</p>
+        <p><b>Nombre:</b> ${r.personName||""}</p>
+        <p><b>Tipo:</b> ${r.type||""}</p>
+        <p><b>Usuario:</b> ${r.assignedUser||""}</p>
+        <p><b>Descripción:</b><br>${(r.description||"").replace(/\\n/g,"<br>")}</p>`;
+      document.getElementById("recordModal").style.display="flex";
+    }
+    window.closeModal=()=>{document.getElementById("recordModal").style.display="none";}
+
+    // Editar (carga en el form)
+    window.editRecord=(r)=>{
+      personName.value=r.personName||"";
+      attentionType.value=r.type||"";
+      assignedUser.value=r.assignedUser||"";
+      description.value=r.description||"";
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    document.addEventListener("DOMContentLoaded",init);
+  </script>
+</body>
+</html>
