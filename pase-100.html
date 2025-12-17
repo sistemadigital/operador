@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operador. Pase y Asignación de Expedientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { padding-top: 70px; background-color: #f8f9fa; }
+        .card { transition: transform 0.3s; position: relative; border: none; border-radius: 8px; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .card-actions { position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity 0.3s; }
+        .card:hover .card-actions { opacity: 1; }
+        .expediente-card { cursor: pointer; }
+        .table-responsive { font-size: 0.9rem; }
+        .pagination { justify-content: center; margin-top: 20px; }
+        .filter-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stats-card { height: 100%; }
+        .stats-header { background-color: #0d6efd; color: white; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .delete-confirmation { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 1050; width: 350px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
+        @media (max-width: 992px) {
+            .section-title { font-size: 1.5rem; }
+            .btn-group-responsive { flex-direction: column; gap: 10px; }
+            .btn-group-responsive .btn { width: 100%; }
+            .stats-section { margin-top: 20px; }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .filter-active {
+            background-color: #e3f2fd !important;
+            border-left: 4px solid #0d6efd !important;
+        }
+        /* Estilo para hacer el icono del calendario clickeable */
+        .clickable-calendar { 
+            cursor: pointer; 
+        }
+        /* Estilo para campo fecha y hora automático */
+        .fecha-automatica {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        /* Estilo para mensaje de error en rojo negrita */
+        .error-rojo-negrita {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+        /* Estilo para campo obligatorio faltante */
+        .campo-faltante {
+            border-color: #dc3545 !important;
+            background-color: #fff5f5 !important;
+        }
+        .campo-faltante-label {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+        /* Estilo para campos bloqueados */
+        .campo-bloqueado {
+            background-color: #e9ecef !important;
+            cursor: not-allowed !important;
+            opacity: 0.7 !important;
+        }
+        /* Modal de alerta personalizado */
+        .modal-alerta-flotante {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1060;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .modal-alerta-flotante .modal-content {
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+        }
+        .modal-alerta-flotante .modal-header {
+            background-color: #dc3545;
+            color: white;
+            border-bottom: 1px solid #c82333;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+        .modal-alerta-flotante .modal-title {
+            font-weight: bold;
+        }
+        .modal-alerta-flotante .modal-body {
+            background-color: #f8d7da;
+            color: #721c24;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Operador. Pase y Asignación de Expedientes</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">Listado de Expedientes con pase/asignación</h2>
+            <div class="btn-group-responsive d-flex gap-2">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expedienteModal">
+                    <i class="fas fa-plus me-1"></i> Crear Nuevo
+                </button>
+                <button class="btn btn-info" id="btnPrintAll">
+                    <i class="fas fa-print me-1"></i> Imprimir
+                </button>
+                <button class="btn btn-outline-secondary" id="btnActualizar">
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card p-3 mb-4 filter-card">
+                    <div class="row g-3">
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label">Buscar por contenido</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Expediente, usuario...">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label">Filtrar por Expediente</label>
+                            <input type="text" id="expedienteAsignadoFilter" class="form-control" placeholder="Nro. Expediente Asignado">
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label">Filtrar por Usuario</label>
+                            <select id="userFilter" class="form-select">
+                                <option value="">Todos los Usuarios</option>
+                                <option>Bazante Nadia Romina</option>
+                                <option>Boillat Cesar Enrique</option>
+                                <option>Cardozo Maria Raquel</option>
+                                <option>Cedron Noelia Aurora</option>
+                                <option>Corrales Alicia Mariela</option>
+                                <option>Escobar Monica Graciela</option>
+                                <option>Fioravante Romulo</option>
+                                <option>Gonzalez Alberto Misael</option>
+                                <option>Gonzalez Juan Jose</option>
+                                <option>Gudiño Natalia Esther</option>
+                                <option>Magnani Enzo Luciano</option>
+                                <option>Pablos Patricia</option>
+                                <option>Palacios Ana Gabriela</option>
+                                <option>Ortega Lucia Noemi</option>
+                                <option>Ramos Marcelo Gustavo</option>
+                                <option>Riveros Patricia Soledad</option>
+                                <option>Sosa Rita Cecilia</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label">Filtrar por Proceso</label>
+                            <select id="procesoFilter" class="form-select">
+                                <option value="">Todos</option>
+                                <option>DEUT</option>
+                                <option>CEJUME</option>
+                                <option>civil</option>
+                                <option>familia</option>
+                                <option>penal</option>
+                                <option>laboral</option>
+                                <option>violencia familiar</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-sm-12">
+                            <label class="form-label">Rango de Fecha de Pase</label>
+                            <div class="d-flex align-items-center">
+                                <div class="input-group me-1">
+                                    <span class="input-group-text clickable-calendar" data-target="dateFilterStart"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" id="dateFilterStart" class="form-control" placeholder="Desde">
+                                </div>
+                                <span class="input-group-text p-2 mx-1">a</span>
+                                <div class="input-group ms-1">
+                                    <span class="input-group-text clickable-calendar" data-target="dateFilterEnd"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" id="dateFilterEnd" class="form-control" placeholder="Hasta">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-8">
+                            <label class="form-label d-block">Filtros Especiales</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="causaNuevaFilter">
+                                    <label class="form-check-label" for="causaNuevaFilter">Causa Nueva</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="causaAnteriorFilter">
+                                    <label class="form-check-label" for="causaAnteriorFilter">Causa Anterior</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="devolucionFilter">
+                                    <label class="form-check-label" for="devolucionFilter">Con Devolución</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remisionFilter">
+                                    <label class="form-check-label" for="remisionFilter">Con Remisión</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="archivoFilter">
+                                    <label class="form-check-label" for="archivoFilter">Archivo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-sm-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="btnSearch"><i class="fas fa-search"></i> Buscar</button>
+                        </div>
+                    </div>
+                    <div class="mt-3" id="activeFiltersContainer" style="display: none;">
+                        <small class="text-muted">Filtros activos:</small>
+                        <div id="activeFilters" class="d-flex flex-wrap gap-2 mt-1"></div>
+                    </div>
+                </div>
+
+                <div id="expedientesContainer">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando expedientes...</p>
+                    </div>
+                </div>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="paginationContainer">
+                        </ul>
+                </nav>
+            </div>
+
+            <div class="col-lg-4 stats-section">
+                <div class="card stats-card">
+                    <div class="stats-header p-3">
+                        <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Estadísticas por Usuario</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="userStatsChart"></canvas>
+                        </div>
+                        <div id="statsDetails" class="mt-3">
+                            <p class="text-center text-muted">Cargando estadísticas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de alerta flotante para campos obligatorios -->
+        <div class="modal fade modal-alerta-flotante" id="camposObligatoriosModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Error de Validación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <i class="fas fa-times-circle me-2"></i> Faltan campos obligatorios para completar el registro. Verifique e intente nuevamente.
+                    </div>
+                    <div class="modal-footer p-2">
+                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Sistema</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="expedienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expedienteModalTitle">Nuevo Expediente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="expedienteForm">
+                        <input type="hidden" id="expedienteId">
+                        <div class="mb-3">
+                            <label for="numCausa" class="form-label">Número de Causa *</label>
+                            <input type="text" class="form-control" id="numCausa" required>
+                            <div class="invalid-feedback error-rojo-negrita" id="numCausaFeedback">Por favor ingrese un número de causa válido.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="tipoProceso" class="form-label">Tipo de Proceso *</label>
+                                <select class="form-select" id="tipoProceso" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option>DEUT</option>
+                                    <option>CEJUME</option>
+                                    <option>civil</option>
+                                    <option>familia</option>
+                                    <option>penal</option>
+                                    <option>laboral</option>
+                                    <option>violencia familiar</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="detalleProceso" class="form-label">Detalle Proceso</label>
+                                <input type="text" class="form-control" id="detalleProceso">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Estado de la Causa</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="estadoCausa" id="causaNuevaRadio" value="nueva">
+                                        <label class="form-check-label" for="causaNuevaRadio">
+                                            Causa Nueva
+                                        </label>
+                                    </div>
+                                    <select class="form-select mt-1" id="causaNuevaDetalle">
+                                        <option value="">-- Detalle --</option>
+                                        <option>inicio demanda</option>
+                                        <option>contestacion demanda</option>
+                                        <option>otros</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="estadoCausa" id="causaAnteriorRadio" value="anterior">
+                                        <label class="form-check-label" for="causaAnteriorRadio">
+                                            Causa Anterior
+                                        </label>
+                                    </div>
+                                    <select class="form-select mt-1" id="causaAnteriorDetalle">
+                                        <option value="">-- Detalle --</option>
+                                        <option>inicio demanda</option>
+                                        <option>contestacion demanda</option>
+                                        <option>otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="mb-3">
+                            <label for="usuarioAsignado" class="form-label">Usuario Asignado *</label>
+                            <select class="form-select" id="usuarioAsignado" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option>Bazante Nadia Romina</option>
+                                <option>Boillat Cesar Enrique</option>
+                                <option>Cardozo Maria Raquel</option>
+                                <option>Cedron Noelia Aurora</option>
+                                <option>Corrales Alicia Mariela</option>
+                                <option>Escobar Monica Graciela</option>
+                                <option>Fioravante Romulo</option>
+                                <option>Gonzalez Alberto Misael</option>
+                                <option>Gonzalez Juan Jose</option>
+                                <option>Gudiño Natalia Esther</option>
+                                <option>Magnani Enzo Luciano</option>
+                                <option>Pablos Patricia</option>
+                                <option>Palacios Ana Gabriela</option>
+                                <option>Ortega Lucia Noemi</option>
+                                <option>Ramos Marcelo Gustavo</option>
+                                <option>Riveros Patricia Soledad</option>
+                                <option>Sosa Rita Cecilia</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaPase" class="form-label">Fecha y Hora de Pase *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="text" class="form-control fecha-automatica" id="fechaPaseDisplay" readonly>
+                                <input type="hidden" id="fechaPase">
+                            </div>
+                            <small class="text-muted">Fecha y hora automática (Hora local del usuario)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observacionesPase" class="form-label"><strong>Observaciones del Pase/asignación:</strong></label>
+                            <textarea class="form-control" id="observacionesPase" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otrosExpedientesCuerda" class="form-label">Otros Expedientes por Cuerda</label>
+                            <textarea class="form-control" id="otrosExpedientesCuerda" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otrosExpedientesAcumulados" class="form-label">Otros Expedientes Acumulados</label>
+                            <textarea class="form-control" id="otrosExpedientesAcumulados" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <h6 class="mb-3">Motivos Especiales (opcional)</h6>
+                        <div class="mb-3">
+                            <label for="devolucionMotivo" class="form-label">Devolución a Mesa de Entradas (Motivo)</label>
+                            <textarea class="form-control" id="devolucionMotivo" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remisionMotivo" class="form-label">Remisión a otra Defensoría (Motivo)</label>
+                            <textarea class="form-control" id="remisionMotivo" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="archivoCheck">
+                                <label class="form-check-label" for="archivoCheck">
+                                    Archivo
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveExpedienteBtn">
+                        <span id="expedienteSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        Guardar Expediente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewExpedienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewExpedienteTitle">Detalles del Expediente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="viewExpedienteBody">
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-info" id="printExpedienteBtn">
+                        <i class="fas fa-print me-1"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+            authDomain: "atencion-publico-def6.firebaseapp.com",
+            databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+            projectId: "atencion-publico-def6",
+            storageBucket: "atencion-publico-def6.firebasestorage.app",
+            messagingSenderId: "1052433106688",
+            appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const expedientesRef = db.collection('causas');
+        
+        // Cache local para evitar consultas repetitivas
+        let cachedExpedientes = null;
+        let lastFetchTime = 0;
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos en milisegundos
+        
+        // Variables globales
+        const expedientesContainer = document.getElementById('expedientesContainer');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const expedienteForm = document.getElementById('expedienteForm');
+        const saveExpedienteBtn = document.getElementById('saveExpedienteBtn');
+        const expedienteSpinner = document.getElementById('expedienteSpinner');
+        const expedienteModal = document.getElementById('expedienteModal');
+        const viewExpedienteModal = document.getElementById('viewExpedienteModal');
+        const printExpedienteBtn = document.getElementById('printExpedienteBtn');
+        const btnPrintAll = document.getElementById('btnPrintAll');
+        const numCausaInput = document.getElementById('numCausa');
+        const numCausaFeedback = document.getElementById('numCausaFeedback');
+        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+        const activeFilters = document.getElementById('activeFilters');
+        const camposObligatoriosModal = new bootstrap.Modal(document.getElementById('camposObligatoriosModal'));
+
+        // Filtros
+        const searchInput = document.getElementById('searchInput');
+        const expedienteAsignadoFilter = document.getElementById('expedienteAsignadoFilter');
+        const userFilter = document.getElementById('userFilter');
+        const dateFilterStart = document.getElementById('dateFilterStart');
+        const dateFilterEnd = document.getElementById('dateFilterEnd');
+        const btnSearch = document.getElementById('btnSearch');
+        const devolucionFilter = document.getElementById('devolucionFilter');
+        const remisionFilter = document.getElementById('remisionFilter');
+        const procesoFilter = document.getElementById('procesoFilter');
+        const causaNuevaFilter = document.getElementById('causaNuevaFilter');
+        const causaAnteriorFilter = document.getElementById('causaAnteriorFilter');
+        const archivoFilter = document.getElementById('archivoFilter');
+
+        // Variables para paginación
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let allExpedientes = [];
+        let filteredExpedientes = [];
+        let currentFilters = {};
+        
+        // Variables para el gráfico
+        let userStatsChart = null;
+
+        // Función para obtener datos con cache
+        async function fetchExpedientesWithCache(forceRefresh = false) {
+            const now = Date.now();
+            
+            // Usar cache si está disponible y no ha expirado
+            if (cachedExpedientes && !forceRefresh && (now - lastFetchTime) < CACHE_DURATION) {
+                console.log('Usando datos en caché');
+                return cachedExpedientes;
+            }
+            
+            console.log('Consultando Firebase...');
+            try {
+                // MODIFICACIÓN: Solo traer los últimos 100 registros
+                const snapshot = await expedientesRef
+                    .orderBy('fechaPase', 'desc')
+                    .limit(100) // Solo trae los últimos 100 registros. Costo: 100 lecturas.
+                    .get();
+
+                const expedientes = [];
+                
+                snapshot.forEach(doc => {
+                    expedientes.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // Actualizar cache
+                cachedExpedientes = expedientes;
+                lastFetchTime = now;
+                
+                return expedientes;
+            } catch (error) {
+                console.error("Error al cargar los expedientes:", error);
+                // Si hay error, intentar usar cache si existe
+                if (cachedExpedientes) {
+                    console.log('Usando caché debido a error en consulta');
+                    return cachedExpedientes;
+                }
+                throw error;
+            }
+        }
+
+        // Función para cargar expedientes (usa cache)
+        async function loadExpedientes(forceRefresh = false) {
+            expedientesContainer.innerHTML = `<div class="text-center py-4">
+                                                 <div class="spinner-border text-primary" role="status">
+                                                   <span class="visually-hidden">Cargando...</span>
+                                                 </div>
+                                                 <p class="mt-2">Cargando expedientes...</p>
+                                               </div>`;
+            paginationContainer.innerHTML = '';
+
+            try {
+                allExpedientes = await fetchExpedientesWithCache(forceRefresh);
+                applyFilters();
+                
+            } catch (error) {
+                console.error("Error al cargar los expedientes:", error);
+                expedientesContainer.innerHTML = `<p class="text-center text-danger mt-5">Error al cargar expedientes: ${error.message}</p>`;
+            }
+        }
+        
+        // Función para invalidar cache
+        function invalidateCache() {
+            cachedExpedientes = null;
+            lastFetchTime = 0;
+        }
+        
+        // Función para obtener la fecha y hora actual LOCAL del usuario en formato DD/MM/AAAA HH:MM
+        function getCurrentLocalDateTimeFormatted() {
+            const now = new Date();
+            
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        // Función para obtener la fecha y hora actual LOCAL del usuario en formato YYYY-MM-DDTHH:MM
+        function getCurrentLocalDateTimeISO() {
+            const now = new Date();
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Función para formatear fecha y hora
+        function formatDateTime(dateTimeString, includeTime = false) {
+            if (!dateTimeString) return 'N/A';
+            
+            let datePart, timePart = '';
+            
+            if (dateTimeString.includes('T')) { 
+                [datePart, timePart] = dateTimeString.split('T');
+            } else {
+                datePart = dateTimeString;
+                timePart = '00:00';
+            }
+
+            const parts = datePart.split('-');
+            if (parts.length !== 3) return 'N/A';
+            const [year, month, day] = parts;
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            if (includeTime && timePart) {
+                const [hours, minutes] = timePart.split(':');
+                return `${formattedDate} ${hours}:${minutes}`;
+            }
+            
+            return formattedDate;
+        }
+
+        // Función para mostrar toast de notificación
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            const header = toast.querySelector('.toast-header');
+            header.classList.remove('bg-danger', 'bg-success', 'text-white');
+
+            if (type === 'error') {
+                header.classList.add('bg-danger', 'text-white');
+            } else if (type === 'success') {
+                header.classList.add('bg-success', 'text-white');
+            }
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // Función para mostrar modal de campos obligatorios
+        function showCamposObligatoriosModal() {
+            camposObligatoriosModal.show();
+            
+            setTimeout(() => {
+                camposObligatoriosModal.hide();
+            }, 5000);
+        }
+
+        // Función para marcar campos faltantes
+        function marcarCamposFaltantes(camposFaltantes) {
+            const todosLosCampos = ['numCausa', 'tipoProceso', 'usuarioAsignado'];
+            todosLosCampos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                const label = document.querySelector(`label[for="${campoId}"]`);
+                if (campo) {
+                    campo.classList.remove('campo-faltante');
+                }
+                if (label) {
+                    label.classList.remove('campo-faltante-label');
+                }
+            });
+            
+            camposFaltantes.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                const label = document.querySelector(`label[for="${campoId}"]`);
+                if (campo) {
+                    campo.classList.add('campo-faltante');
+                    campo.focus();
+                }
+                if (label) {
+                    label.classList.add('campo-faltante-label');
+                }
+            });
+        }
+
+        // Función para bloquear campos del formulario
+        function bloquearCamposFormulario() {
+            const campos = [
+                'tipoProceso', 'detalleProceso', 'usuarioAsignado',
+                'observacionesPase', 'otrosExpedientesCuerda', 'otrosExpedientesAcumulados',
+                'devolucionMotivo', 'remisionMotivo', 'archivoCheck',
+                'causaNuevaRadio', 'causaAnteriorRadio', 'causaNuevaDetalle', 'causaAnteriorDetalle'
+            ];
+            
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    campo.disabled = true;
+                    campo.classList.add('campo-bloqueado');
+                }
+            });
+            
+            saveExpedienteBtn.disabled = true;
+            saveExpedienteBtn.classList.add('campo-bloqueado');
+        }
+
+        // Función para desbloquear campos del formulario
+        function desbloquearCamposFormulario() {
+            const campos = [
+                'tipoProceso', 'detalleProceso', 'usuarioAsignado',
+                'observacionesPase', 'otrosExpedientesCuerda', 'otrosExpedientesAcumulados',
+                'devolucionMotivo', 'remisionMotivo', 'archivoCheck',
+                'causaNuevaRadio', 'causaAnteriorRadio', 'causaNuevaDetalle', 'causaAnteriorDetalle'
+            ];
+            
+            campos.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    campo.disabled = false;
+                    campo.classList.remove('campo-bloqueado');
+                }
+            });
+            
+            saveExpedienteBtn.disabled = false;
+            saveExpedienteBtn.classList.remove('campo-bloqueado');
+        }
+
+        // Función optimizada para verificar si un número de causa ya existe
+        async function checkExpedienteExists(numCausa, excludeId = null) {
+            try {
+                // Primero verificar en cache local
+                if (cachedExpedientes) {
+                    const existsInCache = cachedExpedientes.some(doc => {
+                        if (doc.numCausa === numCausa) {
+                            return excludeId ? doc.id !== excludeId : true;
+                        }
+                        return false;
+                    });
+                    
+                    if (existsInCache) {
+                        return true;
+                    }
+                }
+                
+                // Si no está en cache, consultar Firebase con una query específica
+                let query = expedientesRef.where('numCausa', '==', numCausa).limit(1);
+                const snapshot = await query.get();
+                
+                if (snapshot.empty) {
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error("Error al verificar expediente: ", error);
+                return false;
+            }
+        }
+
+        // Función optimizada para guardar o actualizar un expediente
+        saveExpedienteBtn.addEventListener('click', async () => {
+            const expedienteId = document.getElementById('expedienteId').value;
+            const numCausa = document.getElementById('numCausa').value.trim();
+            const tipoProceso = document.getElementById('tipoProceso').value;
+            const detalleProceso = document.getElementById('detalleProceso').value;
+            const estadoCausaRadio = document.querySelector('input[name="estadoCausa"]:checked');
+            const estadoCausa = estadoCausaRadio ? estadoCausaRadio.value : '';
+            const causaNuevaDetalle = document.getElementById('causaNuevaDetalle').value;
+            const causaAnteriorDetalle = document.getElementById('causaAnteriorDetalle').value;
+            const detalleEstadoCausa = estadoCausa === 'nueva' ? causaNuevaDetalle : (estadoCausa === 'anterior' ? causaAnteriorDetalle : '');
+            const usuarioAsignado = document.getElementById('usuarioAsignado').value;
+            const fechaPase = document.getElementById('fechaPase').value;
+            const observacionesPase = document.getElementById('observacionesPase').value;
+            const otrosExpedientesCuerda = document.getElementById('otrosExpedientesCuerda').value;
+            const otrosExpedientesAcumulados = document.getElementById('otrosExpedientesAcumulados').value;
+            const devolucionMotivo = document.getElementById('devolucionMotivo').value;
+            const remisionMotivo = document.getElementById('remisionMotivo').value;
+            const archivo = document.getElementById('archivoCheck').checked;
+
+            // Validar campos obligatorios
+            const camposFaltantes = [];
+            if (!numCausa) camposFaltantes.push('numCausa');
+            if (!tipoProceso) camposFaltantes.push('tipoProceso');
+            if (!usuarioAsignado) camposFaltantes.push('usuarioAsignado');
+            
+            if (camposFaltantes.length > 0) {
+                showCamposObligatoriosModal();
+                marcarCamposFaltantes(camposFaltantes);
+                return;
+            }
+
+            const exists = await checkExpedienteExists(numCausa, expedienteId);
+            if (exists) {
+                numCausaInput.classList.add('is-invalid');
+                numCausaFeedback.textContent = 'Este número de expediente ya está registrado.';
+                numCausaFeedback.classList.add('error-rojo-negrita');
+                showToast('Este número de expediente ya está registrado en el sistema.', 'error');
+                return;
+            }
+
+            expedienteSpinner.style.display = 'inline-block';
+            saveExpedienteBtn.disabled = true;
+
+            const expedienteData = {
+                numCausa,
+                tipoProceso,
+                detalleProceso,
+                estadoCausa,
+                detalleEstadoCausa,
+                usuarioAsignado,
+                fechaPase,
+                observacionesPase,
+                otrosExpedientesCuerda,
+                otrosExpedientesAcumulados,
+                devolucionMotivo,
+                remisionMotivo,
+                archivo
+            };
+
+            try {
+                if (expedienteId) {
+                    // Actualizar en Firebase
+                    await expedientesRef.doc(expedienteId).update(expedienteData);
+                    
+                    // Actualizar en cache local
+                    if (cachedExpedientes) {
+                        const index = cachedExpedientes.findIndex(e => e.id === expedienteId);
+                        if (index !== -1) {
+                            cachedExpedientes[index] = { id: expedienteId, ...expedienteData };
+                        }
+                    }
+                    
+                    showToast('Expediente actualizado con éxito!', 'success');
+                } else {
+                    // Crear nuevo en Firebase
+                    const docRef = await expedientesRef.add({
+                        ...expedienteData,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // Actualizar cache local
+                    if (cachedExpedientes) {
+                        cachedExpedientes.unshift({
+                            id: docRef.id,
+                            ...expedienteData
+                        });
+                    }
+                    
+                    showToast('Expediente guardado con éxito!', 'success');
+                }
+                
+                // Cerrar modal y actualizar vista
+                const modalInstance = bootstrap.Modal.getInstance(expedienteModal);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                expedienteForm.reset();
+                
+                // Usar cache actualizado en lugar de recargar
+                applyFilters();
+                
+            } catch (error) {
+                console.error("Error al guardar el expediente: ", error);
+                showToast("Error al guardar el expediente: " + error.message, 'error');
+            } finally {
+                expedienteSpinner.style.display = 'none';
+                saveExpedienteBtn.disabled = false;
+            }
+        });
+
+        // Evento para limpiar el formulario al abrir el modal
+        expedienteModal.addEventListener('show.bs.modal', (event) => {
+            const button = event.relatedTarget;
+            if (button && button.dataset.bsToggle === 'modal' && button.dataset.bsTarget === '#expedienteModal') {
+                expedienteForm.reset();
+                document.getElementById('expedienteId').value = '';
+                document.getElementById('expedienteModalTitle').textContent = 'Nuevo Expediente';
+                document.getElementById('saveExpedienteBtn').textContent = 'Guardar Expediente';
+                numCausaInput.classList.remove('is-invalid');
+                numCausaFeedback.classList.remove('error-rojo-negrita');
+                numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
+                
+                desbloquearCamposFormulario();
+                
+                const todosLosCampos = ['numCausa', 'tipoProceso', 'usuarioAsignado'];
+                todosLosCampos.forEach(campoId => {
+                    const campo = document.getElementById(campoId);
+                    const label = document.querySelector(`label[for="${campoId}"]`);
+                    if (campo) {
+                        campo.classList.remove('campo-faltante');
+                    }
+                    if (label) {
+                        label.classList.remove('campo-faltante-label');
+                    }
+                });
+                
+                // Establecer fecha y hora actual
+                const currentDateTimeISO = getCurrentLocalDateTimeISO();
+                const currentDateTimeFormatted = getCurrentLocalDateTimeFormatted();
+                
+                document.getElementById('fechaPaseDisplay').value = currentDateTimeFormatted;
+                document.getElementById('fechaPase').value = currentDateTimeISO;
+            } else {
+                // Lógica de edición
+                const expedienteId = document.getElementById('expedienteId').value;
+                if (expedienteId) {
+                    const currentDateTimeISO = getCurrentLocalDateTimeISO();
+                    const currentDateTimeFormatted = getCurrentLocalDateTimeFormatted();
+                    
+                    document.getElementById('fechaPaseDisplay').value = currentDateTimeFormatted;
+                    document.getElementById('fechaPase').value = currentDateTimeISO;
+                    
+                    // Buscar en cache local primero
+                    const data = cachedExpedientes ? cachedExpedientes.find(e => e.id === expedienteId) : null;
+                    if (data) {
+                        const nuevaDetalle = document.getElementById('causaNuevaDetalle');
+                        const anteriorDetalle = document.getElementById('causaAnteriorDetalle');
+                        
+                        if (data.estadoCausa === 'nueva') {
+                            document.getElementById('causaNuevaRadio').checked = true;
+                            nuevaDetalle.value = data.detalleEstadoCausa || '';
+                            anteriorDetalle.value = '';
+                        } else if (data.estadoCausa === 'anterior') {
+                            document.getElementById('causaAnteriorRadio').checked = true;
+                            anteriorDetalle.value = data.detalleEstadoCausa || '';
+                            nuevaDetalle.value = '';
+                        } else {
+                            document.querySelector('input[name="estadoCausa"]').checked = false; 
+                            nuevaDetalle.value = '';
+                            anteriorDetalle.value = '';
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Event listeners para quitar marcas de campos faltantes
+        document.getElementById('numCausa').addEventListener('input', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="numCausa"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
+        document.getElementById('tipoProceso').addEventListener('change', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="tipoProceso"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
+        document.getElementById('usuarioAsignado').addEventListener('change', function() {
+            this.classList.remove('campo-faltante');
+            const label = document.querySelector(`label[for="usuarioAsignado"]`);
+            if (label) label.classList.remove('campo-faltante-label');
+        });
+        
+        // Manejar la lógica de selección de detalle de causa
+        document.getElementById('causaNuevaRadio').addEventListener('change', () => {
+            document.getElementById('causaAnteriorDetalle').value = '';
+        });
+        document.getElementById('causaAnteriorRadio').addEventListener('change', () => {
+            document.getElementById('causaNuevaDetalle').value = '';
+        });
+
+        // Validar número de causa en tiempo real
+        numCausaInput.addEventListener('blur', async () => {
+            const numCausa = numCausaInput.value.trim();
+            if (!numCausa) {
+                desbloquearCamposFormulario();
+                return;
+            }
+            
+            const expedienteId = document.getElementById('expedienteId').value;
+            const exists = await checkExpedienteExists(numCausa, expedienteId);
+            
+            if (exists && !expedienteId) {
+                numCausaInput.classList.add('is-invalid');
+                numCausaFeedback.textContent = 'Este número de expediente ya está registrado. Ingrese un nuevo número.';
+                numCausaFeedback.classList.add('error-rojo-negrita');
+                showToast('Este número de expediente ya está registrado en el sistema. Ingrese un nuevo número para continuar.', 'error');
+                bloquearCamposFormulario();
+            } else {
+                numCausaInput.classList.remove('is-invalid');
+                numCausaFeedback.classList.remove('error-rojo-negrita');
+                numCausaFeedback.textContent = 'Por favor ingrese un número de causa válido.';
+                desbloquearCamposFormulario();
+            }
+        });
+
+        // Al cambiar el número de causa, desbloquear campos
+        numCausaInput.addEventListener('input', function() {
+            desbloquearCamposFormulario();
+            numCausaInput.classList.remove('is-invalid');
+            numCausaFeedback.classList.remove('error-rojo-negrita');
+        });
+
+        // Función para mostrar filtros activos
+        function showActiveFilters() {
+            activeFilters.innerHTML = '';
+            let hasFilters = false;
+            
+            if (currentFilters.search) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-primary">Búsqueda: "${currentFilters.search}"</span>`;
+            }
+            
+            if (currentFilters.expediente) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-info text-dark">Expediente: "${currentFilters.expediente}"</span>`;
+            }
+            
+            if (currentFilters.usuario) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Usuario: "${currentFilters.usuario}"</span>`;
+            }
+
+            if (currentFilters.proceso) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-secondary">Proceso: "${currentFilters.proceso}"</span>`;
+            }
+            
+            if (currentFilters.fechaInicio || currentFilters.fechaFin) {
+                hasFilters = true;
+                let fechaText = 'Fechas: ';
+                if (currentFilters.fechaInicio) fechaText += `Desde ${formatDateTime(currentFilters.fechaInicio)} `;
+                if (currentFilters.fechaFin) fechaText += `Hasta ${formatDateTime(currentFilters.fechaFin)}`;
+                activeFilters.innerHTML += `<span class="badge bg-success">${fechaText}</span>`;
+            }
+            
+            if (currentFilters.causaNueva) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-danger">Causa Nueva</span>`;
+            }
+            if (currentFilters.causaAnterior) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-danger">Causa Anterior</span>`;
+            }
+
+            if (currentFilters.devolucion) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-warning text-dark">Con Devolución</span>`;
+            }
+
+            if (currentFilters.remision) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-info text-dark">Con Remisión</span>`;
+            }
+
+            if (currentFilters.archivo) {
+                hasFilters = true;
+                activeFilters.innerHTML += `<span class="badge bg-dark">Archivo</span>`;
+            }
+            
+            activeFiltersContainer.style.display = hasFilters ? 'block' : 'none';
+        }
+        
+        // Función para aplicar filtros (solo usa datos en cache)
+        function applyFilters() {
+            const searchString = searchInput.value.toLowerCase();
+            const expedienteAsignadoString = expedienteAsignadoFilter.value.toLowerCase();
+            const userString = userFilter.value;
+            const procesoString = procesoFilter.value; 
+            const startDate = dateFilterStart.value;
+            const endDate = dateFilterEnd.value;
+            const showDevolucion = devolucionFilter.checked;
+            const showRemision = remisionFilter.checked;
+            const showCausaNueva = causaNuevaFilter.checked;
+            const showCausaAnterior = causaAnteriorFilter.checked;
+            const showArchivo = archivoFilter.checked;
+
+            // Guardar filtros actuales
+            currentFilters = {
+                search: searchString || null,
+                expediente: expedienteAsignadoString || null,
+                usuario: userString || null,
+                proceso: procesoString || null,
+                fechaInicio: startDate || null,
+                fechaFin: endDate || null,
+                devolucion: showDevolucion,
+                remision: showRemision,
+                causaNueva: showCausaNueva, 
+                causaAnterior: showCausaAnterior,
+                archivo: showArchivo
+            };
+            
+            // Mostrar filtros activos
+            showActiveFilters();
+            
+            // Filtrar usando datos en cache
+            filteredExpedientes = allExpedientes.filter(data => {
+                // Búsqueda en todos los campos de texto
+                const matchesSearch = !searchString || 
+                    Object.values(data).some(value => {
+                        if (value && typeof value === 'string') {
+                            return value.toLowerCase().includes(searchString);
+                        }
+                        return false;
+                    });
+
+                const matchesExpedienteAsignado = !expedienteAsignadoString || 
+                                                  data.numCausa.toLowerCase().includes(expedienteAsignadoString);
+
+                const matchesUser = !userString || data.usuarioAsignado === userString;
+
+                const matchesProceso = !procesoString || data.tipoProceso === procesoString; 
+
+                // Filtrado por fecha
+                let matchesDate = true;
+                if (startDate || endDate) {
+                    const fullDateTime = data.fechaPase;
+                    if (!fullDateTime) {
+                        matchesDate = false;
+                    } else {
+                        const datePart = fullDateTime.split('T')[0]; 
+                        
+                        if (startDate && datePart < startDate) {
+                            matchesDate = false;
+                        }
+                        if (endDate && datePart > endDate) {
+                            matchesDate = false;
+                        }
+                    }
+                }
+
+                // Filtrado por motivos especiales
+                const matchesSpecialReason = (!showDevolucion || (showDevolucion && data.devolucionMotivo)) &&
+                                             (!showRemision || (showRemision && data.remisionMotivo));
+
+                // Filtrado por estado de causa
+                const matchesEstadoCausa = (!showCausaNueva && !showCausaAnterior) ||
+                                            (showCausaNueva && data.estadoCausa === 'nueva') ||
+                                            (showCausaAnterior && data.estadoCausa === 'anterior');
+
+                // Filtrado por archivo
+                const matchesArchivo = !showArchivo || (showArchivo && data.archivo === true);
+
+                return matchesSearch && matchesExpedienteAsignado && matchesUser && matchesProceso && matchesDate && matchesSpecialReason && matchesEstadoCausa && matchesArchivo;
+            });
+            
+            currentPage = 1;
+            renderExpedientes();
+            renderPagination();
+            renderUserStats();
+        }
+        
+        // Función para renderizar expedientes según la página actual
+        function renderExpedientes() {
+            expedientesContainer.innerHTML = '';
+            
+            if (filteredExpedientes.length === 0) {
+                expedientesContainer.innerHTML = '<p class="text-center text-muted mt-5">No hay expedientes registrados que coincidan con los criterios de búsqueda.</p>';
+                return;
+            }
+            
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredExpedientes.length);
+            const currentExpedientes = filteredExpedientes.slice(startIndex, endIndex);
+            
+            let tableHtml = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Expediente</th>
+                                <th>Proceso</th>
+                                <th>Usuario Asignado</th>
+                                <th>Fecha de Pase</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            currentExpedientes.forEach(data => {
+                const isFiltered = (currentFilters.usuario && data.usuarioAsignado === currentFilters.usuario) || 
+                                   (currentFilters.proceso && data.tipoProceso === currentFilters.proceso);
+                
+                tableHtml += `
+                    <tr class="expediente-row ${isFiltered ? 'filter-active' : ''}" data-id="${data.id}">
+                        <td class="fw-bold expediente-num-causa">${data.numCausa}</td>
+                        <td>${data.tipoProceso || 'N/A'}</td>
+                        <td>${data.usuarioAsignado}</td>
+                        <td>${formatDateTime(data.fechaPase, true)}</td> 
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary view-btn" data-id="${data.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning edit-btn" data-id="${data.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-muted mt-2">
+                Mostrando ${startIndex + 1} - ${endIndex} de ${filteredExpedientes.length} expedientes
+            </div>
+        `;
+            
+            expedientesContainer.innerHTML = tableHtml;
+            
+            // Agregar event listeners a los botones
+            expedientesContainer.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewExpediente(e.currentTarget.dataset.id);
+                });
+            });
+            
+            expedientesContainer.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editExpediente(e.currentTarget.dataset.id);
+                });
+            });
+            
+            expedientesContainer.querySelectorAll('.expediente-row').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        viewExpediente(e.currentTarget.dataset.id);
+                    }
+                });
+            });
+        }
+        
+        // Función para renderizar la paginación
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredExpedientes.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHtml = '';
+            
+            // Botón anterior
+            paginationHtml += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage - 1}">Anterior</a>
+                </li>
+            `;
+            
+            // Páginas
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+            
+            // Botón siguiente
+            paginationHtml += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage + 1}">Siguiente</a>
+                </li>
+            `;
+            
+            paginationContainer.innerHTML = paginationHtml;
+            
+            // Agregar event listeners a los enlaces de paginación
+            paginationContainer.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = parseInt(e.target.dataset.page);
+                    if (!isNaN(page)) {
+                        currentPage = page;
+                        renderExpedientes();
+                        renderPagination();
+                        window.scrollTo(0, 0);
+                    }
+                });
+            });
+        }
+        
+        // Función para generar estadísticas por usuario
+        function renderUserStats() {
+            const statsByUser = {};
+            
+            filteredExpedientes.forEach(expediente => {
+                const user = expediente.usuarioAsignado;
+                if (!statsByUser[user]) {
+                    statsByUser[user] = 0;
+                }
+                statsByUser[user]++;
+            });
+            
+            // Ordenar usuarios por cantidad de expedientes
+            const sortedUsers = Object.keys(statsByUser).sort((a, b) => statsByUser[b] - statsByUser[a]);
+            
+            // Preparar datos para el gráfico
+            const userLabels = sortedUsers;
+            const userData = sortedUsers.map(user => statsByUser[user]);
+            
+            // Crear o actualizar el gráfico
+            const ctx = document.getElementById('userStatsChart').getContext('2d');
+            
+            if (userStatsChart) {
+                userStatsChart.destroy();
+            }
+            
+            userStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: userLabels,
+                    datasets: [{
+                        label: 'Expedientes por Usuario',
+                        data: userData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Expedientes'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Expedientes: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Actualizar detalles de estadísticas
+            const statsDetails = document.getElementById('statsDetails');
+            if (sortedUsers.length === 0) {
+                statsDetails.innerHTML = '<p class="text-center text-muted">No hay datos para mostrar</p>';
+            } else {
+                let detailsHtml = `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold">Usuario</span>
+                        <span class="fw-bold">Cantidad</span>
+                    </div>
+                `;
+                
+                sortedUsers.forEach(user => {
+                    detailsHtml += `
+                        <div class="d-flex justify-content-between border-bottom py-1">
+                            <span>${user}</span>
+                            <span class="badge bg-primary rounded-pill">${statsByUser[user]}</span>
+                    </div>
+                `;
+                });
+                
+                detailsHtml += `
+                    <div class="d-flex justify-content-between mt-2 fw-bold">
+                        <span>Total</span>
+                        <span class="badge bg-success rounded-pill">${filteredExpedientes.length}</span>
+                    </div>
+                `;
+                
+                statsDetails.innerHTML = detailsHtml;
+            }
+        }
+
+        // Función optimizada para editar un expediente
+        async function editExpediente(id) {
+            try {
+                // Primero buscar en cache
+                let data = cachedExpedientes ? cachedExpedientes.find(e => e.id === id) : null;
+                
+                // Si no está en cache, consultar Firebase
+                if (!data) {
+                    const doc = await expedientesRef.doc(id).get();
+                    if (doc.exists) {
+                        data = doc.data();
+                        data.id = doc.id;
+                        // Agregar a cache
+                        if (cachedExpedientes) {
+                            cachedExpedientes.push(data);
+                        }
+                    }
+                }
+                
+                if (data) {
+                    document.getElementById('expedienteId').value = data.id;
+                    document.getElementById('numCausa').value = data.numCausa;
+                    document.getElementById('tipoProceso').value = data.tipoProceso || '';
+                    document.getElementById('detalleProceso').value = data.detalleProceso || '';
+                    
+                    const nuevaRadio = document.getElementById('causaNuevaRadio');
+                    const anteriorRadio = document.getElementById('causaAnteriorRadio');
+                    const nuevaDetalle = document.getElementById('causaNuevaDetalle');
+                    const anteriorDetalle = document.getElementById('causaAnteriorDetalle');
+
+                    if (data.estadoCausa === 'nueva') {
+                        nuevaRadio.checked = true;
+                        anteriorRadio.checked = false;
+                        nuevaDetalle.value = data.detalleEstadoCausa || '';
+                        anteriorDetalle.value = '';
+                    } else if (data.estadoCausa === 'anterior') {
+                        nuevaRadio.checked = false;
+                        anteriorRadio.checked = true;
+                        anteriorDetalle.value = data.detalleEstadoCausa || '';
+                        nuevaDetalle.value = '';
+                    } else {
+                        nuevaRadio.checked = false;
+                        anteriorRadio.checked = false;
+                        nuevaDetalle.value = '';
+                        anteriorDetalle.value = '';
+                    }
+
+                    document.getElementById('usuarioAsignado').value = data.usuarioAsignado;
+                    
+                    // Mostrar fecha actual para edición
+                    const currentDateTimeISO = getCurrentLocalDateTimeISO();
+                    const currentDateTimeFormatted = getCurrentLocalDateTimeFormatted();
+                    
+                    document.getElementById('fechaPaseDisplay').value = currentDateTimeFormatted;
+                    document.getElementById('fechaPase').value = currentDateTimeISO;
+                    
+                    document.getElementById('observacionesPase').value = data.observacionesPase || '';
+                    document.getElementById('otrosExpedientesCuerda').value = data.otrosExpedientesCuerda || '';
+                    document.getElementById('otrosExpedientesAcumulados').value = data.otrosExpedientesAcumulados || '';
+                    document.getElementById('devolucionMotivo').value = data.devolucionMotivo || '';
+                    document.getElementById('remisionMotivo').value = data.remisionMotivo || '';
+                    document.getElementById('archivoCheck').checked = data.archivo || false;
+                    
+                    document.getElementById('expedienteModalTitle').textContent = 'Editar Expediente';
+                    document.getElementById('saveExpedienteBtn').textContent = 'Actualizar Expediente';
+                    
+                    desbloquearCamposFormulario();
+                    
+                    const modal = new bootstrap.Modal(expedienteModal);
+                    modal.show();
+                } else {
+                    showToast('Expediente no encontrado.', 'error');
+                }
+            } catch (error) {
+                console.error("Error al obtener el expediente para editar: ", error);
+                showToast('Error al cargar el expediente para editar.', 'error');
+            }
+        }
+
+        // Función optimizada para ver el expediente
+        async function viewExpediente(id) {
+            try {
+                // Primero buscar en cache
+                let data = cachedExpedientes ? cachedExpedientes.find(e => e.id === id) : null;
+                
+                // Si no está en cache, consultar Firebase
+                if (!data) {
+                    const doc = await expedientesRef.doc(id).get();
+                    if (doc.exists) {
+                        data = doc.data();
+                        data.id = doc.id;
+                        // Agregar a cache
+                        if (cachedExpedientes) {
+                            cachedExpedientes.push(data);
+                        }
+                    }
+                }
+                
+                if (data) {
+                    const viewBody = document.getElementById('viewExpedienteBody');
+                    
+                    const estadoCausaDisplay = data.estadoCausa === 'nueva' ? 'Causa Nueva' : (data.estadoCausa === 'anterior' ? 'Causa Anterior' : 'N/A');
+                    const detalleEstadoCausaDisplay = data.detalleEstadoCausa || 'N/A';
+                    
+                    viewBody.innerHTML = `
+                        <div id="printContent">
+                            <p><strong>Número de Causa:</strong> ${data.numCausa}</p>
+                            <p><strong>Tipo de Proceso:</strong> ${data.tipoProceso || 'N/A'}</p>
+                            <p><strong>Detalle Proceso:</strong> ${data.detalleProceso || 'N/A'}</p>
+                            <p><strong>Estado de la Causa:</strong> ${estadoCausaDisplay} (${detalleEstadoCausaDisplay})</p>
+                            <hr>
+                            <p><strong>Usuario Asignado:</strong> ${data.usuarioAsignado}</p>
+                            <p><strong>Fecha y Hora de Pase:</strong> ${formatDateTime(data.fechaPase, true)}</p>
+                            <p><strong>Observaciones del Pase/asignación:</strong> ${data.observacionesPase || 'N/A'}</p>
+                            <p><strong>Otros Expedientes por Cuerda:</strong> ${data.otrosExpedientesCuerda || 'N/A'}</p>
+                            <p><strong>Otros Expedientes Acumulados:</strong> ${data.otrosExpedientesAcumulados || 'N/A'}</p>
+                            <hr>
+                            <h6>Motivos Especiales</h6>
+                            <p><strong>Devolución a Mesa de Entradas:</strong> ${data.devolucionMotivo || 'N/A'}</p>
+                            <p><strong>Remisión a otra Defensoría:</strong> ${data.remisionMotivo || 'N/A'}</p>
+                            <p><strong>Archivo:</strong> ${data.archivo ? 'Sí' : 'No'}</p>
+                        </div>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(viewExpedienteModal);
+                    modal.show();
+                    
+                    printExpedienteBtn.onclick = () => imprimirExpediente(data);
+                } else {
+                    showToast('Expediente no encontrado.', 'error');
+                }
+            } catch (error) {
+                console.error("Error al ver el expediente: ", error);
+                showToast('Error al cargar los detalles del expediente.', 'error');
+            }
+        }
+        
+        // Función para imprimir el contenido del modal
+        function imprimirExpediente(expediente) {
+            const estadoCausaDisplay = expediente.estadoCausa === 'nueva' ? 'Causa Nueva' : (expediente.estadoCausa === 'anterior' ? 'Causa Anterior' : 'N/A');
+            const detalleEstadoCausaDisplay = expediente.detalleEstadoCausa || 'N/A';
+            
+            const printContent = `
+                <h2>Detalles del Expediente</h2>
+                <p><strong>Número de Causa:</strong> ${expediente.numCausa}</p>
+                <p><strong>Tipo de Proceso:</strong> ${expediente.tipoProceso || 'N/A'}</p>
+                <p><strong>Detalle Proceso:</strong> ${expediente.detalleProceso || 'N/A'}</p>
+                <p><strong>Estado de la Causa:</strong> ${estadoCausaDisplay} (${detalleEstadoCausaDisplay})</p>
+                <p><strong>Usuario Asignado:</strong> ${expediente.usuarioAsignado}</p>
+                <p><strong>Fecha y Hora de Pase:</strong> ${formatDateTime(expediente.fechaPase, true)}</p>
+                <p><strong>Observaciones del Pase/asignación:</strong> ${expediente.observacionesPase || 'N/A'}</p>
+                <p><strong>Otros Expedientes por Cuerda:</strong> ${expediente.otrosExpedientesCuerda || 'N/A'}</p>
+                <p><strong>Otros Expedientes Acumulados:</strong> ${expediente.otrosExpedientesAcumulados || 'N/A'}</p>
+                <hr>
+                <h6>Motivos Especiales</h6>
+                <p><strong>Devolución a Mesa de Entradas:</strong> ${expediente.devolucionMotivo || 'N/A'}</p>
+                <p><strong>Remisión a otra Defensoría:</strong> ${expediente.remisionMotivo || 'N/A'}</p>
+                <p><strong>Archivo:</strong> ${expediente.archivo ? 'Sí' : 'No'}</p>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Imprimir Expediente</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+            printWindow.document.write('<style>body { padding: 20px; }</style></head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+        
+        // Función para imprimir todos los expedientes filtrados
+        function imprimirTodosExpedientes() {
+            if (filteredExpedientes.length === 0) {
+                showToast('No hay expedientes para imprimir.', 'error');
+                return;
+            }
+            
+            let printContent = `
+                <h2 class="text-center mb-4">Listado de Expedientes</h2>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Expediente</th>
+                            <th>Proceso</th>
+                            <th>Usuario Asignado</th>
+                            <th>Fecha y Hora de Pase</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+            filteredExpedientes.forEach(expediente => {
+                printContent += `
+                    <tr>
+                        <td>${expediente.numCausa}</td>
+                        <td>${expediente.tipoProceso || 'N/A'}</td>
+                        <td>${expediente.usuarioAsignado}</td>
+                        <td>${formatDateTime(expediente.fechaPase, true)}</td>
+                        <td>${expediente.observacionesPase || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+            
+            printContent += `
+                    </tbody>
+                </table>
+                <div class="mt-3 text-muted">
+                    Total de expedientes: ${filteredExpedientes.length}
+                </div>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Listado de Expedientes</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">');
+            printWindow.document.write('<style>body { padding: 20px; }</style></head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+        
+        // MODIFICACIÓN: Event listener mejorado para el botón de búsqueda
+        btnSearch.addEventListener('click', async () => {
+            const busqueda = searchInput.value.trim();
+            
+            // 1. Aplicar filtros locales (lo que ya hace tu código)
+            applyFilters(); 
+            
+            // 2. Si no hay resultados y es una búsqueda específica, preguntar a Firebase
+            if (filteredExpedientes.length === 0 && busqueda !== "") {
+                try {
+                    showToast('Buscando en el servidor...', 'info');
+                    
+                    // Buscamos específicamente por número de causa en la nube
+                    const snapshot = await expedientesRef
+                        .where('numCausa', '==', busqueda)
+                        .get();
+                        
+                    if (!snapshot.empty) {
+                        // Si lo encontramos, lo agregamos a la lista local y mostramos
+                        snapshot.forEach(doc => {
+                            const data = { id: doc.id, ...doc.data() };
+                            // Evitar duplicados en memoria
+                            if (!allExpedientes.some(e => e.id === data.id)) {
+                                allExpedientes.push(data);
+                            }
+                        });
+                        applyFilters(); // Re-filtrar para mostrarlo
+                        showToast('Expediente recuperado del archivo.', 'success');
+                    } else {
+                        showToast('No se encontró el expediente ni localmente ni en el servidor.', 'warning');
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        });
+
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                btnSearch.click(); // Dispara la búsqueda mejorada
+            }
+        });
+
+        expedienteAsignadoFilter.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
+        userFilter.addEventListener('change', applyFilters);
+        procesoFilter.addEventListener('change', applyFilters); 
+        dateFilterStart.addEventListener('change', applyFilters);
+        dateFilterEnd.addEventListener('change', applyFilters);
+        devolucionFilter.addEventListener('change', applyFilters);
+        remisionFilter.addEventListener('change', applyFilters);
+        causaNuevaFilter.addEventListener('change', applyFilters);
+        causaAnteriorFilter.addEventListener('change', applyFilters);
+        archivoFilter.addEventListener('change', applyFilters);
+        
+        // Asignar evento al botón de imprimir todos
+        btnPrintAll.addEventListener('click', imprimirTodosExpedientes);
+
+        // Event listener para hacer clic en el icono del calendario
+        document.addEventListener('click', (e) => {
+            const clickableCalendar = e.target.closest('.clickable-calendar');
+            if (clickableCalendar) {
+                e.preventDefault();
+                const targetId = clickableCalendar.dataset.target;
+                const input = document.getElementById(targetId);
+                
+                if (input) {
+                    input.click(); 
+                }
+            }
+        });
+
+        // Llamar a las funciones de carga al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExpedientes(false); // No forzar refresh inicial
+            
+            // Establecer fecha actual en el filtro de fin si está vacío
+            if (!dateFilterEnd.value) {
+                const today = new Date();
+                dateFilterEnd.value = today.toISOString().split('T')[0];
+            }
+        });
+        
+        // Asignar el evento al botón de actualizar
+        const btnActualizar = document.getElementById('btnActualizar');
+        btnActualizar.addEventListener('click', () => {
+            // Forzar recarga desde Firebase
+            loadExpedientes(true);
+            showToast('Datos actualizados desde servidor', 'success');
+        });
+    </script>
+</body>
+</html>
