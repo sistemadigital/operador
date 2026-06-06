@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pase Expedientes-Informe por Usuario</title>
+    <!-- Bootstrap 5 CSS (solo estilos) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', 'Times New Roman', serif;
+        }
+        body {
+            background-color: #eef2f5;
+            padding: 2rem 1rem;
+        }
+        /* Tarjeta principal */
+        .judicial-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .judicial-header {
+            background-color: #fafcff;
+            border-bottom: 2px solid #1e4663;
+            padding: 1.5rem 2rem;
+        }
+        .judicial-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin: 0;
+        }
+        .judicial-header p {
+            color: #4a627a;
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+        }
+        .filtros-panel {
+            background-color: #f9fbfd;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+        .filtro-label {
+            font-weight: 600;
+            color: #1e4663;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .form-select-custom {
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 0.8rem;
+            background-color: white;
+        }
+        .kpi-total {
+            background-color: #eef2fa;
+            border-radius: 20px;
+            padding: 0.6rem 1.2rem;
+            text-align: center;
+            border: 1px solid #dce5ec;
+        }
+        .kpi-numero {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: #1e4663;
+            line-height: 1;
+        }
+        .kpi-texto {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #4a627a;
+            font-weight: 500;
+        }
+        .tabla-container {
+            padding: 0 2rem 2rem 2rem;
+        }
+        .tabla-reporte {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .tabla-reporte thead th {
+            background-color: #f1f5f9;
+            color: #1e3a5f;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 1rem;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .tabla-reporte tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #eef2f6;
+            vertical-align: middle;
+        }
+        .usuario-nombre {
+            font-weight: 600;
+            color: #1f3b4c;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+        .usuario-nombre:hover {
+            color: #0d6efd;
+        }
+        .cantidad-destacada {
+            font-size: 1.9rem;
+            font-weight: 800;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+        }
+        /* Colores según ranking */
+        .cantidad-verde {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .cantidad-azul {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .cantidad-rojo {
+            background-color: #ffe4e2;
+            color: #b91c1c;
+        }
+        .text-center-cantidad {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 2.5rem;
+            color: #6c86a3;
+            font-style: italic;
+        }
+        .footer-note {
+            font-size: 0.75rem;
+            border-top: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            background-color: #fefefe;
+            color: #4b6b8f;
+        }
+        /* Estilos para el modal y tablas internas */
+        .modal-detalle table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .modal-detalle th {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            font-weight: 600;
+        }
+        .modal-detalle td {
+            border: 1px solid #dee2e6;
+            padding: 6px 8px;
+        }
+        .badge-cantidad {
+            font-weight: 700;
+            background-color: #eef2fa;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        @media (max-width: 768px) {
+            .judicial-header, .filtros-panel, .tabla-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .cantidad-destacada {
+                font-size: 1.4rem;
+                min-width: 55px;
+            }
+        }
+        @media print {
+            body { background: white; }
+            .filtros-panel, .btn-group-print, .btn-actualizar, .kpi-total, .footer-note, .btn-imprimir-modal {
+                display: none;
+            }
+        }
+        .btn-judicial {
+            background-color: #1e4663;
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.45rem 1.2rem;
+            border-radius: 8px;
+        }
+        .btn-outline-judicial {
+            background: transparent;
+            border: 1px solid #1e4663;
+            color: #1e4663;
+            border-radius: 8px;
+            padding: 0.45rem 1.2rem;
+            font-weight: 500;
+        }
+        .btn-outline-judicial:hover {
+            background-color: #eef3fc;
+        }
+    </style>
+</head>
+<body>
+<div class="container-lg">
+    <div class="judicial-card">
+        <div class="judicial-header">
+            <h1>Informe de Pase de Expedientes por Usuario</h1>
+            <p>Tabla ordenada por cantidad (descendente). Colores: máximo (verde), diferencia ≤3 (azul), resto (rojo). Click en usuario para ver desglose.</p>
+        </div>
+
+        <!-- Panel de filtros -->
+        <div class="filtros-panel">
+            <div class="row g-4 align-items-end">
+                <div class="col-md-3 col-sm-6">
+                    <div class="filtro-label">Mes</div>
+                    <select id="filtroMes" class="form-select form-select-custom">
+                        <option value="todos">Todos los meses</option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="filtro-label">Año</div>
+                    <select id="filtroAnio" class="form-select form-select-custom">
+                        <option value="todos">Todos los años</option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="filtro-label">Proceso</div>
+                    <select id="filtroProceso" class="form-select form-select-custom">
+                        <option value="todos">Todos los procesos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-6 d-flex justify-content-md-end gap-2">
+                    <button id="btnActualizarDatos" class="btn-judicial">Refrescar datos</button>
+                    <button id="btnImprimirVista" class="btn-outline-judicial">Imprimir tabla</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI total registros Firebase -->
+        <div class="px-4 pt-3 pb-0 d-flex justify-content-end">
+            <div class="kpi-total">
+                <div class="kpi-texto">Total expedientes en sistema</div>
+                <div class="kpi-numero" id="totalRegistrosFirebase">—</div>
+            </div>
+        </div>
+
+        <!-- Tabla principal -->
+        <div class="tabla-container">
+            <div class="table-responsive">
+                <table class="tabla-reporte" id="tablaReporte">
+                    <thead>
+                        <tr>
+                            <th>Usuario asignado</th>
+                            <th style="text-align: center;">Cantidad de expedientes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <tr><td colspan="2" class="empty-message">Cargando información...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="footer-note" id="footerInfo">
+                Los filtros aplican sobre fecha de pase (mes/año) y tipo de proceso. Orden descendente por cantidad.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de detalle del usuario -->
+<div class="modal fade" id="detalleUsuarioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #f8fafc; border-bottom: 2px solid #1e4663;">
+                <h5 class="modal-title" id="modalUsuarioTitulo">Detalle de expedientes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal-detalle" id="modalDetalleBody">
+                <!-- Contenido dinámico: desglose por año, mes, proceso -->
+                Cargando...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" id="btnImprimirDetalle" class="btn-outline-judicial">Imprimir detalle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ---------- CONFIGURACIÓN FIREBASE (misma del código original) ----------
+    const firebaseConfig = {
+        apiKey: "AIzaSyDgxLS98sk6GkLrjMu3BVS2cmZ9exdh4dY",
+        authDomain: "atencion-publico-def6.firebaseapp.com",
+        databaseURL: "https://atencion-publico-def6-default-rtdb.firebaseio.com",
+        projectId: "atencion-publico-def6",
+        storageBucket: "atencion-publico-def6.firebasestorage.app",
+        messagingSenderId: "1052433106688",
+        appId: "1:1052433106688:web:8ac3e144bcf377ac4b55e5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const expedientesRef = db.collection('causas');
+
+    // ---------- VARIABLES GLOBALES ----------
+    let todosExpedientes = [];               // todos los documentos
+    let totalDocumentosFirestore = 0;
+    let usuariosMap = new Map();              // usuario -> array de objetos con fecha y proceso
+    let usuariosOrdenadosGlobal = [];         // para ordenamiento posterior
+    let currentFilters = { mes: 'todos', anio: 'todos', proceso: 'todos' };
+
+    // Elementos DOM
+    const filtroMes = document.getElementById('filtroMes');
+    const filtroAnio = document.getElementById('filtroAnio');
+    const filtroProceso = document.getElementById('filtroProceso');
+    const cuerpoTabla = document.getElementById('cuerpoTabla');
+    const totalRegistrosSpan = document.getElementById('totalRegistrosFirebase');
+    const btnActualizar = document.getElementById('btnActualizarDatos');
+    const btnImprimirTabla = document.getElementById('btnImprimirVista');
+    const detalleModal = new bootstrap.Modal(document.getElementById('detalleUsuarioModal'));
+    const modalBody = document.getElementById('modalDetalleBody');
+    const btnImprimirDetalle = document.getElementById('btnImprimirDetalle');
+    let currentDetalleUsuario = null;
+    let currentDetalleData = null;
+
+    // Mapeo meses
+    const nombresMeses = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio',
+        7: 'Julio', 8: 'Agosto', 9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+    };
+
+    // Helper: extraer año y mes desde fechaPase
+    function extraerAnioMes(fechaStr) {
+        if (!fechaStr) return null;
+        let fechaPart = fechaStr.includes('T') ? fechaStr.split('T')[0] : fechaStr;
+        const partes = fechaPart.split('-');
+        if (partes.length >= 2) {
+            const anio = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10);
+            if (!isNaN(anio) && !isNaN(mes) && mes >= 1 && mes <= 12) return { anio, mes };
+        }
+        return null;
+    }
+
+    // Cargar todos los expedientes desde Firestore
+    async function cargarTodosExpedientes() {
+        cuerpoTabla.innerHTML = `<tr><td colspan="2" class="empty-message"><div class="spinner-border text-primary"></div><br/>Cargando expedientes...</td></tr>`;
+        try {
+            const snapshot = await expedientesRef.get();
+            totalDocumentosFirestore = snapshot.size;
+            totalRegistrosSpan.innerText = totalDocumentosFirestore;
+
+            if (snapshot.empty) {
+                todosExpedientes = [];
+                usuariosMap.clear();
+                actualizarFiltrosVacios();
+                cuerpoTabla.innerHTML = `<tr><td colspan="2" class="empty-message">No hay expedientes registrados.</td></tr>`;
+                return;
+            }
+
+            const lista = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                lista.push({
+                    id: doc.id,
+                    usuarioAsignado: data.usuarioAsignado ? data.usuarioAsignado.trim() : 'Sin asignar',
+                    tipoProceso: data.tipoProceso ? data.tipoProceso.trim() : 'No especificado',
+                    fechaPase: data.fechaPase || null
+                });
+            });
+            todosExpedientes = lista;
+
+            // Construir mapa usuario -> items
+            const tempMap = new Map();
+            const aniosSet = new Set();
+            const mesesSet = new Set();
+            const procesosSet = new Set();
+
+            for (const exp of lista) {
+                const usuario = exp.usuarioAsignado;
+                const proceso = exp.tipoProceso;
+                procesosSet.add(proceso);
+                const fechaInfo = extraerAnioMes(exp.fechaPase);
+                let anio = null, mes = null;
+                if (fechaInfo) {
+                    anio = fechaInfo.anio;
+                    mes = fechaInfo.mes;
+                    aniosSet.add(anio);
+                    mesesSet.add(mes);
+                }
+                if (!tempMap.has(usuario)) tempMap.set(usuario, []);
+                tempMap.get(usuario).push({
+                    anio, mes, proceso,
+                    tieneFecha: fechaInfo !== null
+                });
+            }
+            usuariosMap = tempMap;
+            // Ordenar usuarios alfabéticamente para base
+            const usuariosOrdenados = Array.from(usuariosMap.keys()).sort((a,b) => a.localeCompare(b));
+            usuariosOrdenadosGlobal = usuariosOrdenados;
+
+            // Llenar selects dinámicos
+            llenarSelectAnios(Array.from(aniosSet).sort((a,b)=>b-a));
+            llenarSelectMeses(Array.from(mesesSet).sort((a,b)=>a-b));
+            llenarSelectProcesos(Array.from(procesosSet).sort());
+
+            // Aplicar filtros y renderizar tabla principal
+            aplicarFiltrosYRenderizar();
+        } catch (error) {
+            console.error(error);
+            cuerpoTabla.innerHTML = `<tr><td colspan="2" class="empty-message">Error al cargar: ${error.message}</td></tr>`;
+            totalRegistrosSpan.innerText = 'Error';
+        }
+    }
+
+    function llenarSelectAnios(anios) {
+        filtroAnio.innerHTML = '<option value="todos">Todos los años</option>';
+        anios.forEach(a => { filtroAnio.innerHTML += `<option value="${a}">${a}</option>`; });
+        filtroAnio.value = 'todos';
+    }
+    function llenarSelectMeses(meses) {
+        filtroMes.innerHTML = '<option value="todos">Todos los meses</option>';
+        meses.forEach(m => { filtroMes.innerHTML += `<option value="${m}">${nombresMeses[m] || m}</option>`; });
+        filtroMes.value = 'todos';
+    }
+    function llenarSelectProcesos(procesos) {
+        filtroProceso.innerHTML = '<option value="todos">Todos los procesos</option>';
+        procesos.forEach(p => { filtroProceso.innerHTML += `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`; });
+        filtroProceso.value = 'todos';
+    }
+    function actualizarFiltrosVacios() {
+        filtroAnio.innerHTML = '<option value="todos">Todos los años</option>';
+        filtroMes.innerHTML = '<option value="todos">Todos los meses</option>';
+        filtroProceso.innerHTML = '<option value="todos">Todos los procesos</option>';
+    }
+
+    // Obtener cantidad de expedientes de un usuario según filtros actuales
+    function contarExpedientesUsuario(usuario, filtros) {
+        const items = usuariosMap.get(usuario) || [];
+        let count = 0;
+        for (const item of items) {
+            let cumpleFecha = true;
+            if (filtros.anio !== 'todos' || filtros.mes !== 'todos') {
+                if (item.anio === null || item.mes === null) cumpleFecha = false;
+                else {
+                    if (filtros.anio !== 'todos' && item.anio !== parseInt(filtros.anio,10)) cumpleFecha = false;
+                    if (filtros.mes !== 'todos' && item.mes !== parseInt(filtros.mes,10)) cumpleFecha = false;
+                }
+            }
+            const cumpleProceso = (filtros.proceso === 'todos' || item.proceso === filtros.proceso);
+            if (cumpleFecha && cumpleProceso) count++;
+        }
+        return count;
+    }
+
+    // Obtener lista de usuarios con su cantidad filtrada y orden descendente
+    function obtenerRankingFiltrado() {
+        const filtros = {
+            anio: filtroAnio.value,
+            mes: filtroMes.value,
+            proceso: filtroProceso.value
+        };
+        currentFilters = filtros;
+        const ranking = [];
+        for (const usuario of usuariosOrdenadosGlobal) {
+            const cantidad = contarExpedientesUsuario(usuario, filtros);
+            if (cantidad > 0) ranking.push({ usuario, cantidad });
+        }
+        ranking.sort((a,b) => b.cantidad - a.cantidad);
+        return ranking;
+    }
+
+    // Asignar colores según ranking (máximo, diferencia ≤3, resto)
+    function obtenerColor(cantidad, maxCantidad) {
+        if (cantidad === maxCantidad) return 'verde';
+        if (maxCantidad - cantidad <= 3) return 'azul';
+        return 'rojo';
+    }
+
+    // Renderizar tabla principal con colores y orden
+    function renderizarTablaPrincipal() {
+        const ranking = obtenerRankingFiltrado();
+        if (ranking.length === 0) {
+            cuerpoTabla.innerHTML = `<tr><td colspan="2" class="empty-message">No hay expedientes con los filtros seleccionados.</td></tr>`;
+            document.getElementById('footerInfo').innerHTML = `Filtros aplicados: sin resultados. Total en sistema: ${totalDocumentosFirestore}`;
+            return;
+        }
+        const maxCantidad = ranking[0].cantidad;
+        let html = '';
+        for (const item of ranking) {
+            const colorClase = obtenerColor(item.cantidad, maxCantidad);
+            let claseCantidad = '';
+            if (colorClase === 'verde') claseCantidad = 'cantidad-verde';
+            else if (colorClase === 'azul') claseCantidad = 'cantidad-azul';
+            else claseCantidad = 'cantidad-rojo';
+            html += `
+                <tr>
+                    <td class="usuario-nombre" data-usuario="${escapeHtml(item.usuario)}">${escapeHtml(item.usuario)}</td>
+                    <td class="text-center-cantidad"><span class="cantidad-destacada ${claseCantidad}">${item.cantidad}</span></td>
+                </tr>
+            `;
+        }
+        cuerpoTabla.innerHTML = html;
+        // Agregar evento click a cada nombre de usuario
+        document.querySelectorAll('.usuario-nombre').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const usuario = el.getAttribute('data-usuario');
+                mostrarDetalleUsuario(usuario);
+            });
+        });
+        const totalMostrado = ranking.reduce((acc, r) => acc + r.cantidad, 0);
+        const footerInfo = document.getElementById('footerInfo');
+        footerInfo.innerHTML = `Filtros: Mes ${filtroMes.value !== 'todos' ? nombresMeses[parseInt(filtroMes.value)] : 'todos'} | Año ${filtroAnio.value !== 'todos' ? filtroAnio.value : 'todos'} | Proceso ${filtroProceso.value !== 'todos' ? filtroProceso.value : 'todos'} | Expedientes en vista: ${totalMostrado} | Total sistema: ${totalDocumentosFirestore}`;
+    }
+
+    function aplicarFiltrosYRenderizar() {
+        renderizarTablaPrincipal();
+    }
+
+    // ---------------------- MODAL: DESGLOSE POR AÑO, MES, PROCESO ----------------------
+    function mostrarDetalleUsuario(usuario) {
+        const filtros = currentFilters;
+        const items = usuariosMap.get(usuario) || [];
+        // Filtrar los items según los filtros actuales
+        const itemsFiltrados = items.filter(item => {
+            let cumpleFecha = true;
+            if (filtros.anio !== 'todos' || filtros.mes !== 'todos') {
+                if (item.anio === null || item.mes === null) cumpleFecha = false;
+                else {
+                    if (filtros.anio !== 'todos' && item.anio !== parseInt(filtros.anio,10)) cumpleFecha = false;
+                    if (filtros.mes !== 'todos' && item.mes !== parseInt(filtros.mes,10)) cumpleFecha = false;
+                }
+            }
+            const cumpleProceso = (filtros.proceso === 'todos' || item.proceso === filtros.proceso);
+            return cumpleFecha && cumpleProceso;
+        });
+
+        // Desglose por año
+        const porAnio = new Map();
+        const porMes = new Map();
+        const porProceso = new Map();
+        for (const it of itemsFiltrados) {
+            if (it.anio) {
+                porAnio.set(it.anio, (porAnio.get(it.anio) || 0) + 1);
+            }
+            if (it.mes) {
+                const nomMes = nombresMeses[it.mes] || `Mes ${it.mes}`;
+                porMes.set(nomMes, (porMes.get(nomMes) || 0) + 1);
+            }
+            porProceso.set(it.proceso, (porProceso.get(it.proceso) || 0) + 1);
+        }
+
+        // Construir HTML del modal
+        let html = `<h6>Usuario: <strong>${escapeHtml(usuario)}</strong></h6><hr>`;
+        // Tabla por año
+        html += `<h6>📅 Cantidad por año</h6><table class="table table-sm"><thead><tr><th>Año</th><th>Expedientes</th></tr></thead><tbody>`;
+        if (porAnio.size === 0) html += `<tr><td colspan="2">Sin datos de año</td></tr>`;
+        else {
+            const aniosSorted = Array.from(porAnio.keys()).sort((a,b)=>b-a);
+            for (const anio of aniosSorted) {
+                html += `<tr><td>${anio}</td><td><span class="badge-cantidad">${porAnio.get(anio)}</span></td></tr>`;
+            }
+        }
+        html += `</tbody></table>`;
+
+        // Tabla por mes
+        html += `<h6>📆 Cantidad por mes</h6><table class="table table-sm"><thead><tr><th>Mes</th><th>Expedientes</th></tr></thead><tbody>`;
+        if (porMes.size === 0) html += `<tr><td colspan="2">Sin datos de mes</td></tr>`;
+        else {
+            const mesesOrden = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const mesKeys = Array.from(porMes.keys()).sort((a,b) => mesesOrden.indexOf(a) - mesesOrden.indexOf(b));
+            for (const mes of mesKeys) {
+                html += `<tr><td>${mes}</td><td><span class="badge-cantidad">${porMes.get(mes)}</span></td></tr>`;
+            }
+        }
+        html += `</tbody></table>`;
+
+        // Tabla por proceso
+        html += `<h6>⚖️ Cantidad por proceso</h6><table class="table table-sm"><thead><tr><th>Proceso</th><th>Expedientes</th></tr></thead><tbody>`;
+        if (porProceso.size === 0) html += `<tr><td colspan="2">Sin datos de proceso</td></tr>`;
+        else {
+            const procesosSorted = Array.from(porProceso.keys()).sort();
+            for (const proc of procesosSorted) {
+                html += `<tr><td>${escapeHtml(proc)}</td><td><span class="badge-cantidad">${porProceso.get(proc)}</span></td></tr>`;
+            }
+        }
+        html += `</tbody></table>`;
+        html += `<div class="mt-2 text-muted small">* Datos basados en los filtros actuales de la tabla principal.</div>`;
+
+        modalBody.innerHTML = html;
+        document.getElementById('modalUsuarioTitulo').innerText = `Detalle: ${usuario}`;
+        currentDetalleUsuario = usuario;
+        currentDetalleData = { porAnio, porMes, porProceso, usuario, filtrosActuales: {...filtros} };
+        detalleModal.show();
+    }
+
+    // Imprimir el contenido del modal
+    function imprimirDetalleModal() {
+        if (!currentDetalleUsuario) return;
+        const contenido = document.getElementById('modalDetalleBody').cloneNode(true);
+        const titulo = `Detalle de expedientes - ${currentDetalleUsuario}`;
+        const htmlPrint = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>${titulo}</title>
+        <style>
+            body { font-family: 'Segoe UI', Georgia; margin: 1.5cm; }
+            h2 { color: #1e3a5f; border-bottom: 2px solid #1e4663; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+            th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
+            th { background: #f0f4f9; }
+            .badge-cantidad { font-weight: bold; }
+        </style>
+        </head>
+        <body>
+            <h2>${titulo}</h2>
+            <p>Filtros aplicados en la vista principal: Mes ${currentDetalleData.filtrosActuales.mes !== 'todos' ? nombresMeses[parseInt(currentDetalleData.filtrosActuales.mes)] : 'todos'} | Año ${currentDetalleData.filtrosActuales.anio !== 'todos' ? currentDetalleData.filtrosActuales.anio : 'todos'} | Proceso ${currentDetalleData.filtrosActuales.proceso !== 'todos' ? currentDetalleData.filtrosActuales.proceso : 'todos'}</p>
+            ${contenido.innerHTML}
+            <div style="margin-top: 30px; font-size: 0.7rem;">Fecha emisión: ${new Date().toLocaleString()}</div>
+        </body>
+        </html>
+        `;
+        const ventana = window.open('', '_blank');
+        ventana.document.write(htmlPrint);
+        ventana.document.close();
+        ventana.focus();
+        ventana.print();
+        ventana.close();
+    }
+
+    // Imprimir tabla principal completa
+    function imprimirTablaCompleta() {
+        const tablaOriginal = document.getElementById('tablaReporte').cloneNode(true);
+        const filtrosTexto = `Filtros: Mes ${filtroMes.value !== 'todos' ? nombresMeses[parseInt(filtroMes.value)] : 'todos'} | Año ${filtroAnio.value !== 'todos' ? filtroAnio.value : 'todos'} | Proceso ${filtroProceso.value !== 'todos' ? filtroProceso.value : 'todos'}`;
+        const htmlPrint = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Informe de Pase de Expedientes</title>
+        <style>
+            body { font-family: 'Segoe UI', Georgia; margin: 1.5cm; }
+            h2 { color: #1e3a5f; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #aaa; padding: 8px; }
+            th { background: #f0f4f9; }
+            .cantidad-destacada { font-size: 1.4rem; font-weight: bold; padding: 0 8px; border-radius: 20px; }
+        </style>
+        </head>
+        <body>
+            <h2>Pase de expedientes por usuario</h2>
+            <p>${filtrosTexto}</p>
+            ${tablaOriginal.outerHTML}
+            <p>Total expedientes en sistema: ${totalDocumentosFirestore}</p>
+        </body>
+        </html>
+        `;
+        const win = window.open('', '_blank');
+        win.document.write(htmlPrint);
+        win.document.close();
+        win.print();
+    }
+
+    // Helper
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Event listeners
+    filtroMes.addEventListener('change', aplicarFiltrosYRenderizar);
+    filtroAnio.addEventListener('change', aplicarFiltrosYRenderizar);
+    filtroProceso.addEventListener('change', aplicarFiltrosYRenderizar);
+    btnActualizar.addEventListener('click', cargarTodosExpedientes);
+    btnImprimirTabla.addEventListener('click', imprimirTablaCompleta);
+    btnImprimirDetalle.addEventListener('click', imprimirDetalleModal);
+
+    // Inicializar
+    cargarTodosExpedientes();
+</script>
+</body>
+</html>
