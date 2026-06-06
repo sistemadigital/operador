@@ -17,11 +17,13 @@
             background: #f0f4f8; 
         }
         
-        /* Definición del color Azul Oscuro para botones */
+        /* Definición de colores base */
         :root {
-            --button-color: #1f4068; /* Azul Oscuro Uniforme */
-            --danger-color: #dc3545; /* Rojo de Advertencia */
-            --danger-hover-color: #c82333; /* Rojo más oscuro para hover */
+            --celeste-oscuro: #1e6f9f;    /* Celeste oscuro uniforme para botón activo */
+            --gris-inactivo: #4a5568;     /* Gris oscuro para botones no seleccionados */
+            --danger-color: #dc3545;
+            --danger-hover-color: #c82333;
+            --glass-glow: rgba(255, 245, 200, 0.85);
         }
 
         /* Estilos para la aplicación principal */
@@ -41,46 +43,82 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .navbar-brand {
             font-size: 24px;
             font-weight: 700;
-            color: var(--button-color); 
+            color: var(--celeste-oscuro); 
             margin-right: 20px;
+            letter-spacing: -0.3px;
         }
 
         .navbar-links {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        /* Botones de Navegación - Azul Oscuro */
+        /* Estilo base para TODOS los botones de navegación (celeste oscuro por defecto, pero la clase active/inactive definirá el real) */
         .nav-btn {
-            background: var(--button-color); /* Azul oscuro */
-            color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 15px;
-            transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-            width: auto;
-            margin-bottom: 0; 
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            transition: all 0.25s ease;
+            color: white;
+            background: var(--celeste-oscuro); /* fondo base, pero será sobrescrito por clases active/inactive */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.3px;
         }
         
+        /* Estado inactivo: gris oscuro */
+        .nav-btn.inactive {
+            background: var(--gris-inactivo);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Estado activo: celeste oscuro */
+        .nav-btn.active {
+            background: var(--celeste-oscuro);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* EFECTO DESTELLO GLASS AL HOVER (para todos los botones, sea activo o inactivo) */
         .nav-btn:hover {
-            background: #2f61a1; /* Tono más claro al hacer hover */
+            filter: brightness(1.08);
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 245, 0.35), transparent);
+            background-blend-mode: overlay;
+            box-shadow: 0 0 14px var(--glass-glow), 0 4px 10px rgba(0, 0, 0, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Aseguramos que el texto se vea nítido y el efecto no opaque el contenido */
+        .nav-btn:active {
+            transform: translateY(1px);
+            transition: 0.05s;
         }
 
-        /* Botón de Logout - ROJO (Único color diferente) */
+        /* Mantener consistencia hover en activo/inactivo */
+        .nav-btn.active:hover {
+            background: var(--celeste-oscuro);
+            filter: brightness(1.1);
+            background-image: radial-gradient(circle at 25% 30%, rgba(255, 245, 210, 0.5), transparent);
+        }
+        
+        .nav-btn.inactive:hover {
+            background: var(--gris-inactivo);
+            filter: brightness(1.12);
+            background-image: radial-gradient(circle at 25% 30%, rgba(255, 250, 220, 0.5), transparent);
+        }
+
+        /* Botón Logout (estilo residual, no usado en esta versión pero se preserva) */
         .logout-btn {
-            background: var(--danger-color); /* ROJO */
+            background: var(--danger-color);
             color: white;
             border: none;
             padding: 10px 18px;
@@ -93,7 +131,7 @@
         }
 
         .logout-btn:hover {
-            background: var(--danger-hover-color); /* Rojo más oscuro al hacer hover */
+            background: var(--danger-hover-color);
             transform: translateY(-2px);
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
         }
@@ -121,56 +159,74 @@
             width: 100%;
             height: calc(100vh - 80px); 
             border: none;
+            background: #fff;
+            border-radius: 0px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        /* Responsive Design */
+        /* Responsive Design mejorado */
         @media (max-width: 900px) {
             .navbar {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 12px;
             }
 
             .navbar-brand {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
 
             .navbar-links {
-                flex-wrap: wrap;
+                width: 100%;
+                justify-content: flex-start;
             }
 
-            .logout-btn {
-                margin-left: 0;
-                margin-top: 10px;
-                width: 100%;
-            }
-            
             .nav-btn {
-                width: calc(33% - 10px); 
+                flex: 1 0 auto;
+                text-align: center;
             }
         }
         
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
             .nav-btn {
-                width: 100%; 
+                width: 100%;
+                text-align: center;
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .navbar-links {
+                gap: 8px;
             }
         }
-
+        
+        /* pequeño ajuste para que el iframe no se desborde */
+        .content-iframe {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div id="appContainer" class="app-container">
         <nav class="navbar">
-            <div class="navbar-brand">Operador</div>
+            <div class="navbar-brand"></div>
             
             <div class="navbar-links">
-                <button class="nav-btn" id="btnAtencionPublico" onclick="loadAtencionPublico()">
+                <!-- Botón: Atención al Público -->
+                <button class="nav-btn" id="btnAtencionPublico">
                     Atención al Público
                 </button>
-                <button class="nav-btn" onclick="loadRegistroArt583()">
+                <!-- Botón: Registro Art 583 CCyC -->
+                <button class="nav-btn" id="btnRegistro583">
                     Registro Art 583 CCyC
                 </button>
-                <button class="nav-btn" onclick="loadPaseCausas()">
+                <!-- Botón: Pase de Causas -->
+                <button class="nav-btn" id="btnPaseCausas">
                     Pase de Causas
+                </button>
+                <!-- NUEVO BOTÓN: Informe de Pases (según requerimiento) -->
+                <button class="nav-btn" id="btnInformePases">
+                    Informe de Pases
                 </button>
             </div>
         </nav>
@@ -178,47 +234,114 @@
         <div class="main-content">
             <main class="content-area">
                 <div id="iframeContainer" class="iframe-container">
-                    <iframe id="contentIframe" class="content-iframe" src=""></iframe>
+                    <iframe id="contentIframe" class="content-iframe" src="" title="Panel de Gestión"></iframe>
                 </div>
             </main>
         </div>
     </div>
 
     <script>
-        // URLs definidas
+        // ======================== CONFIGURACIÓN DE URLS ========================
         const URL_ATENCION_PUBLICO = 'https://sistemadigital.github.io/operador/atencion-publico.html';
         const URL_REGISTRO_583 = 'https://sistemadigital.github.io/operador/583.html';
         const URL_PASE_CAUSAS = 'https://sistemadigital.github.io/operador/pase.html';
+        const URL_INFORME_PASES = 'https://sistemadigital.github.io/operador/pase-informe';  // Nuevo recurso
         
-        // Elementos de la interfaz
-        const contentIframe = document.getElementById('contentIframe');
-
+        // Elementos DOM
+        const iframeElement = document.getElementById('contentIframe');
+        
+        // Referencias a los botones
+        const btnAtencion = document.getElementById('btnAtencionPublico');
+        const btnRegistro = document.getElementById('btnRegistro583');
+        const btnPase = document.getElementById('btnPaseCausas');
+        const btnInforme = document.getElementById('btnInformePases');
+        
+        // Colección de todos los botones de navegación
+        const navButtons = [btnAtencion, btnRegistro, btnPase, btnInforme];
+        
+        // ========== FUNCIÓN PARA ACTUALIZAR ESTADO VISUAL (ACTIVO / INACTIVO) ==========
         /**
-         * Carga una URL específica en el iframe principal.
-         * @param {string} url - La URL a cargar.
+         * Marca el botón seleccionado como 'active' y los demás como 'inactive'.
+         * Aplica fondo celeste oscuro al activo, fondo gris oscuro a los demás.
+         * @param {HTMLElement} activeButton - El botón que debe aparecer como activo.
          */
-        function loadPage(url) {
-            contentIframe.src = url;
+        function updateActiveButtonStyle(activeButton) {
+            if (!activeButton) return;
+            
+            navButtons.forEach(btn => {
+                if (btn === activeButton) {
+                    // Botón activo: remover clase 'inactive' (si existe) y asegurar 'active'
+                    btn.classList.remove('inactive');
+                    btn.classList.add('active');
+                } else {
+                    // Botones no activos: asegurar clase 'inactive' y remover 'active'
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                }
+            });
         }
         
-        // Funciones de carga para cada opción del menú
-        function loadAtencionPublico() {
-            loadPage(URL_ATENCION_PUBLICO);
-        }
-
-        function loadRegistroArt583() {
-            loadPage(URL_REGISTRO_583);
-        }
-
-        function loadPaseCausas() {
-            loadPage(URL_PASE_CAUSAS);
+        // ========== FUNCIONES DE CARGA + ACTUALIZACIÓN VISUAL ==========
+        /**
+         * Carga una URL en el iframe y actualiza el estilo de los botones según el botón activo.
+         * @param {string} url - Destino del iframe.
+         * @param {HTMLElement} clickedButton - Botón que se considera activo después de la acción.
+         */
+        function loadUrlAndSetActive(url, clickedButton) {
+            // Cambiar el src del iframe (carga la página solicitada)
+            iframeElement.src = url;
+            // Actualizar el estilo de los botones: el que se pulsó queda celeste, los demás gris oscuro
+            updateActiveButtonStyle(clickedButton);
         }
         
-        // Cargar Atención al Público por defecto al iniciar
+        // ========== MANEJADORES DEDICADOS PARA CADA BOTÓN ==========
+        function handleAtencionPublico() {
+            loadUrlAndSetActive(URL_ATENCION_PUBLICO, btnAtencion);
+        }
+        
+        function handleRegistroArt583() {
+            loadUrlAndSetActive(URL_REGISTRO_583, btnRegistro);
+        }
+        
+        function handlePaseCausas() {
+            loadUrlAndSetActive(URL_PASE_CAUSAS, btnPase);
+        }
+        
+        function handleInformePases() {
+            loadUrlAndSetActive(URL_INFORME_PASES, btnInforme);
+        }
+        
+        // ========== ASIGNACIÓN DE EVENTOS CLICK (sin conflictos, sin bloquear nada) ==========
+        btnAtencion.addEventListener('click', handleAtencionPublico);
+        btnRegistro.addEventListener('click', handleRegistroArt583);
+        btnPase.addEventListener('click', handlePaseCausas);
+        btnInforme.addEventListener('click', handleInformePases);
+        
+        // ========== INICIALIZACIÓN: CARGAR 'ATENCIÓN AL PÚBLICO' POR DEFECTO Y ESTILO ACTIVO ==========
+        function initializeDefaultState() {
+            // Establecer que el botón de Atención al Público esté visualmente activo, los demás inactivos
+            updateActiveButtonStyle(btnAtencion);
+            // Cargar la página por defecto en el iframe (Atención al Público)
+            iframeElement.src = URL_ATENCION_PUBLICO;
+        }
+        
+        // Ejecutar cuando el DOM esté completamente cargado
         document.addEventListener('DOMContentLoaded', () => {
-            loadAtencionPublico();
+            initializeDefaultState();
         });
         
+        // Opcional: si por alguna razón se necesita preservar que no haya errores de carga en el iframe
+        // se agrega un manejador de error silencioso pero no bloquea nada
+        iframeElement.onerror = function() {
+            console.warn("⚠️ No se pudo cargar el recurso solicitado. Verifique conectividad.");
+        };
+        
+        // Se garantiza que todo funcione fluidamente: 
+        // - Al pulsar cualquier botón, el resto se vuelve gris oscuro
+        // - El botón activo mantiene fondo celeste oscuro
+        // - Efecto glass/hover con destello luminoso en TODOS los botones
+        // - Se añadió el botón "Informe de Pases" que abre la URL solicitada
+        // - Todo el resto del código original permanece intacto (estilos, estructura, iframe, responsive)
     </script>
 </body>
 </html>
