@@ -24,6 +24,7 @@
             --texto-negro: #111111;
             --glass-glow: rgba(255, 245, 200, 0.9);
             --sombra-hover: rgba(0, 0, 0, 0.2);
+            --violeta-texto: #8b5cf6;           /* Violeta para el texto del botón SIGED */
         }
 
         /* Estilos para la aplicación principal */
@@ -131,6 +132,26 @@
             border: 1px solid rgba(255, 245, 180, 0.8);
         }
         
+        /* ========== ESTILOS ESPECÍFICOS PARA BOTÓN SIGED ENTRADAS ==========
+           Mismo fondo que los demás (gris/celeste según estado), pero texto en violeta negrita */
+        .nav-btn.siged-btn {
+            color: var(--violeta-texto);
+        }
+        .nav-btn.siged-btn.active {
+            color: var(--violeta-texto);
+            font-weight: bold;
+        }
+        .nav-btn.siged-btn.inactive {
+            color: var(--violeta-texto);
+            font-weight: bold;
+        }
+        /* Mantener el efecto hover con el texto violeta */
+        .nav-btn.siged-btn:hover,
+        .nav-btn.siged-btn.active:hover,
+        .nav-btn.siged-btn.inactive:hover {
+            color: var(--violeta-texto);
+        }
+        
         /* Efecto al hacer clic (presionar) para todos los botones */
         .nav-btn:active {
             transform: translateY(1px);
@@ -227,10 +248,16 @@
             display: block;
         }
         
-        /* Ajuste adicional: garantizar que en todos los estados el texto de los botones sea negro y negrita */
+        /* Ajuste adicional: garantizar que en todos los estados el texto de los botones sea negro y negrita (excepto SIGED que tiene violeta) */
         .nav-btn, .nav-btn.inactive, .nav-btn.active {
             font-weight: bold;
             color: #111111;
+        }
+        /* Reforzar color violeta para SIGED en cualquier estado */
+        .nav-btn.siged-btn,
+        .nav-btn.siged-btn.inactive,
+        .nav-btn.siged-btn.active {
+            color: var(--violeta-texto) !important;
         }
     </style>
 </head>
@@ -260,6 +287,10 @@
                 <button class="nav-btn" id="btnInformeCompleto">
                     Informe Completo
                 </button>
+                <!-- NUEVO BOTÓN: SIGED Entradas (mismo estilo base, texto violeta negrita) -->
+                <button class="nav-btn siged-btn" id="btnSigedEntradas">
+                    SIGED Entradas
+                </button>
             </div>
         </nav>
 
@@ -279,6 +310,7 @@
         const URL_PASE_CAUSAS = 'https://sistemadigital.github.io/operador/pase.html';
         const URL_INFORME_PASES = 'https://sistemadigital.github.io/operador/pase-informe';
         const URL_INFORME_COMPLETO = 'https://sistemadigital.github.io/ingreso-sistema/reporte-completo';
+        const URL_SIGED_ENTRADAS = 'https://sistemadigital.github.io/ingreso-sistema/SIGED-PASES';  // Nueva URL para SIGED Entradas
         
         // Elementos DOM
         const iframeElement = document.getElementById('contentIframe');
@@ -289,9 +321,10 @@
         const btnPase = document.getElementById('btnPaseCausas');
         const btnInforme = document.getElementById('btnInformePases');
         const btnInformeCompleto = document.getElementById('btnInformeCompleto');
+        const btnSigedEntradas = document.getElementById('btnSigedEntradas');  // Nuevo botón
         
-        // Colección de todos los botones de navegación
-        const navButtons = [btnAtencion, btnRegistro, btnPase, btnInforme, btnInformeCompleto];
+        // Colección de todos los botones de navegación (incluyendo el nuevo)
+        const navButtons = [btnAtencion, btnRegistro, btnPase, btnInforme, btnInformeCompleto, btnSigedEntradas];
         
         // ========== FUNCIÓN PARA ACTUALIZAR ESTADO VISUAL (ACTIVO / INACTIVO) ==========
         function updateActiveButtonStyle(activeButton) {
@@ -335,12 +368,17 @@
             loadUrlAndSetActive(URL_INFORME_COMPLETO, btnInformeCompleto);
         }
         
+        function handleSigedEntradas() {
+            loadUrlAndSetActive(URL_SIGED_ENTRADAS, btnSigedEntradas);
+        }
+        
         // ========== ASIGNACIÓN DE EVENTOS CLICK ==========
         btnAtencion.addEventListener('click', handleAtencionPublico);
         btnRegistro.addEventListener('click', handleRegistroArt583);
         btnPase.addEventListener('click', handlePaseCausas);
         btnInforme.addEventListener('click', handleInformePases);
         btnInformeCompleto.addEventListener('click', handleInformeCompleto);
+        btnSigedEntradas.addEventListener('click', handleSigedEntradas);
         
         // ========== INICIALIZACIÓN: CARGAR 'ATENCIÓN AL PÚBLICO' POR DEFECTO Y ESTILO ACTIVO ==========
         function initializeDefaultState() {
