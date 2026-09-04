@@ -3,822 +3,644 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Art 583 CCyC – Defensoría Civil y Comercial 6 (con Realtime Database)</title>
+    <title>Art 583 CCyC – Defensoría Civil y Comercial 6</title>
+    <!-- Google Fonts (tipografía moderna) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <style>
-        /* Variables CSS actualizadas según causas.html */
-        :root {
-            --primary-blue: #007bff;
-            --primary-light-blue: #e7f4ff;
-            --primary-dark-blue: #0056b3;
-            --secondary-gray: #f8f9fa;
-            --secondary-light-gray: #e9ecef;
-            --secondary-dark-gray: #6c757d;
-            --status-success: #28a745;
-            --status-warning: #ffc107;
-            --status-danger: #dc3545;
-            --status-info: #17a2b8;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --text-link: #007bff;
-            --text-light: #ffffff;
-            --background-default: #ffffff;
-            --background-card: #ffffff;
-            --background-header: #ffffff;
-            --background-table-header: #f8f9fa;
-            --border-default: #dee2e6;
-            --font-family: 'Arial', 'Helvetica', sans-serif;
-            --display-size: 24px;
-            --h1-size: 20px;
-            --h2-size: 18px;
-            --body-large-size: 16px;
-            --body-regular-size: 14px;
-            --caption-size: 12px;
-            --font-weight-regular: 400;
-            --font-weight-semibold: 600;
-            --font-weight-bold: 700;
-            --spacing-unit: 8px;
-            --spacing-xs: 4px;
-            --spacing-s: 8px;
-            --spacing-m: 16px;
-            --spacing-l: 24px;
-            --spacing-xl: 32px;
-            --spacing-gutter: 20px;
-            --border-radius-small: 2px;
-            --border-radius-default: 4px;
-            --border-radius-pill: 20px;
-            --shadow-none: none;
-            --shadow-subtle: 0 1px 3px rgba(0,0,0,0.1);
-            --radius: 12px;
-            --shadow: 0 4px 15px rgba(0,0,0,.08);
-        }
-
-        /* Estilos base mejorados */
+        /* ===== Variables y estilos base actualizados ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-dark: #0a2a4a;
+            --primary-mid: #1a3a6a;
+            --primary-blue: #2a5a8a;
+            --primary-light: #4a8aba;
+            --primary-lighter: #e8f0fe;
+            --secondary-gray: #f0f4f8;
+            --border-light: #d0dce8;
+            --text-primary: #0a1a2a;
+            --text-secondary: #2a4a6a;
+            --text-light: #ffffff;
+            --status-success: #1a8a4a;
+            --status-warning: #c47a1a;
+            --status-danger: #b03a3a;
+            --shadow: 0 8px 24px rgba(10, 42, 74, 0.12);
+            --radius: 16px;
+            --transition: 0.25s ease;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
         body {
-            font-family: var(--font-family);
-            background-color: var(--background-default);
+            font-family: var(--font);
+            background: #f8fafc;
             color: var(--text-primary);
             line-height: 1.5;
             min-height: 100vh;
         }
 
-        /* Header mejorado */
+        /* Header moderno */
         .header {
-            background-color: var(--background-header);
-            border-bottom: 1px solid var(--border-default);
-            padding: var(--spacing-s) var(--spacing-m);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
+            color: var(--text-light);
+            padding: 14px 24px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow-subtle);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         }
-
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             max-width: 1800px;
             margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-
         .logo {
-            font-size: var(--h1-size);
-            font-weight: var(--font-weight-bold);
-            color: var(--primary-blue);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo i {
+            font-size: 24px;
+            color: var(--primary-light);
         }
 
-        /* Contenedor principal mejorado */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 40px;
+            font-family: var(--font);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--primary-light);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+        .btn-success {
+            background: #1a8a4a;
+        }
+        .btn-warning {
+            background: #c47a1a;
+            color: #fff;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 30px;
+        }
+
         .container {
             max-width: 1800px;
             margin: 0 auto;
-            padding: var(--spacing-m) var(--spacing-gutter);
+            padding: 20px 24px;
         }
 
-        /* Tarjetas de resumen (KPIs) */
+        /* ===== KPIs modernos ===== */
         .kpi-section {
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: 32px;
         }
-
         .kpi-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--spacing-m);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
         }
-
         .kpi-cards {
-            display: flex;
-            gap: var(--spacing-m);
-            overflow-x: auto;
-            padding-bottom: var(--spacing-s);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
         }
-
         .kpi-card {
-            background-color: var(--background-card);
-            padding: var(--spacing-m) var(--spacing-l);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
-            text-align: center;
-            box-shadow: var(--shadow-subtle);
-            transition: transform 0.2s, box-shadow 0.2s;
-            min-width: 180px;
-            flex: 1;
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .kpi-card.total {
-            background-color: var(--primary-blue);
-            color: var(--text-light);
-        }
-
-        .kpi-card.pendiente {
-            border-left: 4px solid var(--status-warning);
-        }
-
-        .kpi-card.resuelto {
-            border-left: 4px solid var(--status-success);
-        }
-
-        .kpi-card.en-proceso {
-            border-left: 4px solid var(--primary-blue);
-        }
-
-        .kpi-number {
-            font-size: var(--display-size);
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .kpi-card.total .kpi-number {
-            color: var(--text-light);
-        }
-
-        .kpi-label {
-            font-size: var(--caption-size);
-            font-weight: var(--font-weight-regular);
-            text-transform: uppercase;
-        }
-
-        .kpi-card.total .kpi-label {
-            color: var(--text-light);
-        }
-
-        /* Controles mejorados */
-        .controls-section {
-            background-color: var(--background-card);
-            padding: var(--spacing-m);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
-            margin-bottom: var(--spacing-xl);
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .controls-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--spacing-m);
-        }
-
-        .controls-row {
+            background: #fff;
+            padding: 20px 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-m);
-        }
-
-        .controls-group {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .controls-label {
-            display: block;
-            font-size: var(--body-regular-size);
-            margin-bottom: var(--spacing-xs);
-            font-weight: var(--font-weight-semibold);
-        }
-
-        /* Botones mejorados */
-        .button {
-            background-color: var(--primary-blue);
-            color: var(--text-light);
-            border: none;
-            border-radius: var(--border-radius-default);
-            padding: var(--spacing-s) var(--spacing-m);
-            font-size: var(--body-regular-size);
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: inline-flex;
             align-items: center;
-            gap: var(--spacing-xs);
-            font-weight: var(--font-weight-semibold);
+            gap: 14px;
+            transition: all var(--transition);
+            border: 1px solid transparent;
         }
-
-        .button:hover {
-            opacity: 0.9;
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-light);
+            box-shadow: 0 12px 28px rgba(10, 42, 74, 0.15);
         }
-
-        .button-success {
-            background-color: var(--status-success);
-        }
-
-        .button-warning {
-            background-color: var(--status-warning);
-            color: var(--text-primary);
-        }
-
-        .button-danger {
-            background-color: var(--status-danger);
-        }
-
-        .button-icon {
-            width: 32px;
-            height: 32px;
-            padding: 0;
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 22px;
+            flex-shrink: 0;
         }
-
-        /* Búsqueda mejorada */
-        .search-box {
+        .kpi-icon.total {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+        .kpi-icon.pendiente {
+            background: #fef3d7;
+            color: #b07a1a;
+        }
+        .kpi-icon.proceso {
+            background: #d7eafc;
+            color: var(--primary-blue);
+        }
+        .kpi-icon.resuelto {
+            background: #d4f0e0;
+            color: var(--status-success);
+        }
+        .kpi-info {
             flex: 1;
-            min-width: min(320px, 100%);
-            padding: var(--spacing-s);
-            border: 1px solid var(--border-default);
-            border-radius: var(--border-radius-default);
-            font-size: var(--body-regular-size);
-            transition: border-color .2s ease;
+        }
+        .kpi-number {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .search-box:focus {
+        /* ===== Controles ===== */
+        .controls-section {
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 28px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+        .controls-section .search-box {
+            flex: 1;
+            min-width: 220px;
+            padding: 10px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 40px;
+            font-family: var(--font);
+            font-size: 14px;
+            transition: border var(--transition);
+            background: var(--secondary-gray);
+        }
+        .controls-section .search-box:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(0,123,255,.1);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(42, 90, 138, 0.1);
         }
 
-        /* Tabla mejorada */
+        /* ===== Tabla ===== */
         .table-section {
-            background-color: var(--background-card);
-            border-radius: var(--border-radius-default);
-            border: 1px solid var(--border-default);
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
-            box-shadow: var(--shadow-subtle);
-            margin-bottom: var(--spacing-l);
+            margin-bottom: 24px;
         }
-
         .table-title {
-            font-size: var(--h2-size);
-            font-weight: var(--font-weight-semibold);
-            padding: var(--spacing-m);
-            background-color: var(--background-table-header);
-            border-bottom: 1px solid var(--border-default);
+            padding: 16px 24px;
+            background: var(--secondary-gray);
+            border-bottom: 1px solid var(--border-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: var(--spacing-s);
+            gap: 12px;
+            font-weight: 600;
+            font-size: 16px;
         }
-
         .table-wrap {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            padding: 0 4px;
         }
-
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 900px;
+            font-size: 14px;
         }
-
         .data-table th {
-            background-color: var(--background-table-header);
-            font-weight: var(--font-weight-semibold);
-            border-bottom: 2px solid var(--border-default);
-            padding: var(--spacing-m);
-            color: var(--text-primary);
-            font-size: var(--caption-size);
-            text-transform: uppercase;
             text-align: left;
+            padding: 14px 16px;
+            background: var(--secondary-gray);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-light);
         }
-
         .data-table td {
-            border-bottom: 1px solid var(--border-default);
-            padding: var(--spacing-m);
-            color: var(--text-primary);
-            font-size: var(--body-regular-size);
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
         }
-
+        .data-table tr:hover td {
+            background: var(--primary-lighter);
+        }
         .data-table tr:last-child td {
             border-bottom: none;
         }
 
-        .data-table tr:hover td {
-            background-color: var(--secondary-gray);
-        }
-
-        /* Estilos para estados y prioridades */
         .status-pill, .priority-pill {
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #fff;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        
-        .status-pendiente { background-color: var(--status-warning); color: var(--text-primary); }
-        .status-en-proceso { background-color: var(--primary-blue); }
-        .status-resuelto { background-color: var(--status-success); }
-        
-        .priority-normal { background-color: var(--secondary-dark-gray); }
-        .priority-alta { background-color: var(--status-warning); color: var(--text-primary); }
-        .priority-urgente { background-color: var(--status-danger); }
+        .status-pendiente { background: #fef3d7; color: #7a5a1a; }
+        .status-en-proceso { background: #d7eafc; color: var(--primary-blue); }
+        .status-resuelto { background: #d4f0e0; color: var(--status-success); }
+        .priority-normal { background: #e9ecef; color: #4a5a6a; }
+        .priority-alta { background: #fef3d7; color: #7a5a1a; }
+        .priority-urgente { background: #fce8e8; color: var(--status-danger); }
 
-        /* Acciones en tabla */
-        .actions {
+        .actions-cell {
             display: flex;
-            gap: var(--spacing-xs);
+            gap: 6px;
             flex-wrap: wrap;
         }
-
-        .actions .button {
-            padding: 6px 10px;
-            font-size: var(--caption-size);
+        .actions-cell .btn {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 30px;
+            background: var(--secondary-gray);
+            color: var(--text-primary);
+            box-shadow: none;
+            border: 1px solid var(--border-light);
+        }
+        .actions-cell .btn:hover {
+            background: var(--primary-lighter);
+            border-color: var(--primary-light);
+            transform: none;
+        }
+        .actions-cell .btn-view {
+            background: var(--primary-lighter);
+            border-color: var(--primary-light);
+            color: var(--primary-blue);
+        }
+        .actions-cell .btn-view:hover {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+        .actions-cell .btn-edit {
+            background: #fff3d7;
+            border-color: #e0c080;
+            color: #7a5a1a;
+        }
+        .actions-cell .btn-edit:hover {
+            background: #c47a1a;
+            color: #fff;
         }
 
-        /* Mensaje sin casos */
-        .no-cases { 
-            text-align: center; 
-            padding: 48px 16px; 
-            color: var(--text-secondary); 
-            font-weight: var(--font-weight-semibold); 
-            font-size: 1.05rem; 
+        /* ===== Paginación mejorada ===== */
+        #paginacion-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            margin-top: 8px;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pagination-controls select {
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border-light);
+            font-family: var(--font);
+            font-size: 13px;
+            background: #fff;
+        }
+        .page-info {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .nav-buttons .btn {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 30px;
+            background: #fff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            box-shadow: none;
+            min-width: 36px;
+            justify-content: center;
+        }
+        .nav-buttons .btn.active {
+            background: var(--primary-dark);
+            color: #fff;
+            border-color: var(--primary-dark);
+        }
+        .nav-buttons .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .pagination-goto {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pagination-goto input {
+            width: 60px;
+            padding: 6px 8px;
+            border-radius: 30px;
+            border: 1px solid var(--border-light);
+            font-family: var(--font);
+            text-align: center;
         }
 
-        /* MODALES mejorados */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            inset: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,.6); 
+        /* ===== MODALES ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 42, 74, 0.5);
+            backdrop-filter: blur(4px);
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-
-        .modal-content { 
-            background: var(--background-card); 
+        .modal-content {
+            background: #fff;
             border-radius: var(--radius);
-            max-width: 980px;
+            max-width: 960px;
             width: 100%;
             max-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            animation: fadeIn .25s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeUp 0.3s ease;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .modal-header {
-            position: sticky;
-            top: 0;
-            background: var(--primary-blue);
+            background: var(--primary-dark);
             color: #fff;
-            padding: 12px 16px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 16px 24px;
             border-radius: var(--radius) var(--radius) 0 0;
-            z-index: 5;
             display: flex;
-            align-items: center;
-            gap: 10px;
             justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .modal-header .close {
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity var(--transition);
+            background: none;
+            border: none;
+            color: #fff;
+            line-height: 1;
+        }
+        .modal-header .close:hover {
+            opacity: 1;
+        }
         .modal-body {
-            padding: 16px;
+            padding: 24px;
             overflow-y: auto;
+            flex: 1;
         }
-
         .modal-actions {
-            position: sticky;
-            bottom: 0;
-            background: #fff;
-            padding: 12px 16px;
-            border-top: 1px solid #eee;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-light);
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
-            z-index: 5;
+            background: var(--secondary-gray);
             border-radius: 0 0 var(--radius) var(--radius);
         }
 
-        .close { 
-            color: var(--text-light); 
-            font-size: 28px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: opacity .2s ease; 
+        /* Formulario */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-family: var(--font);
+            font-size: 14px;
+            transition: border var(--transition);
+            background: #fafcfe;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: #fff;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .detail-section {
+            background: var(--secondary-gray);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .detail-section h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 6px;
         }
 
-        .close:hover { 
-            opacity: .7; 
+        /* Modal de vista (resumido + detallado) */
+        .view-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-
-        /* Formularios mejorados */
-        .form-group { 
-            margin-bottom: 16px; 
+        .view-item {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-light);
         }
-
-        .form-group label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-weight: var(--font-weight-semibold); 
-            color: var(--text-primary); 
+        .view-item .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-
-        .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; 
-            padding: 10px 12px; 
-            border: 1px solid var(--border-default); 
-            border-radius: var(--border-radius-default); 
-            font-size: var(--body-regular-size); 
-            transition: border-color .2s ease; 
-            background-color: var(--background-default);
+        .view-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 2px;
             color: var(--text-primary);
         }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
-            outline: none; 
-            border-color: var(--primary-blue); 
-            box-shadow: 0 0 0 3px rgba(0,123,255,.1); 
+        .view-full {
+            grid-column: 1 / -1;
         }
-
-        .form-group textarea { 
-            resize: vertical; 
-            min-height: 100px; 
-        }
-
-        .form-row { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-        }
-
-        .detail-section { 
-            margin-bottom: 18px; 
-            padding: 16px; 
-            background: var(--secondary-gray); 
-            border-radius: var(--border-radius-default); 
-        }
-
-        .detail-section h3 { 
-            color: var(--primary-blue); 
-            margin-bottom: 12px; 
-            font-size: 1.05rem; 
-            border-bottom: 2px solid var(--primary-blue); 
-            padding-bottom: 6px; 
-        }
-
-        .detail-item { 
-            display: grid; 
-            grid-template-columns: 1fr 2fr; 
-            gap: 10px; 
-            margin-bottom: 8px; 
-            padding: 6px 0; 
-            border-bottom: 1px solid var(--border-default); 
-        }
-
-        .detail-item:last-child { 
-            border-bottom: none; 
-        }
-
-        .detail-label { 
-            font-weight: var(--font-weight-semibold); 
-            color: var(--text-primary); 
-        }
-
-        .detail-value { 
-            color: var(--text-secondary); 
-        }
-
-        /* Información del artículo */
-        .article-info {
-            background: var(--secondary-gray);
-            border-left: 4px solid var(--primary-blue);
-            padding: var(--spacing-m);
-            margin: var(--spacing-m) 0;
-            border-radius: var(--border-radius-default);
-            font-size: clamp(0.9rem, 2.2vw, 0.95rem);
-            line-height: 1.6;
-        }
-
-        .article-info h3 { 
-            color: var(--primary-blue); 
-            margin-bottom: var(--spacing-s); 
-            font-size: clamp(1.05rem, 3.2vw, 1.15rem); 
-        }
-
-        /* Paginación */
-        #paginacion-container {
+        .view-actions {
+            margin-top: 16px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-m);
-            margin-top: var(--spacing-m);
-            background: var(--background-card);
-            border-radius: var(--border-radius-default);
-            box-shadow: var(--shadow-subtle);
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .page-info {
-            font-size: var(--body-regular-size);
-            color: var(--text-secondary);
-            font-weight: var(--font-weight-semibold);
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: var(--spacing-s);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .container {
-                max-width: 100%;
-                padding: var(--spacing-s);
-            }
-            
-            .kpi-cards {
-                gap: var(--spacing-s);
-            }
-            
-            .kpi-card {
-                min-width: 160px;
-                padding: var(--spacing-s) var(--spacing-m);
-            }
-            
-            .controls-row {
-                gap: var(--spacing-s);
-            }
-            
-            .controls-group {
-                min-width: 140px;
-            }
-
-            .modal-content {
-                max-width: 95%;
-            }
-        }
-
+        /* ===== Responsive ===== */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: var(--spacing-s);
-                text-align: center;
-            }
-            
-            .kpi-cards {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                overflow-x: visible;
-            }
-            
-            .kpi-card {
-                min-width: auto;
-            }
-            
-            .controls-row {
-                flex-direction: column;
-            }
-            
-            .controls-group {
-                min-width: auto;
-            }
-            
-            #paginacion-container {
-                flex-direction: column;
-                gap: var(--spacing-m);
-                text-align: center;
-            }
-            
-            .table-title {
-                padding: var(--spacing-s);
-            }
-            
-            .data-table th, 
-            .data-table td {
-                padding: var(--spacing-s);
-            }
-
-            .form-row { 
-                grid-template-columns: 1fr; 
-            }
-            
-            .detail-item { 
-                grid-template-columns: 1fr; 
-                gap: 6px; 
-            }
-
-            .table-title {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .actions {
-                justify-content: center;
-            }
-
-            .modal-body {
-                padding: var(--spacing-s);
-            }
-
-            .modal-actions {
-                flex-direction: column;
-            }
+            .header-content { flex-direction: column; align-items: stretch; text-align: center; }
+            .kpi-cards { grid-template-columns: 1fr 1fr; }
+            .controls-section { flex-direction: column; align-items: stretch; }
+            .form-row { grid-template-columns: 1fr; }
+            .view-grid { grid-template-columns: 1fr; }
+            .data-table { min-width: 700px; font-size: 13px; }
+            .modal-content { max-width: 100%; margin: 10px; border-radius: 12px; }
+            #paginacion-container { flex-direction: column; align-items: stretch; }
+            .pagination-controls, .nav-buttons, .pagination-goto { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .kpi-cards { grid-template-columns: 1fr; }
+            .container { padding: 12px; }
+            .modal-body { padding: 16px; }
         }
 
-        @media (max-width: 576px) {
-            .container {
-                padding: var(--spacing-xs);
-            }
-            
-            .kpi-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .kpi-card {
-                padding: var(--spacing-m);
-            }
-            
-            .kpi-number {
-                font-size: var(--h1-size);
-            }
-            
-            .controls-section,
-            .table-section {
-                padding: var(--spacing-s);
-            }
-            
-            .controls-title,
-            .table-title {
-                font-size: var(--body-large-size);
-            }
-
-            .modal-content {
-                max-width: 100%;
-                max-height: 100vh;
-                border-radius: 0;
-                margin: 0;
-            }
-
-            .modal-header,
-            .modal-body,
-            .modal-actions {
-                padding: var(--spacing-s);
-            }
-            
-            .controls-group {
-                width: 100%;
-            }
-            
-            .button {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .table-wrap {
-                margin: 0 -8px;
-                padding: 0 8px;
-            }
-            
-            .data-table {
-                min-width: 100%;
-            }
-            
-            .status-pill, .priority-pill {
-                font-size: 0.7rem;
-                padding: 3px 6px;
-            }
-            
-            .actions {
-                flex-direction: column;
-                gap: 4px;
-            }
-            
-            .actions .button {
-                width: 100%;
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .container {
-                padding: 4px;
-            }
-            
-            .kpi-card {
-                padding: 10px;
-            }
-            
-            .controls-section,
-            .table-section {
-                padding: 8px;
-            }
-            
-            .data-table th, 
-            .data-table td {
-                padding: 6px;
-                font-size: 0.8rem;
-            }
-            
-            .button {
-                padding: 8px 12px;
-                font-size: 0.85rem;
-            }
-        }
+        /* Utilidades */
+        .text-center { text-align: center; }
+        .mt-16 { margin-top: 16px; }
+        .no-cases { padding: 48px 16px; color: var(--text-secondary); }
+        .no-cases i { font-size: 48px; color: var(--border-light); margin-bottom: 12px; }
     </style>
 </head>
 <body>
+
     <header class="header">
         <div class="header-content">
-            <div class="logo">Art 583 CCyC – Defensoría Civil y Comercial 6</div>
-            <button class="button button-success" onclick="openModal('add')">
-                <i class="fas fa-plus"></i> Nuevo Caso
+            <div class="logo"><i class="fas fa-gavel"></i> Art 583 CCyC – Defensoría Civil y Comercial 6</div>
+            <button class="btn btn-success" onclick="openModal('add')">
+                <i class="fas fa-plus-circle"></i> Nuevo Caso
             </button>
         </div>
     </header>
 
     <main class="container">
-        <div class="article-info">
-            <h3>ARTÍCULO 583. Reclamación en supuestos de filiación con sola maternidad</h3>
-            <p>El Registro Civil debe comunicar al Ministerio Público cuando un niño/a figure sólo con filiación materna, procurando la determinación de paternidad y reconocimiento. Debe instarse a la madre a suministrar el nombre del presunto padre y datos para su individualización, bajo juramento previo aviso de consecuencias legales.</p>
-            <p>Antes de remitir la comunicación, el Registro cita e informa a la madre sobre derechos y deberes. Cumplido ello, se remiten actuaciones al Ministerio Público para promover acción judicial.</p>
+        <!-- Artículo informativo -->
+        <div style="background:#e8f0fe; border-left:4px solid var(--primary-dark); padding:16px 20px; border-radius:12px; margin-bottom:28px; font-size:14px; line-height:1.6;">
+            <strong style="color:var(--primary-dark);">ARTÍCULO 583.</strong> Reclamación en supuestos de filiación con sola maternidad. El Registro Civil debe comunicar al Ministerio Público cuando un niño/a figure sólo con filiación materna, procurando la determinación de paternidad y reconocimiento. Debe instarse a la madre a suministrar el nombre del presunto padre y datos para su individualización, bajo juramento previo aviso de consecuencias legales. Antes de remitir la comunicación, el Registro cita e informa a la madre sobre derechos y deberes.
         </div>
 
-        <!-- KPIs mejorados -->
+        <!-- KPIs -->
         <section class="kpi-section">
-            <h2 class="kpi-title">Resumen de Casos</h2>
+            <h2 class="kpi-title">📊 Resumen de Casos</h2>
             <div class="kpi-cards" id="kpiCards">
-                <div class="kpi-card total">
-                    <div class="kpi-number" id="totalCasos">0</div>
-                    <div class="kpi-label">Total de Casos</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon total"><i class="fas fa-folder-open"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-number" id="totalCasos">0</div>
+                        <div class="kpi-label">Total</div>
+                    </div>
                 </div>
-                <div class="kpi-card pendiente">
-                    <div class="kpi-number" id="casosPendientes">0</div>
-                    <div class="kpi-label">Pendientes</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon pendiente"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-number" id="casosPendientes">0</div>
+                        <div class="kpi-label">Pendientes</div>
+                    </div>
                 </div>
-                <div class="kpi-card en-proceso">
-                    <div class="kpi-number" id="casosEnProceso">0</div>
-                    <div class="kpi-label">En Proceso</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon proceso"><i class="fas fa-spinner"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-number" id="casosEnProceso">0</div>
+                        <div class="kpi-label">En Proceso</div>
+                    </div>
                 </div>
-                <div class="kpi-card resuelto">
-                    <div class="kpi-number" id="casosResueltos">0</div>
-                    <div class="kpi-label">Resueltos</div>
+                <div class="kpi-card">
+                    <div class="kpi-icon resuelto"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-info">
+                        <div class="kpi-number" id="casosResueltos">0</div>
+                        <div class="kpi-label">Resueltos</div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Controles mejorados -->
+        <!-- Controles -->
         <section class="controls-section">
-            <h2 class="controls-title">Filtros y Acciones</h2>
-            <div class="controls-row">
-                <div class="controls-group">
-                    <input type="text" class="search-box" id="searchInput" placeholder="Buscar casos por cualquier campo..." onkeyup="filterCases()" />
-                </div>
-                <div class="controls-group">
-                    <button class="button button-warning" onclick="printAllCases()">
-                        <i class="fas fa-print"></i> Imprimir Todo
-                    </button>
-                </div>
-            </div>
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar casos por cualquier campo..." onkeyup="filterCases()" />
+            <button class="btn btn-warning" onclick="printAllCases()"><i class="fas fa-print"></i> Imprimir Todo</button>
         </section>
 
-        <!-- Tabla mejorada -->
+        <!-- Tabla -->
         <section class="table-section">
             <div class="table-title">
-                <span>Registro de Casos</span>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <span id="paginationInfo" style="font-size: 0.9rem; color: var(--text-secondary);"></span>
-                </div>
+                <span>📋 Registro de Casos</span>
+                <span id="registrosInfo" style="font-size:13px; font-weight:400; color:var(--text-secondary);"></span>
             </div>
             <div class="table-wrap">
                 <table class="data-table">
@@ -834,43 +656,48 @@
                         </tr>
                     </thead>
                     <tbody id="casesContainer">
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 40px;">
-                                <div class="no-cases">
-                                    <div>📁</div>
-                                    <p>No hay casos registrados</p>
-                                    <p>Haga clic en "Nuevo Caso" para comenzar</p>
-                                </div>
-                            </td>
-                        </tr>
+                        <tr><td colspan="7" class="text-center"><div class="no-cases"><i class="fas fa-folder-open"></i><p>No hay casos registrados</p><p style="font-size:13px;">Haga clic en "Nuevo Caso" para comenzar</p></div></td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
-        
-        <!-- Controles de paginación -->
-        <div id="paginacion-container" style="display: none;">
-            <div class="page-info"></div>
-            <div class="nav-buttons"></div>
+
+        <!-- Paginación -->
+        <div id="paginacion-container">
+            <div class="pagination-controls">
+                <label for="recordsPerPage" style="font-size:13px;">Mostrar:</label>
+                <select id="recordsPerPage" onchange="cambiarRegistrosPorPagina()">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span style="font-size:13px;">por página</span>
+            </div>
+            <div class="page-info" id="pageInfo">Página 1 de 1</div>
+            <div class="nav-buttons" id="navButtons"></div>
+            <div class="pagination-goto">
+                <span style="font-size:13px;">Ir a:</span>
+                <input type="number" id="goToPage" min="1" value="1" onchange="irAPagina(this.value)" />
+                <button class="btn btn-sm" onclick="irAPagina(document.getElementById('goToPage').value)">Ir</button>
+            </div>
         </div>
     </main>
 
-    <!-- Modal para agregar/editar casos -->
+    <!-- ===== MODAL DE REGISTRO (Nuevo / Editar) ===== -->
     <div id="caseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalTitle">Nuevo Caso</h2>
-                <div class="modal-actions">
-                    <button class="button button-warning" onclick="printCaseFromForm()">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                    <span class="close" onclick="closeModal()">&times;</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-sm btn-outline" onclick="printCaseFromForm()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="close" onclick="closeModal()">&times;</button>
                 </div>
             </div>
             <div class="modal-body">
                 <form id="caseForm">
                     <div class="detail-section">
-                        <h3>Información General del Caso</h3>
+                        <h3>📌 Información General</h3>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="numeroExpediente">Número de Expediente *</label>
@@ -883,9 +710,9 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="estado">Estado del Caso *</label>
+                                <label for="estado">Estado *</label>
                                 <select id="estado" required>
-                                    <option value="">Seleccionar estado</option>
+                                    <option value="">Seleccionar</option>
                                     <option value="pendiente">Pendiente</option>
                                     <option value="en-proceso">En Proceso</option>
                                     <option value="resuelto">Resuelto</option>
@@ -903,192 +730,184 @@
                     </div>
 
                     <div class="detail-section">
-                        <h3>Información del Menor</h3>
+                        <h3>👶 Menor</h3>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="nombreMenor">Nombre del Menor *</label>
-                                <input type="text" id="nombreMenor" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="apellidoMenor">Apellido del Menor *</label>
-                                <input type="text" id="apellidoMenor" required />
-                            </div>
+                            <div class="form-group"><label>Nombre *</label><input type="text" id="nombreMenor" required /></div>
+                            <div class="form-group"><label>Apellido *</label><input type="text" id="apellidoMenor" required /></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                                <input type="date" id="fechaNacimiento" />
-                            </div>
-                            <div class="form-group">
-                                <label for="dniMenor">DNI del Menor</label>
-                                <input type="text" id="dniMenor" />
-                            </div>
+                            <div class="form-group"><label>Fecha Nac.</label><input type="date" id="fechaNacimiento" /></div>
+                            <div class="form-group"><label>DNI</label><input type="text" id="dniMenor" /></div>
                         </div>
-                        <div class="form-group">
-                            <label for="lugarNacimiento">Lugar de Nacimiento</label>
-                            <input type="text" id="lugarNacimiento" />
-                        </div>
+                        <div class="form-group"><label>Lugar Nacimiento</label><input type="text" id="lugarNacimiento" /></div>
                     </div>
 
                     <div class="detail-section">
-                        <h3>Información de la Madre</h3>
+                        <h3>👩 Madre</h3>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="nombreMadre">Nombre de la Madre *</label>
-                                <input type="text" id="nombreMadre" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="apellidoMadre">Apellido de la Madre *</label>
-                                <input type="text" id="apellidoMadre" required />
-                            </div>
+                            <div class="form-group"><label>Nombre *</label><input type="text" id="nombreMadre" required /></div>
+                            <div class="form-group"><label>Apellido *</label><input type="text" id="apellidoMadre" required /></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="dniMadre">DNI de la Madre</label>
-                                <input type="text" id="dniMadre" />
-                            </div>
-                            <div class="form-group">
-                                <label for="telefonoMadre">Teléfono de la Madre</label>
-                                <input type="text" id="telefonoMadre" />
-                            </div>
+                            <div class="form-group"><label>DNI</label><input type="text" id="dniMadre" /></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="telefonoMadre" /></div>
                         </div>
-                        <div class="form-group">
-                            <label for="domicilioMadre">Domicilio de la Madre</label>
-                            <input type="text" id="domicilioMadre" />
-                        </div>
+                        <div class="form-group"><label>Domicilio</label><input type="text" id="domicilioMadre" /></div>
                     </div>
 
                     <div class="detail-section">
-                        <h3>Información del Presunto Padre</h3>
+                        <h3>👨 Presunto Padre</h3>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="nombrePadre">Nombre del Presunto Padre</label>
-                                <input type="text" id="nombrePadre" />
-                            </div>
-                            <div class="form-group">
-                                <label for="apellidoPadre">Apellido del Presunto Padre</label>
-                                <input type="text" id="apellidoPadre" />
-                            </div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="nombrePadre" /></div>
+                            <div class="form-group"><label>Apellido</label><input type="text" id="apellidoPadre" /></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label for="dniPadre">DNI del Presunto Padre</label>
-                                <input type="text" id="dniPadre" />
-                            </div>
-                            <div class="form-group">
-                                <label for="telefonoPadre">Teléfono del Presunto Padre</label>
-                                <input type="text" id="telefonoPadre" />
-                            </div>
+                            <div class="form-group"><label>DNI</label><input type="text" id="dniPadre" /></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="telefonoPadre" /></div>
                         </div>
-                        <div class="form-group">
-                            <label for="domicilioPadre">Domicilio del Presunto Padre</label>
-                            <input type="text" id="domicilioPadre" />
-                        </div>
-                        <div class="form-group">
-                            <label for="informacionAdicionalPadre">Información Adicional para Individualización</label>
-                            <textarea id="informacionAdicionalPadre" placeholder="Información útil para individualización y paradero"></textarea>
-                        </div>
+                        <div class="form-group"><label>Domicilio</label><input type="text" id="domicilioPadre" /></div>
+                        <div class="form-group"><label>Información Adicional</label><textarea id="informacionAdicionalPadre" rows="2"></textarea></div>
                     </div>
                 </form>
             </div>
             <div class="modal-actions">
-                <button type="submit" class="button button-success" form="caseForm">
-                    <i class="fas fa-save"></i> Guardar Caso
-                </button>
-                <button type="button" class="button button-secondary" onclick="closeModal()">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
+                <button type="submit" class="btn btn-success" form="caseForm"><i class="fas fa-save"></i> Guardar Caso</button>
+                <button type="button" class="btn" onclick="closeModal()" style="background:#e9ecef; color:#333;">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase App + Realtime Database (módulos) -->
+    <!-- ===== MODAL DE VISTA RÁPIDA (VER) ===== -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content" style="max-width:720px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-eye"></i> Detalle del Caso</h2>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-sm btn-outline" onclick="printSingleCase()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="close" onclick="closeViewModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body" id="viewBody">
+                <!-- Se llena dinámicamente -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeViewModal()" style="background:#e9ecef; color:#333;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FIREBASE + FIRESTORE (módulo) ===== -->
     <script type="module">
-        // Inicializar Firebase App
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
         import {
-            getDatabase, ref, set, get, onValue, remove, child, update
-        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+            getFirestore,
+            collection,
+            doc,
+            setDoc,
+            deleteDoc,
+            updateDoc,
+            onSnapshot,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDaMuUaVI_61xHMQoRSsIkHi9fqvZgkj6s",
             authDomain: "articulo583.firebaseapp.com",
+            databaseURL: "https://articulo583-default-rtdb.firebaseio.com",
             projectId: "articulo583",
             storageBucket: "articulo583.firebasestorage.app",
             messagingSenderId: "972837111055",
-            appId: "1:972837111055:web:aa37d0d28d8b0d0a0f6a7a",
-            databaseURL: "https://articulo583-default-rtdb.firebaseio.com"
+            appId: "1:972837111055:web:aa37d0d28d8b0d0a0f6a7a"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
+        const casosCollection = collection(db, 'casos');
 
-        // Estado local
-        let cases = JSON.parse(localStorage.getItem('defensoriaCases')) || [];
+        // Estado
+        let cases = [];
         let currentEditingId = null;
-
-        const casesRef = ref(db, 'casos');
-
-        // Suscripción en tiempo real a Realtime Database
-        onValue(casesRef, (snapshot) => {
-            const val = snapshot.val();
-            const remote = [];
-            if (val && typeof val === 'object') {
-                for (const [key, data] of Object.entries(val)) {
-                    remote.push({ id: key, ...data });
-                }
-                // Orden simple por fecha de ingreso descendente si existe
-                remote.sort((a, b) => (b.fechaIngreso || '').localeCompare(a.fechaIngreso || ''));
-            }
-            cases = remote;
-            localStorage.setItem('defensoriaCases', JSON.stringify(cases));
-            renderCases();
-            actualizarKPIs();
-        }, (err) => {
-            renderCases();
-            actualizarKPIs();
-        });
-
-        // Variables de paginación
-        const recordsPerPage = 10;
+        let recordsPerPage = 25;
         let paginaActual = 1;
         let datosFiltrados = [];
 
-        // Cargar UI al iniciar
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCases();
+        // ===== Suscripción en tiempo real =====
+        onSnapshot(casosCollection, (snapshot) => {
+            const remote = [];
+            snapshot.forEach((doc) => {
+                remote.push({ id: doc.id, ...doc.data() });
+            });
+            remote.sort((a, b) => (b.fechaIngreso || '').localeCompare(a.fechaIngreso || ''));
+            cases = remote;
+            filterCases();
             actualizarKPIs();
+        }, (error) => {
+            console.error("Error en onSnapshot:", error);
+            const local = localStorage.getItem('defensoriaCases');
+            if (local) {
+                cases = JSON.parse(local);
+                filterCases();
+                actualizarKPIs();
+            }
         });
 
-        // UI logic
+        // Carga inicial
+        async function cargarDatosIniciales() {
+            try {
+                const snapshot = await getDocs(casosCollection);
+                const remote = [];
+                snapshot.forEach((doc) => {
+                    remote.push({ id: doc.id, ...doc.data() });
+                });
+                remote.sort((a, b) => (b.fechaIngreso || '').localeCompare(a.fechaIngreso || ''));
+                cases = remote;
+                filterCases();
+                actualizarKPIs();
+                localStorage.setItem('defensoriaCases', JSON.stringify(cases));
+            } catch (e) {
+                console.error("Error al cargar datos iniciales:", e);
+            }
+        }
+        cargarDatosIniciales();
+
+        // ===== Funciones de UI =====
         window.openModal = function(mode, caseId = null) {
             const modal = document.getElementById('caseModal');
             const modalTitle = document.getElementById('modalTitle');
             const form = document.getElementById('caseForm');
-            if (mode === 'add') { 
-                modalTitle.textContent = 'Nuevo Caso'; 
-                form.reset(); 
-                currentEditingId = null; 
-            } else if (mode === 'edit') { 
-                modalTitle.textContent = 'Editar Caso'; 
-                currentEditingId = caseId; 
-                loadCaseData(caseId); 
+            // Habilitar campos
+            form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+            const saveBtn = form.querySelector('button[type="submit"]');
+            if (saveBtn) saveBtn.style.display = '';
+
+            if (mode === 'add') {
+                modalTitle.textContent = 'Nuevo Caso';
+                form.reset();
+                currentEditingId = null;
+            } else if (mode === 'edit') {
+                modalTitle.textContent = 'Editar Caso';
+                currentEditingId = caseId;
+                loadCaseData(caseId);
             }
             modal.style.display = 'flex';
         }
 
-        window.closeModal = function() { 
-            document.getElementById('caseModal').style.display = 'none'; 
-            currentEditingId = null; 
+        window.closeModal = function() {
+            document.getElementById('caseModal').style.display = 'none';
+            currentEditingId = null;
+            const saveBtn = document.querySelector('#caseForm button[type="submit"]');
+            if (saveBtn) saveBtn.style.display = '';
+            document.querySelectorAll('#caseForm input, #caseForm select, #caseForm textarea').forEach(el => el.disabled = false);
         }
 
         function loadCaseData(caseId) {
             const caseData = cases.find(c => c.id === caseId);
             if (!caseData) return;
             const fields = [
-                'numeroExpediente','fechaIngreso','estado','prioridad','nombreMenor','apellidoMenor','fechaNacimiento','dniMenor','lugarNacimiento',
-                'nombreMadre','apellidoMadre','dniMadre','telefonoMadre','domicilioMadre','nombrePadre','apellidoPadre','dniPadre','telefonoPadre',
-                'domicilioPadre','informacionAdicionalPadre'
+                'numeroExpediente', 'fechaIngreso', 'estado', 'prioridad', 'nombreMenor', 'apellidoMenor',
+                'fechaNacimiento', 'dniMenor', 'lugarNacimiento', 'nombreMadre', 'apellidoMadre', 'dniMadre',
+                'telefonoMadre', 'domicilioMadre', 'nombrePadre', 'apellidoPadre', 'dniPadre', 'telefonoPadre',
+                'domicilioPadre', 'informacionAdicionalPadre'
             ];
             for (const key of fields) {
                 const el = document.getElementById(key);
@@ -1096,260 +915,341 @@
             }
         }
 
+        // ===== Guardado RÁPIDO (sin demora) =====
         async function saveCaseData() {
             const caseData = {
-                id: currentEditingId || Date.now().toString(),
-                numeroExpediente: document.getElementById('numeroExpediente').value,
+                numeroExpediente: document.getElementById('numeroExpediente').value.trim(),
                 fechaIngreso: document.getElementById('fechaIngreso').value,
                 estado: document.getElementById('estado').value,
                 prioridad: document.getElementById('prioridad').value,
-                nombreMenor: document.getElementById('nombreMenor').value,
-                apellidoMenor: document.getElementById('apellidoMenor').value,
+                nombreMenor: document.getElementById('nombreMenor').value.trim(),
+                apellidoMenor: document.getElementById('apellidoMenor').value.trim(),
                 fechaNacimiento: document.getElementById('fechaNacimiento').value,
-                dniMenor: document.getElementById('dniMenor').value,
-                lugarNacimiento: document.getElementById('lugarNacimiento').value,
-                nombreMadre: document.getElementById('nombreMadre').value,
-                apellidoMadre: document.getElementById('apellidoMadre').value,
-                dniMadre: document.getElementById('dniMadre').value,
-                telefonoMadre: document.getElementById('telefonoMadre').value,
-                domicilioMadre: document.getElementById('domicilioMadre').value,
-                nombrePadre: document.getElementById('nombrePadre').value,
-                apellidoPadre: document.getElementById('apellidoPadre').value,
-                dniPadre: document.getElementById('dniPadre').value,
-                telefonoPadre: document.getElementById('telefonoPadre').value,
-                domicilioPadre: document.getElementById('domicilioPadre').value,
-                informacionAdicionalPadre: document.getElementById('informacionAdicionalPadre').value,
+                dniMenor: document.getElementById('dniMenor').value.trim(),
+                lugarNacimiento: document.getElementById('lugarNacimiento').value.trim(),
+                nombreMadre: document.getElementById('nombreMadre').value.trim(),
+                apellidoMadre: document.getElementById('apellidoMadre').value.trim(),
+                dniMadre: document.getElementById('dniMadre').value.trim(),
+                telefonoMadre: document.getElementById('telefonoMadre').value.trim(),
+                domicilioMadre: document.getElementById('domicilioMadre').value.trim(),
+                nombrePadre: document.getElementById('nombrePadre').value.trim(),
+                apellidoPadre: document.getElementById('apellidoPadre').value.trim(),
+                dniPadre: document.getElementById('dniPadre').value.trim(),
+                telefonoPadre: document.getElementById('telefonoPadre').value.trim(),
+                domicilioPadre: document.getElementById('domicilioPadre').value.trim(),
+                informacionAdicionalPadre: document.getElementById('informacionAdicionalPadre').value.trim(),
                 fechaModificacion: new Date().toISOString().split('T')[0],
             };
 
-            try {
-                const id = caseData.id;
-                await set(child(casesRef, id), {
-                    ...caseData,
-                    fechaCreacion: (currentEditingId ? caseData.fechaCreacion : (new Date().toISOString().split('T')[0])) || (new Date().toISOString().split('T')[0]),
-                    ts: Date.now()
-                });
+            if (!caseData.numeroExpediente || !caseData.fechaIngreso || !caseData.estado ||
+                !caseData.nombreMenor || !caseData.apellidoMenor || !caseData.nombreMadre || !caseData.apellidoMadre) {
+                alert('Por favor, complete todos los campos obligatorios (*)');
+                return;
+            }
 
-                const idx = cases.findIndex(c => c.id === id);
-                if (idx !== -1) cases[idx] = caseData; else cases.push(caseData);
-                localStorage.setItem('defensoriaCases', JSON.stringify(cases));
-                renderCases();
-                actualizarKPIs();
+            try {
+                let id = currentEditingId;
+                if (id) {
+                    const docRef = doc(db, 'casos', id);
+                    await updateDoc(docRef, caseData);
+                } else {
+                    id = Date.now().toString();
+                    const docRef = doc(db, 'casos', id);
+                    caseData.fechaCreacion = new Date().toISOString().split('T')[0];
+                    await setDoc(docRef, caseData);
+                }
                 closeModal();
             } catch (e) {
-                alert('Error al guardar en Realtime Database. Revise la conexión o reglas de seguridad.');
+                console.error('Error al guardar en Firestore:', e);
+                alert('Error al guardar el caso. Verifica tu conexión.');
             }
         }
 
-        async function deleteCase(caseId) {
-            if (!confirm('¿Está seguro de que desea eliminar este caso? Esta acción no se puede deshacer.')) return;
-            try {
-                await remove(child(casesRef, caseId));
-                cases = cases.filter(c => c.id !== caseId);
-                localStorage.setItem('defensoriaCases', JSON.stringify(cases));
-                renderCases();
-                actualizarKPIs();
-            } catch (e) {
-                alert('No se pudo eliminar el caso en Realtime Database.');
-            }
+        // ===== VISTA RÁPIDA (VER) =====
+        window.viewCase = function(caseId) {
+            const caseData = cases.find(c => c.id === caseId);
+            if (!caseData) return;
+            const body = document.getElementById('viewBody');
+            // Formatear fecha y hora local Argentina
+            const fechaIngreso = caseData.fechaIngreso ? formatDateLocal(caseData.fechaIngreso) : '—';
+            const fechaNac = caseData.fechaNacimiento ? formatDateLocal(caseData.fechaNacimiento) : '—';
+            // Crear HTML detallado
+            body.innerHTML = `
+                <div class="view-grid">
+                    <div class="view-item"><div class="label">Expediente</div><div class="value">${caseData.numeroExpediente || '—'}</div></div>
+                    <div class="view-item"><div class="label">Fecha Ingreso</div><div class="value">${fechaIngreso}</div></div>
+                    <div class="view-item"><div class="label">Estado</div><div class="value"><span class="status-pill status-${caseData.estado}">${getStatusText(caseData.estado)}</span></div></div>
+                    <div class="view-item"><div class="label">Prioridad</div><div class="value"><span class="priority-pill priority-${caseData.prioridad}">${getPriorityText(caseData.prioridad)}</span></div></div>
+                    <div class="view-item view-full"><div class="label">Menor</div><div class="value">${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</div></div>
+                    <div class="view-item"><div class="label">Fecha Nac. Menor</div><div class="value">${fechaNac}</div></div>
+                    <div class="view-item"><div class="label">DNI Menor</div><div class="value">${caseData.dniMenor || '—'}</div></div>
+                    <div class="view-item"><div class="label">Lugar Nacimiento</div><div class="value">${caseData.lugarNacimiento || '—'}</div></div>
+                    <div class="view-item view-full"><div class="label">Madre</div><div class="value">${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</div></div>
+                    <div class="view-item"><div class="label">DNI Madre</div><div class="value">${caseData.dniMadre || '—'}</div></div>
+                    <div class="view-item"><div class="label">Teléfono Madre</div><div class="value">${caseData.telefonoMadre || '—'}</div></div>
+                    <div class="view-item view-full"><div class="label">Domicilio Madre</div><div class="value">${caseData.domicilioMadre || '—'}</div></div>
+                    <div class="view-item view-full"><div class="label">Presunto Padre</div><div class="value">${caseData.nombrePadre || ''} ${caseData.apellidoPadre || ''}</div></div>
+                    <div class="view-item"><div class="label">DNI Padre</div><div class="value">${caseData.dniPadre || '—'}</div></div>
+                    <div class="view-item"><div class="label">Teléfono Padre</div><div class="value">${caseData.telefonoPadre || '—'}</div></div>
+                    <div class="view-item view-full"><div class="label">Domicilio Padre</div><div class="value">${caseData.domicilioPadre || '—'}</div></div>
+                    <div class="view-item view-full"><div class="label">Información Adicional</div><div class="value">${caseData.informacionAdicionalPadre || '—'}</div></div>
+                </div>
+                <div class="view-actions">
+                    <button class="btn btn-sm" onclick="printSingleCase()" style="background:var(--primary-dark); color:#fff;"><i class="fas fa-print"></i> Imprimir este caso</button>
+                </div>
+            `;
+            // Guardar ID para impresión
+            body.dataset.caseId = caseId;
+            document.getElementById('viewModal').style.display = 'flex';
         }
 
-        // Filtrado de casos
+        window.closeViewModal = function() {
+            document.getElementById('viewModal').style.display = 'none';
+        }
+
+        window.printSingleCase = function() {
+            const body = document.getElementById('viewBody');
+            const caseId = body.dataset.caseId;
+            const caseData = cases.find(c => c.id === caseId);
+            if (!caseData) return;
+            const printWindow = window.open('', '_blank');
+            const content = `
+            <!DOCTYPE html>
+            <html><head><title>Detalle Caso ${caseData.numeroExpediente || ''}</title>
+            <style>body{font-family:'Inter',sans-serif;padding:30px;} h1{color:#0a2a4a;} .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;} .item{border-bottom:1px solid #ddd;padding:8px 0;} .label{font-weight:600;color:#2a4a6a;}</style>
+            </head><body>
+            <h1>Detalle del Caso</h1>
+            <p><strong>Expediente:</strong> ${caseData.numeroExpediente || '—'}</p>
+            <p><strong>Fecha Ingreso:</strong> ${formatDateLocal(caseData.fechaIngreso)}</p>
+            <p><strong>Estado:</strong> ${getStatusText(caseData.estado)}</p>
+            <p><strong>Prioridad:</strong> ${getPriorityText(caseData.prioridad)}</p>
+            <hr>
+            <h3>Menor</h3>
+            <p>${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</p>
+            <p><strong>DNI:</strong> ${caseData.dniMenor || '—'} | <strong>Nac.:</strong> ${formatDateLocal(caseData.fechaNacimiento)}</p>
+            <h3>Madre</h3>
+            <p>${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</p>
+            <p><strong>DNI:</strong> ${caseData.dniMadre || '—'} | <strong>Tel.:</strong> ${caseData.telefonoMadre || '—'}</p>
+            <p><strong>Domicilio:</strong> ${caseData.domicilioMadre || '—'}</p>
+            <h3>Presunto Padre</h3>
+            <p>${caseData.nombrePadre || ''} ${caseData.apellidoPadre || ''}</p>
+            <p><strong>DNI:</strong> ${caseData.dniPadre || '—'} | <strong>Tel.:</strong> ${caseData.telefonoPadre || '—'}</p>
+            <p><strong>Domicilio:</strong> ${caseData.domicilioPadre || '—'}</p>
+            <p><strong>Info Adicional:</strong> ${caseData.informacionAdicionalPadre || '—'}</p>
+            <hr>
+            <p style="color:#6c757d; font-size:12px;">Impreso el ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>
+            </body></html>`;
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // ===== Filtrado y paginación =====
         window.filterCases = function() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             if (!searchTerm) {
                 datosFiltrados = cases;
             } else {
-                datosFiltrados = cases.filter(caseData => 
-                    Object.values(caseData).some(value => 
-                        value && value.toString().toLowerCase().includes(searchTerm)
-                    )
+                datosFiltrados = cases.filter(c =>
+                    Object.values(c).some(v => v && v.toString().toLowerCase().includes(searchTerm))
                 );
             }
             paginaActual = 1;
             renderTablaPaginada();
         }
 
-        // Renderizado con paginación
         function renderTablaPaginada() {
             const startIndex = (paginaActual - 1) * recordsPerPage;
-            const endIndex = startIndex + recordsPerPage;
+            const endIndex = Math.min(startIndex + recordsPerPage, datosFiltrados.length);
             const dataToRender = datosFiltrados.slice(startIndex, endIndex);
             renderTablas(dataToRender);
-            renderPaginacion(datosFiltrados.length, dataToRender.length);
-        }
-
-        function renderCases() {
-            datosFiltrados = cases;
-            renderTablaPaginada();
+            renderPaginacion(datosFiltrados.length, startIndex, endIndex);
         }
 
         function renderTablas(data) {
             const container = document.getElementById('casesContainer');
-            
             if (data.length === 0) {
-                container.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px;">
-                            <div class="no-cases">
-                                <div>📁</div>
-                                <p>No hay casos registrados</p>
-                                <p>Haga clic en "Nuevo Caso" para comenzar</p>
-                            </div>
-                        </td>
-                    </tr>`;
+                container.innerHTML = `<tr><td colspan="7" class="text-center"><div class="no-cases"><i class="fas fa-folder-open"></i><p>No hay casos coincidentes</p></div></td></tr>`;
                 return;
             }
-
-            container.innerHTML = data.map(caseData => `
+            container.innerHTML = data.map(c => `
                 <tr>
-                    <td>${caseData.numeroExpediente || ''}</td>
-                    <td>${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</td>
-                    <td>${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</td>
-                    <td>${formatDate(caseData.fechaIngreso) || ''}</td>
-                    <td><span class="status-pill status-${caseData.estado}">${getStatusText(caseData.estado)}</span></td>
-                    <td><span class="priority-pill priority-${caseData.prioridad}">${getPriorityText(caseData.prioridad)}</span></td>
-                    <td class="actions">
-                        <button class="button button-icon" onclick="viewCase('${caseData.id}')" title="Ver">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="button button-icon" onclick="openModal('edit', '${caseData.id}')" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="button button-icon button-danger" onclick="deleteCase('${caseData.id}')" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <td><strong>${c.numeroExpediente || ''}</strong></td>
+                    <td>${c.nombreMenor || ''} ${c.apellidoMenor || ''}</td>
+                    <td>${c.nombreMadre || ''} ${c.apellidoMadre || ''}</td>
+                    <td>${formatDateLocal(c.fechaIngreso)}</td>
+                    <td><span class="status-pill status-${c.estado}">${getStatusText(c.estado)}</span></td>
+                    <td><span class="priority-pill priority-${c.prioridad}">${getPriorityText(c.prioridad)}</span></td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-view" onclick="viewCase('${c.id}')"><i class="fas fa-eye"></i> Ver</button>
+                            <button class="btn btn-edit" onclick="openModal('edit', '${c.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Paginación
-        function renderPaginacion(totalRecords, recordsOnPage) {
-            const container = document.getElementById('paginacion-container');
-            const totalPages = Math.ceil(totalRecords / recordsPerPage);
-            
-            if (totalPages <= 1) {
-                container.style.display = 'none';
-                return;
+        function renderPaginacion(totalRecords, startIndex, endIndex) {
+            const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+            const pageInfo = document.getElementById('pageInfo');
+            if (totalRecords === 0) {
+                pageInfo.textContent = 'No hay registros';
+            } else {
+                pageInfo.textContent = `Mostrando ${startIndex + 1}-${Math.min(endIndex, totalRecords)} de ${totalRecords} casos`;
             }
-            
-            container.style.display = 'flex';
-            
-            const pageInfo = container.querySelector('.page-info');
-            const navButtons = container.querySelector('.nav-buttons');
-            
-            pageInfo.innerHTML = `Página ${paginaActual} de ${totalPages} | Mostrando ${recordsOnPage} de ${totalRecords} registros`;
-            
-            navButtons.innerHTML = `
-                <button class="button" ${paginaActual === 1 ? 'disabled' : ''} onclick="changePage(${paginaActual - 1})">
-                    <i class="fas fa-arrow-left"></i> Anterior
-                </button>
-                <button class="button" ${paginaActual === totalPages ? 'disabled' : ''} onclick="changePage(${paginaActual + 1})">
-                    Siguiente <i class="fas fa-arrow-right"></i>
-                </button>
-            `;
+            document.getElementById('registrosInfo').textContent = `${totalRecords} casos`;
+
+            const nav = document.getElementById('navButtons');
+            let html = '';
+            html += `<button class="btn" ${paginaActual <= 1 ? 'disabled' : ''} onclick="cambiarPagina(${paginaActual - 1})">◀</button>`;
+
+            const maxVisible = 7;
+            let startPage = Math.max(1, paginaActual - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+            if (startPage > 1) {
+                html += `<button class="btn" onclick="cambiarPagina(1)">1</button>`;
+                if (startPage > 2) html += `<span style="padding:0 4px;">…</span>`;
+            }
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="btn ${i === paginaActual ? 'active' : ''}" onclick="cambiarPagina(${i})">${i}</button>`;
+            }
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span style="padding:0 4px;">…</span>`;
+                html += `<button class="btn" onclick="cambiarPagina(${totalPages})">${totalPages}</button>`;
+            }
+            html += `<button class="btn" ${paginaActual >= totalPages ? 'disabled' : ''} onclick="cambiarPagina(${paginaActual + 1})">▶</button>`;
+            nav.innerHTML = html;
+            document.getElementById('goToPage').value = paginaActual;
+            document.getElementById('goToPage').max = totalPages;
         }
 
-        window.changePage = function(page) {
+        window.cambiarPagina = function(page) {
+            const totalPages = Math.ceil(datosFiltrados.length / recordsPerPage) || 1;
+            if (page < 1 || page > totalPages) return;
             paginaActual = page;
             renderTablaPaginada();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Actualizar KPIs
+        window.cambiarRegistrosPorPagina = function() {
+            recordsPerPage = parseInt(document.getElementById('recordsPerPage').value);
+            paginaActual = 1;
+            renderTablaPaginada();
+        }
+
+        window.irAPagina = function(val) {
+            let page = parseInt(val);
+            if (isNaN(page) || page < 1) page = 1;
+            const totalPages = Math.ceil(datosFiltrados.length / recordsPerPage) || 1;
+            if (page > totalPages) page = totalPages;
+            paginaActual = page;
+            renderTablaPaginada();
+            document.getElementById('goToPage').value = page;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== KPIs =====
         function actualizarKPIs() {
-            const totalCasos = cases.length;
-            const casosPendientes = cases.filter(c => c.estado === 'pendiente').length;
-            const casosEnProceso = cases.filter(c => c.estado === 'en-proceso').length;
-            const casosResueltos = cases.filter(c => c.estado === 'resuelto').length;
-            
-            document.getElementById('totalCasos').textContent = totalCasos;
-            document.getElementById('casosPendientes').textContent = casosPendientes;
-            document.getElementById('casosEnProceso').textContent = casosEnProceso;
-            document.getElementById('casosResueltos').textContent = casosResueltos;
+            const total = cases.length;
+            const pendientes = cases.filter(c => c.estado === 'pendiente').length;
+            const enProceso = cases.filter(c => c.estado === 'en-proceso').length;
+            const resueltos = cases.filter(c => c.estado === 'resuelto').length;
+            document.getElementById('totalCasos').textContent = total;
+            document.getElementById('casosPendientes').textContent = pendientes;
+            document.getElementById('casosEnProceso').textContent = enProceso;
+            document.getElementById('casosResueltos').textContent = resueltos;
         }
 
-        // Utilidades
-        window.formatDate = function(dateString) { 
-            if (!dateString) return ''; 
-            const date = new Date(dateString); 
-            return isNaN(date) ? '' : date.toLocaleDateString('es-AR'); 
+        // ===== Utilidades =====
+        function formatDateLocal(dateStr) {
+            if (!dateStr) return '—';
+            const d = new Date(dateStr);
+            if (isNaN(d)) return '—';
+            return d.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }) +
+                ' ' +
+                d.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit' });
         }
 
-        window.getStatusText = function(status) { 
-            const m = { 'pendiente':'Pendiente', 'en-proceso':'En Proceso', 'resuelto':'Resuelto' }; 
-            return m[status] || 'Sin estado'; 
+        window.getStatusText = function(status) {
+            const map = { 'pendiente': 'Pendiente', 'en-proceso': 'En Proceso', 'resuelto': 'Resuelto' };
+            return map[status] || 'Sin estado';
+        }
+        window.getPriorityText = function(priority) {
+            const map = { 'normal': 'Normal', 'alta': 'Alta', 'urgente': 'Urgente' };
+            return map[priority] || 'Normal';
         }
 
-        window.getPriorityText = function(priority) { 
-            const m = { 'normal':'Normal', 'alta':'Alta', 'urgente':'Urgente' }; 
-            return m[priority] || 'Normal'; 
-        }
-
-        // Funciones de impresión
+        // ===== Impresión =====
         window.printCaseFromForm = function() {
-            alert('Función de impresión desde formulario');
-        }
-
-        window.printAllCases = function() {
+            // Toma los datos del formulario y los imprime en una ventana
+            const form = document.getElementById('caseForm');
+            const data = new FormData(form);
+            const obj = {};
+            for (let [key, val] of data.entries()) obj[key] = val;
             const printWindow = window.open('', '_blank');
-            const printContent = `<!DOCTYPE html><html><head><title>Listado Completo de Casos</title>
-            <style>body{font-family:Arial,sans-serif;margin:20px;} .header{text-align:center;margin-bottom:30px;} .case{border:1px solid #ddd;margin-bottom:20px;padding:15px;} .case-header{font-weight:bold;font-size:1.1em;margin-bottom:10px;}</style></head><body>
-            <div class="header"><h1>Listado Completo de Casos</h1><p>Fecha de impresión: ${new Date().toLocaleDateString('es-AR')}</p></div>
-            ${cases.map(caseData => `
-                <div class='case'>
-                  <div class='case-header'>Caso ${caseData.numeroExpediente || ''}</div>
-                  <p><strong>Menor:</strong> ${caseData.nombreMenor || ''} ${caseData.apellidoMenor || ''}</p>
-                  <p><strong>Madre:</strong> ${caseData.nombreMadre || ''} ${caseData.apellidoMadre || ''}</p>
-                  <p><strong>Fecha de Ingreso:</strong> ${formatDate(caseData.fechaIngreso) || ''}</p>
-                  <p><strong>Estado:</strong> ${getStatusText(caseData.estado)}</p>
-                </div>`).join('')}
-            </body></html>`;
-            printWindow.document.write(printContent);
+            printWindow.document.write(`
+            <!DOCTYPE html>
+            <html><head><title>Impresión Caso</title>
+            <style>body{font-family:'Inter',sans-serif;padding:30px;} h1{color:#0a2a4a;} .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;} .item{padding:6px 0;border-bottom:1px solid #eee;}</style>
+            </head><body>
+            <h1>Datos del Caso</h1>
+            <div class="grid">
+                <div><strong>Expediente:</strong> ${obj.numeroExpediente || ''}</div>
+                <div><strong>Fecha Ingreso:</strong> ${obj.fechaIngreso || ''}</div>
+                <div><strong>Estado:</strong> ${obj.estado || ''}</div>
+                <div><strong>Prioridad:</strong> ${obj.prioridad || ''}</div>
+                <div><strong>Menor:</strong> ${obj.nombreMenor || ''} ${obj.apellidoMenor || ''}</div>
+                <div><strong>DNI Menor:</strong> ${obj.dniMenor || ''}</div>
+                <div><strong>Madre:</strong> ${obj.nombreMadre || ''} ${obj.apellidoMadre || ''}</div>
+                <div><strong>DNI Madre:</strong> ${obj.dniMadre || ''}</div>
+                <div><strong>Presunto Padre:</strong> ${obj.nombrePadre || ''} ${obj.apellidoPadre || ''}</div>
+                <div><strong>DNI Padre:</strong> ${obj.dniPadre || ''}</div>
+            </div>
+            <p style="margin-top:20px;color:#6c757d;font-size:12px;">Impreso el ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>
+            </body></html>`);
             printWindow.document.close();
             printWindow.print();
         }
 
-        // Vista de caso (simplificada)
-        window.viewCase = function(caseId) {
-            const caseData = cases.find(c => c.id === caseId);
-            if (!caseData) return;
-            
-            const modal = document.getElementById('caseModal');
-            const modalTitle = document.getElementById('modalTitle');
-            modalTitle.textContent = `Caso ${caseData.numeroExpediente}`;
-            
-            // Cargar datos en el formulario para vista
-            loadCaseData(caseId);
-            
-            // Deshabilitar todos los campos para solo lectura
-            const form = document.getElementById('caseForm');
-            const inputs = form.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => input.disabled = true);
-            
-            modal.style.display = 'flex';
-            
-            // Restaurar cuando se cierre
-            const restoreForm = function() {
-                inputs.forEach(input => input.disabled = false);
-                modal.removeEventListener('close', restoreForm);
-            };
-            modal.addEventListener('close', restoreForm);
+        window.printAllCases = function() {
+            const printWindow = window.open('', '_blank');
+            const content = `
+            <!DOCTYPE html>
+            <html><head><title>Listado Completo de Casos</title>
+            <style>body{font-family:'Inter',sans-serif;padding:30px;} h1{color:#0a2a4a;} .case{border:1px solid #ddd;padding:16px;margin-bottom:16px;border-radius:8px;} .case-header{font-weight:bold;font-size:1.1em;color:#0a2a4a;}</style>
+            </head><body>
+            <h1>Listado Completo de Casos</h1>
+            <p>Fecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>
+            ${cases.map(c => `
+                <div class="case">
+                    <div class="case-header">${c.numeroExpediente || 'Sin expediente'}</div>
+                    <p><strong>Menor:</strong> ${c.nombreMenor || ''} ${c.apellidoMenor || ''}</p>
+                    <p><strong>Madre:</strong> ${c.nombreMadre || ''} ${c.apellidoMadre || ''}</p>
+                    <p><strong>Fecha Ingreso:</strong> ${formatDateLocal(c.fechaIngreso)}</p>
+                    <p><strong>Estado:</strong> ${getStatusText(c.estado)}</p>
+                </div>`).join('')}
+            </body></html>`;
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.print();
         }
 
-        // Eventos
-        document.getElementById('caseForm').addEventListener('submit', function(e){ 
-            e.preventDefault(); 
-            saveCaseData(); 
+        // ===== Eventos =====
+        document.getElementById('caseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveCaseData();
         });
 
-        window.addEventListener('click', function(event){ 
-            const modal = document.getElementById('caseModal');
-            if(event.target === modal) closeModal(); 
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('caseModal')) closeModal();
+            if (e.target === document.getElementById('viewModal')) closeViewModal();
         });
 
-        // Iconos FontAwesome
+        // Cargar FontAwesome
         const faScript = document.createElement('script');
         faScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js';
         document.head.appendChild(faScript);
