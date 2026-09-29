@@ -253,7 +253,7 @@
           </div>
           <div class="field">
             <label for="phone">Teléfono de Contacto</label>
-            <input type="tel" id="phone" inputmode="tel" autocomplete="off" placeholder="Con código de área">
+            <input type="tel" id="phone" inputmode="tel" autocomplete="off" maxlength="15">
           </div>
           <div class="field">
             <label for="attentionType">Tipo de Atención</label>
@@ -664,11 +664,16 @@
       hint.classList.toggle("is-ok",n===DNI_LENGTH);
       el.setCustomValidity(n===0||n===DNI_LENGTH?"":`El DNI debe tener exactamente ${DNI_LENGTH} dígitos`);
     }
+    const PHONE_PREFIX="(+54)", PHONE_LENGTH=10;
     function syncPhone(){
       const el=document.getElementById("phone");
-      el.value=el.value.replace(/[^\d+()\-\s]/g,"");
-      const n=el.value.replace(/\D/g,"").length;
-      el.setCustomValidity(n===0||(n>=8&&n<=15)?"":"Ingresá un teléfono de 8 a 15 dígitos");
+      const raw=el.value;
+      let d=raw.replace(/\D/g,"");
+      if(/^\s*\(?\+54/.test(raw) || (d.length>PHONE_LENGTH && d.startsWith("54"))) d=d.slice(2);
+      d=d.slice(0,PHONE_LENGTH);
+      el.value=d?PHONE_PREFIX+d:"";
+      const n=d.length;
+      el.setCustomValidity(n===0||n===PHONE_LENGTH?"":`El teléfono debe tener exactamente ${PHONE_LENGTH} dígitos (código de área + número)`);
     }
     function initFormFields(){
       document.getElementById("dni").addEventListener("input",syncDni);
